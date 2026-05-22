@@ -60,6 +60,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "requestAttestation": {
+          "description": "Opt into `attestation/generate` requests for upstream `x-oai-attestation`.",
+          "type": "boolean",
+          "default": false
         }
       }
     }

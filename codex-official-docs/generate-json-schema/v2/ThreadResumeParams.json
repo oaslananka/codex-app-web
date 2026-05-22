@@ -97,10 +97,6 @@
     }
   },
   "definitions": {
-    "AbsolutePathBuf": {
-      "description": "A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem).\n\nIMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.",
-      "type": "string"
-    },
     "ApprovalsReviewer": {
       "description": "Configures who approval requests are routed to for review. Examples include sandbox escapes, blocked network access, MCP approval prompts, and ARC escalations. Defaults to `user`. `auto_review` uses a carefully prompted subagent to gather relevant context and apply a risk-based decision framework before approving or denying the request. The legacy value `guardian_subagent` is accepted for compatibility.",
       "type": "string",
@@ -305,8 +301,6 @@
     "ImageDetail": {
       "type": "string",
       "enum": [
-        "auto",
-        "low",
         "high",
         "original"
       ]
@@ -391,65 +385,6 @@
           "enum": [
             "final_answer"
           ]
-        }
-      ]
-    },
-    "PermissionProfileModificationParams": {
-      "oneOf": [
-        {
-          "title": "AdditionalWritableRootPermissionProfileModificationParams",
-          "description": "Additional concrete directory that should be writable.",
-          "type": "object",
-          "required": [
-            "path",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "AdditionalWritableRootPermissionProfileModificationParamsType",
-              "type": "string",
-              "enum": [
-                "additionalWritableRoot"
-              ]
-            },
-            "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
-            }
-          }
-        }
-      ]
-    },
-    "PermissionProfileSelectionParams": {
-      "oneOf": [
-        {
-          "title": "ProfilePermissionProfileSelectionParams",
-          "description": "Select a named built-in or user-defined profile and optionally apply bounded modifications that Codex knows how to validate.",
-          "type": "object",
-          "required": [
-            "id",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "ProfilePermissionProfileSelectionParamsType",
-              "type": "string",
-              "enum": [
-                "profile"
-              ]
-            },
-            "id": {
-              "type": "string"
-            },
-            "modifications": {
-              "type": [
-                "array",
-                "null"
-              ],
-              "items": {
-                "$ref": "#/definitions/PermissionProfileModificationParams"
-              }
-            }
-          }
         }
       ]
     },
@@ -955,6 +890,22 @@
             },
             "encrypted_content": {
               "type": "string"
+            }
+          }
+        },
+        {
+          "title": "CompactionTriggerResponseItem",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "CompactionTriggerResponseItemType",
+              "type": "string",
+              "enum": [
+                "compaction_trigger"
+              ]
             }
           }
         },

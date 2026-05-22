@@ -39,11 +39,13 @@ export const OFFICIAL_REQUEST_METHODS = [
   "marketplace/remove",
   "marketplace/upgrade",
   "plugin/list",
+  "plugin/installed",
   "plugin/read",
   "plugin/skill/read",
   "plugin/share/save",
   "plugin/share/updateTargets",
   "plugin/share/list",
+  "plugin/share/checkout",
   "plugin/share/delete",
   "app/list",
   "fs/readFile",
@@ -172,6 +174,7 @@ export const OFFICIAL_SERVER_REQUEST_METHODS = [
   "item/permissions/requestApproval",
   "item/tool/call",
   "account/chatgptAuthTokens/refresh",
+  "attestation/generate",
   "applyPatchApproval",
   "execCommandApproval"
 ] as const;
@@ -247,6 +250,18 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "unstable": false,
     "deprecated": false
   },
+  "desktop": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
   "developer_instructions": {
     "description": null,
     "types": [
@@ -263,11 +278,12 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "description": null,
     "types": [
       "string",
+      "array",
       "null"
     ],
     "enumValues": [],
     "hasObjectShape": false,
-    "hasArrayShape": false,
+    "hasArrayShape": true,
     "unstable": false,
     "deprecated": false
   },
@@ -525,18 +541,6 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     ],
     "enumValues": [],
     "hasObjectShape": true,
-    "hasArrayShape": false,
-    "unstable": false,
-    "deprecated": false
-  },
-  "tools.view_image": {
-    "description": null,
-    "types": [
-      "boolean",
-      "null"
-    ],
-    "enumValues": [],
-    "hasObjectShape": false,
     "hasArrayShape": false,
     "unstable": false,
     "deprecated": false

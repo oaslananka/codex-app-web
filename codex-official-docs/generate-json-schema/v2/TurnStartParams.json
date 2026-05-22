@@ -206,6 +206,13 @@
         }
       }
     },
+    "ImageDetail": {
+      "type": "string",
+      "enum": [
+        "high",
+        "original"
+      ]
+    },
     "ModeKind": {
       "description": "Initial collaboration mode to use when the TUI starts.",
       "type": "string",
@@ -219,65 +226,6 @@
       "enum": [
         "restricted",
         "enabled"
-      ]
-    },
-    "PermissionProfileModificationParams": {
-      "oneOf": [
-        {
-          "title": "AdditionalWritableRootPermissionProfileModificationParams",
-          "description": "Additional concrete directory that should be writable.",
-          "type": "object",
-          "required": [
-            "path",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "AdditionalWritableRootPermissionProfileModificationParamsType",
-              "type": "string",
-              "enum": [
-                "additionalWritableRoot"
-              ]
-            },
-            "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
-            }
-          }
-        }
-      ]
-    },
-    "PermissionProfileSelectionParams": {
-      "oneOf": [
-        {
-          "title": "ProfilePermissionProfileSelectionParams",
-          "description": "Select a named built-in or user-defined profile and optionally apply bounded modifications that Codex knows how to validate.",
-          "type": "object",
-          "required": [
-            "id",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "ProfilePermissionProfileSelectionParamsType",
-              "type": "string",
-              "enum": [
-                "profile"
-              ]
-            },
-            "id": {
-              "type": "string"
-            },
-            "modifications": {
-              "type": [
-                "array",
-                "null"
-              ],
-              "items": {
-                "$ref": "#/definitions/PermissionProfileModificationParams"
-              }
-            }
-          }
-        }
       ]
     },
     "Personality": {
@@ -530,6 +478,17 @@
                 "image"
               ]
             },
+            "detail": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "url": {
               "type": "string"
             }
@@ -548,6 +507,17 @@
               "type": "string",
               "enum": [
                 "localImage"
+              ]
+            },
+            "detail": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "path": {

@@ -85,6 +85,25 @@
         }
       }
     },
+    "AttestationGenerateParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AttestationGenerateParams",
+      "type": "object"
+    },
+    "AttestationGenerateResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AttestationGenerateResponse",
+      "type": "object",
+      "required": [
+        "token"
+      ],
+      "properties": {
+        "token": {
+          "description": "Opaque client attestation token.",
+          "type": "string"
+        }
+      }
+    },
     "ChatgptAuthTokensRefreshParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ChatgptAuthTokensRefreshParams",
@@ -742,6 +761,30 @@
           }
         },
         {
+          "title": "Plugin/installedRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "title": "Plugin/installedRequestMethod",
+              "type": "string",
+              "enum": [
+                "plugin/installed"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/v2/PluginInstalledParams"
+            }
+          }
+        },
+        {
           "title": "Plugin/readRequest",
           "type": "object",
           "required": [
@@ -858,6 +901,30 @@
             },
             "params": {
               "$ref": "#/definitions/v2/PluginShareListParams"
+            }
+          }
+        },
+        {
+          "title": "Plugin/share/checkoutRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "title": "Plugin/share/checkoutRequestMethod",
+              "type": "string",
+              "enum": [
+                "plugin/share/checkout"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/v2/PluginShareCheckoutParams"
             }
           }
         },
@@ -2623,6 +2690,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "requestAttestation": {
+          "description": "Opt into `attestation/generate` requests for upstream `x-oai-attestation`.",
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -5211,6 +5283,31 @@
           }
         },
         {
+          "title": "Attestation/generateRequest",
+          "description": "Generate a fresh upstream attestation result on demand.",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "title": "Attestation/generateRequestMethod",
+              "type": "string",
+              "enum": [
+                "attestation/generate"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/AttestationGenerateParams"
+            }
+          }
+        },
+        {
           "title": "ApplyPatchApprovalRequest",
           "description": "DEPRECATED APIs below Request to approve a patch. This request is used for Turns started via the legacy APIs (i.e. SendUserTurn, SendUserMessage).",
           "type": "object",
@@ -5540,41 +5637,8 @@
           "id": {
             "description": "Identifier from `default_permissions` or the implicit built-in default, such as `:workspace` or a user-defined `[permissions.<id>]` profile.",
             "type": "string"
-          },
-          "modifications": {
-            "description": "Bounded user-requested modifications applied on top of the named profile, if any.",
-            "type": "array",
-            "default": [],
-            "items": {
-              "$ref": "#/definitions/v2/ActivePermissionProfileModification"
-            }
           }
         }
-      },
-      "ActivePermissionProfileModification": {
-        "oneOf": [
-          {
-            "title": "AdditionalWritableRootActivePermissionProfileModification",
-            "description": "Additional concrete directory that should be writable.",
-            "type": "object",
-            "required": [
-              "path",
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "title": "AdditionalWritableRootActivePermissionProfileModificationType",
-                "type": "string",
-                "enum": [
-                  "additionalWritableRoot"
-                ]
-              },
-              "path": {
-                "$ref": "#/definitions/v2/AbsolutePathBuf"
-              }
-            }
-          }
-        ]
       },
       "AddCreditsNudgeCreditType": {
         "type": "string",
@@ -7048,6 +7112,13 @@
               "null"
             ]
           },
+          "desktop": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
           "developer_instructions": {
             "type": [
               "string",
@@ -7055,9 +7126,13 @@
             ]
           },
           "forced_chatgpt_workspace_id": {
-            "type": [
-              "string",
-              "null"
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/ForcedChatgptWorkspaceIds"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "forced_login_method": {
@@ -7364,6 +7439,13 @@
                     "$ref": "#/definitions/v2/AbsolutePathBuf"
                   }
                 ]
+              },
+              "profile": {
+                "description": "Name of the selected profile-v2 config layered on top of the base user config, when this layer represents one.",
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             }
           },
@@ -7494,6 +7576,12 @@
       "ConfigRequirements": {
         "type": "object",
         "properties": {
+          "allowManagedHooksOnly": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
           "allowedApprovalPolicies": {
             "type": [
               "array",
@@ -7690,6 +7778,12 @@
               },
               "command": {
                 "type": "string"
+              },
+              "commandWindows": {
+                "type": [
+                  "string",
+                  "null"
+                ]
               },
               "statusMessage": {
                 "type": [
@@ -8104,6 +8198,13 @@
             ],
             "format": "uint32",
             "minimum": 0
+          },
+          "threadId": {
+            "description": "Optional loaded thread id. Pass this when showing feature state for an existing thread so enablement is computed from that thread's refreshed config, including project-local config for the thread's cwd.",
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       },
@@ -8606,6 +8707,20 @@
             "type": "string"
           }
         }
+      },
+      "ForcedChatgptWorkspaceIds": {
+        "description": "Backward-compatible API shape for ChatGPT workspace login restrictions.",
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
       },
       "ForcedLoginMethod": {
         "type": "string",
@@ -9839,8 +9954,6 @@
       "ImageDetail": {
         "type": "string",
         "enum": [
-          "auto",
-          "low",
           "high",
           "original"
         ]
@@ -11539,194 +11652,6 @@
           }
         ]
       },
-      "PermissionProfile": {
-        "oneOf": [
-          {
-            "title": "ManagedPermissionProfile",
-            "description": "Codex owns sandbox construction for this profile.",
-            "type": "object",
-            "required": [
-              "fileSystem",
-              "network",
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "title": "ManagedPermissionProfileType",
-                "type": "string",
-                "enum": [
-                  "managed"
-                ]
-              },
-              "fileSystem": {
-                "$ref": "#/definitions/v2/PermissionProfileFileSystemPermissions"
-              },
-              "network": {
-                "$ref": "#/definitions/v2/PermissionProfileNetworkPermissions"
-              }
-            }
-          },
-          {
-            "title": "DisabledPermissionProfile",
-            "description": "Do not apply an outer sandbox.",
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "title": "DisabledPermissionProfileType",
-                "type": "string",
-                "enum": [
-                  "disabled"
-                ]
-              }
-            }
-          },
-          {
-            "title": "ExternalPermissionProfile",
-            "description": "Filesystem isolation is enforced by an external caller.",
-            "type": "object",
-            "required": [
-              "network",
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "title": "ExternalPermissionProfileType",
-                "type": "string",
-                "enum": [
-                  "external"
-                ]
-              },
-              "network": {
-                "$ref": "#/definitions/v2/PermissionProfileNetworkPermissions"
-              }
-            }
-          }
-        ]
-      },
-      "PermissionProfileFileSystemPermissions": {
-        "oneOf": [
-          {
-            "title": "RestrictedPermissionProfileFileSystemPermissions",
-            "type": "object",
-            "required": [
-              "entries",
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "title": "RestrictedPermissionProfileFileSystemPermissionsType",
-                "type": "string",
-                "enum": [
-                  "restricted"
-                ]
-              },
-              "entries": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/v2/FileSystemSandboxEntry"
-                }
-              },
-              "globScanMaxDepth": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "format": "uint",
-                "minimum": 1
-              }
-            }
-          },
-          {
-            "title": "UnrestrictedPermissionProfileFileSystemPermissions",
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "title": "UnrestrictedPermissionProfileFileSystemPermissionsType",
-                "type": "string",
-                "enum": [
-                  "unrestricted"
-                ]
-              }
-            }
-          }
-        ]
-      },
-      "PermissionProfileModificationParams": {
-        "oneOf": [
-          {
-            "title": "AdditionalWritableRootPermissionProfileModificationParams",
-            "description": "Additional concrete directory that should be writable.",
-            "type": "object",
-            "required": [
-              "path",
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "title": "AdditionalWritableRootPermissionProfileModificationParamsType",
-                "type": "string",
-                "enum": [
-                  "additionalWritableRoot"
-                ]
-              },
-              "path": {
-                "$ref": "#/definitions/v2/AbsolutePathBuf"
-              }
-            }
-          }
-        ]
-      },
-      "PermissionProfileNetworkPermissions": {
-        "type": "object",
-        "required": [
-          "enabled"
-        ],
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          }
-        }
-      },
-      "PermissionProfileSelectionParams": {
-        "oneOf": [
-          {
-            "title": "ProfilePermissionProfileSelectionParams",
-            "description": "Select a named built-in or user-defined profile and optionally apply bounded modifications that Codex knows how to validate.",
-            "type": "object",
-            "required": [
-              "id",
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "title": "ProfilePermissionProfileSelectionParamsType",
-                "type": "string",
-                "enum": [
-                  "profile"
-                ]
-              },
-              "id": {
-                "type": "string"
-              },
-              "modifications": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "$ref": "#/definitions/v2/PermissionProfileModificationParams"
-                }
-              }
-            }
-          }
-        ]
-      },
       "Personality": {
         "type": "string",
         "enum": [
@@ -11930,6 +11855,56 @@
           },
           "authPolicy": {
             "$ref": "#/definitions/v2/PluginAuthPolicy"
+          }
+        }
+      },
+      "PluginInstalledParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "PluginInstalledParams",
+        "type": "object",
+        "properties": {
+          "cwds": {
+            "description": "Optional working directories used to discover repo marketplaces.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/definitions/v2/AbsolutePathBuf"
+            }
+          },
+          "installSuggestionPluginNames": {
+            "description": "Additional uninstalled plugin names that should be returned when present locally. This is used by mention surfaces that intentionally expose install entrypoints.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PluginInstalledResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "PluginInstalledResponse",
+        "type": "object",
+        "required": [
+          "marketplaces"
+        ],
+        "properties": {
+          "marketplaceLoadErrors": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "$ref": "#/definitions/v2/MarketplaceLoadErrorInfo"
+            }
+          },
+          "marketplaces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/v2/PluginMarketplaceEntry"
+            }
           }
         }
       },
@@ -12209,6 +12184,58 @@
           }
         }
       },
+      "PluginShareCheckoutParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "PluginShareCheckoutParams",
+        "type": "object",
+        "required": [
+          "remotePluginId"
+        ],
+        "properties": {
+          "remotePluginId": {
+            "type": "string"
+          }
+        }
+      },
+      "PluginShareCheckoutResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "PluginShareCheckoutResponse",
+        "type": "object",
+        "required": [
+          "marketplaceName",
+          "marketplacePath",
+          "pluginId",
+          "pluginName",
+          "pluginPath",
+          "remotePluginId"
+        ],
+        "properties": {
+          "marketplaceName": {
+            "type": "string"
+          },
+          "marketplacePath": {
+            "$ref": "#/definitions/v2/AbsolutePathBuf"
+          },
+          "pluginId": {
+            "type": "string"
+          },
+          "pluginName": {
+            "type": "string"
+          },
+          "pluginPath": {
+            "$ref": "#/definitions/v2/AbsolutePathBuf"
+          },
+          "remotePluginId": {
+            "type": "string"
+          },
+          "remoteVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "PluginShareContext": {
         "type": "object",
         "required": [
@@ -12227,10 +12254,28 @@
               "null"
             ]
           },
+          "discoverability": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/PluginShareDiscoverability"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "remotePluginId": {
             "type": "string"
           },
-          "shareTargets": {
+          "remoteVersion": {
+            "description": "Version of the remote shared plugin release when available.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null
+          },
+          "sharePrincipals": {
             "type": [
               "array",
               "null"
@@ -12276,8 +12321,7 @@
       "PluginShareListItem": {
         "type": "object",
         "required": [
-          "plugin",
-          "shareUrl"
+          "plugin"
         ],
         "properties": {
           "localPluginPath": {
@@ -12292,9 +12336,6 @@
           },
           "plugin": {
             "$ref": "#/definitions/v2/PluginSummary"
-          },
-          "shareUrl": {
-            "type": "string"
           }
         }
       },
@@ -12324,7 +12365,8 @@
         "required": [
           "name",
           "principalId",
-          "principalType"
+          "principalType",
+          "role"
         ],
         "properties": {
           "name": {
@@ -12335,8 +12377,19 @@
           },
           "principalType": {
             "$ref": "#/definitions/v2/PluginSharePrincipalType"
+          },
+          "role": {
+            "$ref": "#/definitions/v2/PluginSharePrincipalRole"
           }
         }
+      },
+      "PluginSharePrincipalRole": {
+        "type": "string",
+        "enum": [
+          "reader",
+          "editor",
+          "owner"
+        ]
       },
       "PluginSharePrincipalType": {
         "type": "string",
@@ -12405,7 +12458,8 @@
         "type": "object",
         "required": [
           "principalId",
-          "principalType"
+          "principalType",
+          "role"
         ],
         "properties": {
           "principalId": {
@@ -12413,8 +12467,18 @@
           },
           "principalType": {
             "$ref": "#/definitions/v2/PluginSharePrincipalType"
+          },
+          "role": {
+            "$ref": "#/definitions/v2/PluginShareTargetRole"
           }
         }
+      },
+      "PluginShareTargetRole": {
+        "type": "string",
+        "enum": [
+          "reader",
+          "editor"
+        ]
       },
       "PluginShareUpdateDiscoverability": {
         "type": "string",
@@ -12633,8 +12697,23 @@
               "type": "string"
             }
           },
+          "localVersion": {
+            "description": "Version of the locally materialized plugin package when available.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null
+          },
           "name": {
             "type": "string"
+          },
+          "remotePluginId": {
+            "description": "Backend remote plugin identifier when available.",
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "shareContext": {
             "description": "Remote sharing context associated with this plugin when available.",
@@ -13309,9 +13388,11 @@
       "RemoteControlStatusChangedNotification": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "RemoteControlStatusChangedNotification",
-        "description": "Current remote-control connection status and environment id exposed to clients.",
+        "description": "Current remote-control connection status and remote identity exposed to clients.",
         "type": "object",
         "required": [
+          "installationId",
+          "serverName",
           "status"
         ],
         "properties": {
@@ -13320,6 +13401,12 @@
               "string",
               "null"
             ]
+          },
+          "installationId": {
+            "type": "string"
+          },
+          "serverName": {
+            "type": "string"
           },
           "status": {
             "$ref": "#/definitions/v2/RemoteControlConnectionStatus"
@@ -13931,6 +14018,22 @@
               },
               "encrypted_content": {
                 "type": "string"
+              }
+            }
+          },
+          {
+            "title": "CompactionTriggerResponseItem",
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "title": "CompactionTriggerResponseItemType",
+                "type": "string",
+                "enum": [
+                  "compaction_trigger"
+                ]
               }
             }
           },
@@ -15386,7 +15489,7 @@
             ]
           },
           "sandbox": {
-            "description": "Legacy sandbox policy retained for compatibility. Experimental clients should prefer `permissionProfile` when they need exact runtime permissions.",
+            "description": "Legacy sandbox policy retained for compatibility. Experimental clients should prefer `activePermissionProfile` for profile provenance.",
             "allOf": [
               {
                 "$ref": "#/definitions/v2/SandboxPolicy"
@@ -15468,6 +15571,8 @@
         "enum": [
           "active",
           "paused",
+          "blocked",
+          "usageLimited",
           "budgetLimited",
           "complete"
         ]
@@ -16878,7 +16983,7 @@
             ]
           },
           "sandbox": {
-            "description": "Legacy sandbox policy retained for compatibility. Experimental clients should prefer `permissionProfile` when they need exact runtime permissions.",
+            "description": "Legacy sandbox policy retained for compatibility. Experimental clients should prefer `activePermissionProfile` for profile provenance.",
             "allOf": [
               {
                 "$ref": "#/definitions/v2/SandboxPolicy"
@@ -17186,7 +17291,7 @@
             ]
           },
           "sandbox": {
-            "description": "Legacy sandbox policy retained for compatibility. Experimental clients should prefer `permissionProfile` when they need exact runtime permissions.",
+            "description": "Legacy sandbox policy retained for compatibility. Experimental clients should prefer `activePermissionProfile` for profile provenance.",
             "allOf": [
               {
                 "$ref": "#/definitions/v2/SandboxPolicy"
@@ -17503,12 +17608,6 @@
       "ToolsV2": {
         "type": "object",
         "properties": {
-          "view_image": {
-            "type": [
-              "boolean",
-              "null"
-            ]
-          },
           "web_search": {
             "anyOf": [
               {
@@ -18002,6 +18101,17 @@
                   "image"
                 ]
               },
+              "detail": {
+                "default": null,
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ImageDetail"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "url": {
                 "type": "string"
               }
@@ -18020,6 +18130,17 @@
                 "type": "string",
                 "enum": [
                   "localImage"
+                ]
+              },
+              "detail": {
+                "default": null,
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ImageDetail"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "path": {
