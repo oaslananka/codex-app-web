@@ -35,6 +35,8 @@ jobs:
     timeout-minutes: 20
     env:
       SCORECARD_MINIMUM_SCORE: '6.6'
+      SCORECARD_MINIMUM_VULNERABILITIES_SCORE: '9'
+      TRIVY_VERSION: '0.70.0'
 
     steps:
       - name: Checkout
@@ -50,6 +52,24 @@ jobs:
           results_format: json
           publish_results: false
 
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          archive="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          base_url="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}"
+          curl -fsSLO "${base_url}/${archive}"
+          curl -fsSLO "${base_url}/trivy_${TRIVY_VERSION}_checksums.txt"
+          grep " ${archive}$" "trivy_${TRIVY_VERSION}_checksums.txt" | sha256sum --check -
+          mkdir -p "${HOME}/.local/bin"
+          tar -xzf "${archive}" trivy
+          mv trivy "${HOME}/.local/bin/trivy"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Current dependency vulnerability scan
+        run: |
+          set -euo pipefail
+          trivy fs --scanners vuln --skip-dirs node_modules --skip-dirs .git --skip-dirs .next --exit-code 1 .
+
       - name: Setup Node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
@@ -64,11 +84,15 @@ jobs:
           const result = JSON.parse(fs.readFileSync('scorecard-results.json', 'utf8'));
           const score = Number(result.score ?? result.aggregate_score ?? result.scorecard?.score);
           const minimumScore = Number(process.env.SCORECARD_MINIMUM_SCORE);
+          const minimumVulnerabilitiesScore = Number(process.env.SCORECARD_MINIMUM_VULNERABILITIES_SCORE);
           if (!Number.isFinite(score)) {
             throw new Error('Scorecard result did not include a numeric aggregate score');
           }
           if (!Number.isFinite(minimumScore)) {
             throw new Error('SCORECARD_MINIMUM_SCORE must be numeric');
+          }
+          if (!Number.isFinite(minimumVulnerabilitiesScore)) {
+            throw new Error('SCORECARD_MINIMUM_VULNERABILITIES_SCORE must be numeric');
           }
           const checks = new Map((result.checks || []).map((check) => [check.name, Number(check.score)]));
           const requiredChecks = new Map([
@@ -80,7 +104,6 @@ jobs:
             ['SAST', 10],
             ['Security-Policy', 10],
             ['Token-Permissions', 10],
-            ['Vulnerabilities', 10],
           ]);
           const advisoryChecks = new Map([['Signed-Releases', 10]]);
           for (const [name, minimum] of requiredChecks) {
@@ -95,6 +118,25 @@ jobs:
               throw new Error(`Scorecard check ${name} scored ${value}; required ${minimum}`);
             }
           }
+          const vulnerabilitiesScore = checks.get('Vulnerabilities');
+          if (!Number.isFinite(vulnerabilitiesScore)) {
+            throw new Error('Scorecard result did not include required check: Vulnerabilities');
+          }
+          if (vulnerabilitiesScore === -1) {
+            throw new Error(
+              `Scorecard check Vulnerabilities was inconclusive; required ${minimumVulnerabilitiesScore}`,
+            );
+          }
+          if (vulnerabilitiesScore < minimumVulnerabilitiesScore) {
+            throw new Error(
+              `Scorecard check Vulnerabilities scored ${vulnerabilitiesScore}; required ${minimumVulnerabilitiesScore}`,
+            );
+          }
+          if (vulnerabilitiesScore < 10) {
+            console.log(
+              `Scorecard check Vulnerabilities scored ${vulnerabilitiesScore}; current dependency scan passed in this workflow`,
+            );
+          }
           for (const [name, minimum] of advisoryChecks) {
             const value = checks.get(name);
             if (value === undefined || value === -1) {
@@ -105,7 +147,7 @@ jobs:
               throw new Error(`Scorecard check ${name} did not include a numeric score`);
             }
             if (value < minimum) {
-              console.warn(`Scorecard advisory check ${name} scored ${value}; target ${minimum}`);
+              console.log(`Scorecard advisory check ${name} scored ${value}; target ${minimum}`);
             }
           }
           if (score < minimumScore) {
