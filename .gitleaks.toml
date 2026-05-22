@@ -1,0 +1,15 @@
+title = "codex-app-web gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ignore local generated artifacts and dependency directories"
+paths = [
+  '''(^|/)\.next/''',
+  '''(^|/)node_modules/''',
+  '''(^|/)coverage/''',
+  '''(^|/)dist/''',
+  '''(^|/)build/''',
+  '''(^|/)public/vendor/''',
+]

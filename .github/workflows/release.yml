@@ -1,0 +1,218 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  PNPM_VERSION: '11.2.2'
+
+jobs:
+  release-please:
+    name: Release Please
+    if: ${{ github.repository == 'oaslananka/codex-app-web' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+      major: ${{ steps.release.outputs.major }}
+      minor: ${{ steps.release.outputs.minor }}
+      patch: ${{ steps.release.outputs.patch }}
+
+    steps:
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish-github-release:
+    name: Publish GitHub Release Assets
+    needs: release-please
+    if: ${{ github.repository == 'oaslananka/codex-app-web' && needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      artifact-metadata: write
+      attestations: write
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Enable pnpm
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+
+      - name: Validate release source
+        run: |
+          set -euo pipefail
+          pnpm format:check
+          pnpm lint
+          pnpm repo:hygiene:check
+          pnpm protocol:manifest:check
+          pnpm protocol:drift:check -- --base-ref origin/main
+          pnpm typecheck
+          pnpm test
+          pnpm build
+
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          version="0.70.0"
+          archive="trivy_${version}_Linux-64bit.tar.gz"
+          base_url="https://github.com/aquasecurity/trivy/releases/download/v${version}"
+          curl -fsSLO "${base_url}/${archive}"
+          curl -fsSLO "${base_url}/trivy_${version}_checksums.txt"
+          grep " ${archive}$" "trivy_${version}_checksums.txt" | sha256sum --check -
+          mkdir -p "${HOME}/.local/bin"
+          tar -xzf "${archive}" trivy
+          mv trivy "${HOME}/.local/bin/trivy"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Build release assets
+        env:
+          VERSION: ${{ needs.release-please.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist/release
+          pnpm pack --pack-destination dist/release
+          trivy fs --format cyclonedx --output "dist/release/codex-app-web-${VERSION}.sbom.cdx.json" --skip-dirs node_modules --skip-dirs .git --skip-dirs .next .
+
+      - name: Attest release assets
+        id: attest
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26
+        with:
+          subject-path: dist/release/codex-app-web-${{ needs.release-please.outputs.version }}.tgz
+
+      - name: Stage provenance asset
+        env:
+          VERSION: ${{ needs.release-please.outputs.version }}
+          BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BUNDLE_PATH}" ] || [ ! -f "${BUNDLE_PATH}" ]; then
+            echo "Attestation bundle was not created at the expected path: ${BUNDLE_PATH}" >&2
+            exit 1
+          fi
+          cp "${BUNDLE_PATH}" "dist/release/codex-app-web-${VERSION}.tgz.intoto.jsonl"
+          (
+            cd dist/release
+            sha256sum ./* > SHA256SUMS.txt
+          )
+
+      - name: Verify provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.release-please.outputs.version }}
+        run: |
+          set -euo pipefail
+          gh attestation verify "dist/release/codex-app-web-${VERSION}.tgz" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --bundle "dist/release/codex-app-web-${VERSION}.tgz.intoto.jsonl"
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          gh release view "${TAG_NAME}" --json assets > existing-release-assets.json
+          node - <<'NODE' > assets-to-upload.txt
+          const crypto = require('node:crypto');
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          const release = JSON.parse(fs.readFileSync('existing-release-assets.json', 'utf8'));
+          const existing = new Map((release.assets || []).map((asset) => [asset.name, asset.digest]));
+          for (const name of fs.readdirSync('dist/release').sort()) {
+            const filePath = path.join('dist/release', name);
+            const stat = fs.statSync(filePath);
+            if (!stat.isFile()) {
+              continue;
+            }
+            const digest = `sha256:${crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex')}`;
+            const publishedDigest = existing.get(name);
+            if (existing.has(name)) {
+              if (publishedDigest !== digest) {
+                throw new Error(`Release asset already exists with a different digest: ${name}`);
+              }
+              continue;
+            }
+            console.log(filePath);
+          }
+          NODE
+          if [ -s assets-to-upload.txt ]; then
+            while IFS= read -r asset; do
+              gh release upload "${TAG_NAME}" "${asset}"
+            done < assets-to-upload.txt
+          else
+            echo "All release assets are already present with matching digests."
+          fi
+
+      - name: Verify release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+          VERSION: ${{ needs.release-please.outputs.version }}
+        run: |
+          set -euo pipefail
+          gh release view "${TAG_NAME}" --json tagName,isDraft,isPrerelease,assets > release.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const release = JSON.parse(fs.readFileSync('release.json', 'utf8'));
+          const assets = new Set((release.assets || []).map((asset) => asset.name));
+          const required = [
+            'SHA256SUMS.txt',
+            `codex-app-web-${process.env.VERSION}.sbom.cdx.json`,
+            `codex-app-web-${process.env.VERSION}.tgz.intoto.jsonl`,
+          ];
+          for (const name of required) {
+            if (!assets.has(name)) {
+              throw new Error(`Missing release asset: ${name}`);
+            }
+          }
+          if (![...assets].some((name) => /^codex-app-web-\d+\.\d+\.\d+\.tgz$/.test(name))) {
+            throw new Error('Missing package tarball release asset');
+          }
+          if (release.isDraft) {
+            throw new Error('Release must not remain draft after asset publication');
+          }
+          NODE

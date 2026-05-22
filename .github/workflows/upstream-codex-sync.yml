@@ -1,0 +1,178 @@
+name: Upstream Codex App-Server Sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: 'openai/codex ref, branch, tag, or SHA'
+        required: false
+        type: string
+      mode:
+        description: 'check or pr'
+        required: true
+        default: 'pr'
+        type: choice
+        options:
+          - check
+          - pr
+  schedule:
+    - cron: '17 3 * * 1-5'
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: upstream-codex-app-server-sync
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  PNPM_VERSION: '11.2.2'
+  SYNC_BRANCH: upstream/sync-openai-codex-app-server
+  PR_TITLE: 'chore(protocol): sync OpenAI Codex app-server artifacts'
+  COMMIT_MESSAGE: 'chore(protocol): sync OpenAI Codex app-server artifacts'
+
+jobs:
+  sync:
+    name: Sync Protocol Artifacts
+    if: ${{ github.repository == 'oaslananka/codex-app-web' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Enable pnpm
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+
+      - name: Prepare sync branch
+        if: ${{ inputs.mode == 'pr' || github.event_name == 'schedule' }}
+        env:
+          GH_TOKEN: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          gh auth setup-git
+          if git ls-remote --exit-code --heads origin "${SYNC_BRANCH}" >/dev/null 2>&1; then
+            git fetch origin "${SYNC_BRANCH}"
+            git switch -c "${SYNC_BRANCH}" "origin/${SYNC_BRANCH}"
+            git merge --no-edit "origin/${GITHUB_REF_NAME}"
+          else
+            git switch -c "${SYNC_BRANCH}"
+          fi
+
+      - name: Sync upstream artifacts
+        env:
+          CODEX_BIN: pnpm --silent dlx @openai/codex@latest codex
+          UPSTREAM_REF: ${{ inputs.upstream_ref }}
+        run: |
+          set -euo pipefail
+          if [ -n "${UPSTREAM_REF}" ]; then
+            pnpm protocol:sync:upstream -- --upstream-ref "${UPSTREAM_REF}"
+          else
+            pnpm protocol:sync:upstream
+          fi
+
+      - name: Validate generated state
+        run: |
+          set -euo pipefail
+          pnpm format:check
+          pnpm lint
+          pnpm repo:hygiene:check
+          pnpm protocol:manifest:check
+          pnpm protocol:drift:check -- --base-ref "origin/${GITHUB_REF_NAME}"
+          pnpm typecheck
+          pnpm test
+          pnpm build
+
+      - name: Check mode diff
+        if: ${{ inputs.mode == 'check' }}
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+
+      - name: Commit and push sync branch
+        if: ${{ inputs.mode == 'pr' || github.event_name == 'schedule' }}
+        env:
+          GH_TOKEN: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "No upstream protocol changes detected."
+            exit 0
+          fi
+          git add codex-official-docs src/lib/codex-runtime/official-manifest.generated.ts
+          git commit -m "${COMMIT_MESSAGE}"
+          git push origin "HEAD:${SYNC_BRANCH}"
+
+      - name: Create or update draft PR
+        if: ${{ inputs.mode == 'pr' || github.event_name == 'schedule' }}
+        env:
+          GH_TOKEN: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          if ! git ls-remote --exit-code --heads origin "${SYNC_BRANCH}" >/dev/null 2>&1; then
+            echo "No sync branch was pushed."
+            exit 0
+          fi
+
+          body_file="$(mktemp)"
+          {
+            echo "## Summary"
+            echo
+            echo "- Syncs OpenAI Codex app-server generated TypeScript and JSON schema artifacts."
+            echo "- Updates generated protocol manifest and upstream metadata."
+            echo "- Keeps the PR in draft until validation is green."
+            echo
+            echo "## Validation"
+            echo
+            echo "- pnpm format:check"
+            echo "- pnpm lint"
+            echo "- pnpm repo:hygiene:check"
+            echo "- pnpm protocol:manifest:check"
+            echo "- pnpm protocol:drift:check"
+            echo "- pnpm typecheck"
+            echo "- pnpm test"
+            echo "- pnpm build"
+            echo
+            echo "## Credential note"
+            echo
+            echo "If this PR was created with GITHUB_TOKEN and required validation did not trigger, configure UPSTREAM_SYNC_TOKEN with minimal contents and pull request write scopes."
+          } > "${body_file}"
+
+          existing="$(gh pr list --head "${SYNC_BRANCH}" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "${existing}" ]; then
+            gh pr edit "${existing}" --title "${PR_TITLE}" --body-file "${body_file}"
+          else
+            gh pr create --draft --base "${GITHUB_REF_NAME}" --head "${SYNC_BRANCH}" --title "${PR_TITLE}" --body-file "${body_file}"
+          fi

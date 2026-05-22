@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GetAccountResponse",
+  "type": "object",
+  "required": [
+    "requiresOpenaiAuth"
+  ],
+  "properties": {
+    "account": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Account"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requiresOpenaiAuth": {
+      "type": "boolean"
+    }
+  },
+  "definitions": {
+    "Account": {
+      "oneOf": [
+        {
+          "title": "ApiKeyAccount",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "ApiKeyAccountType",
+              "type": "string",
+              "enum": [
+                "apiKey"
+              ]
+            }
+          }
+        },
+        {
+          "title": "ChatgptAccount",
+          "type": "object",
+          "required": [
+            "email",
+            "planType",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "ChatgptAccountType",
+              "type": "string",
+              "enum": [
+                "chatgpt"
+              ]
+            },
+            "email": {
+              "type": "string"
+            },
+            "planType": {
+              "$ref": "#/definitions/PlanType"
+            }
+          }
+        },
+        {
+          "title": "AmazonBedrockAccount",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "AmazonBedrockAccountType",
+              "type": "string",
+              "enum": [
+                "amazonBedrock"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "PlanType": {
+      "type": "string",
+      "enum": [
+        "free",
+        "go",
+        "plus",
+        "pro",
+        "prolite",
+        "team",
+        "self_serve_business_usage_based",
+        "business",
+        "enterprise_cbp_usage_based",
+        "enterprise",
+        "edu",
+        "unknown"
+      ]
+    }
+  }
+}

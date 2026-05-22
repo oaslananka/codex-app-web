@@ -1,0 +1,115 @@
+name: OSSF Scorecard
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '43 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scorecard-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  scorecard:
+    name: Scorecard
+    if: ${{ github.repository == 'oaslananka/codex-app-web' && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SCORECARD_MINIMUM_SCORE: '6.6'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Scorecard
+        uses: ossf/scorecard-action@99c09fe975337306107572b4fdf4db224cf8e2f2
+        with:
+          results_file: scorecard-results.json
+          results_format: json
+          publish_results: false
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Enforce Scorecard policy
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const result = JSON.parse(fs.readFileSync('scorecard-results.json', 'utf8'));
+          const score = Number(result.score ?? result.aggregate_score ?? result.scorecard?.score);
+          const minimumScore = Number(process.env.SCORECARD_MINIMUM_SCORE);
+          if (!Number.isFinite(score)) {
+            throw new Error('Scorecard result did not include a numeric aggregate score');
+          }
+          if (!Number.isFinite(minimumScore)) {
+            throw new Error('SCORECARD_MINIMUM_SCORE must be numeric');
+          }
+          const checks = new Map((result.checks || []).map((check) => [check.name, Number(check.score)]));
+          const requiredChecks = new Map([
+            ['Binary-Artifacts', 10],
+            ['Dangerous-Workflow', 10],
+            ['Dependency-Update-Tool', 10],
+            ['License', 9],
+            ['Pinned-Dependencies', 10],
+            ['SAST', 10],
+            ['Security-Policy', 10],
+            ['Token-Permissions', 10],
+            ['Vulnerabilities', 10],
+          ]);
+          const advisoryChecks = new Map([['Signed-Releases', 10]]);
+          for (const [name, minimum] of requiredChecks) {
+            const value = checks.get(name);
+            if (!Number.isFinite(value)) {
+              throw new Error(`Scorecard result did not include required check: ${name}`);
+            }
+            if (value === -1) {
+              throw new Error(`Scorecard check ${name} was inconclusive; required ${minimum}`);
+            }
+            if (value < minimum) {
+              throw new Error(`Scorecard check ${name} scored ${value}; required ${minimum}`);
+            }
+          }
+          for (const [name, minimum] of advisoryChecks) {
+            const value = checks.get(name);
+            if (value === undefined || value === -1) {
+              console.log(`Scorecard check ${name} was not emitted or was inconclusive for this event`);
+              continue;
+            }
+            if (!Number.isFinite(value)) {
+              throw new Error(`Scorecard check ${name} did not include a numeric score`);
+            }
+            if (value < minimum) {
+              console.warn(`Scorecard advisory check ${name} scored ${value}; target ${minimum}`);
+            }
+          }
+          if (score < minimumScore) {
+            throw new Error(`OSSF Scorecard score ${score} is below required threshold ${minimumScore}`);
+          }
+          console.log(`OSSF Scorecard score ${score} satisfies repository threshold ${minimumScore}`);
+          NODE

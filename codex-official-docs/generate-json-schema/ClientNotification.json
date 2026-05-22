@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ClientNotification",
+  "oneOf": [
+    {
+      "title": "InitializedNotification",
+      "type": "object",
+      "required": [
+        "method"
+      ],
+      "properties": {
+        "method": {
+          "title": "InitializedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "initialized"
+          ]
+        }
+      }
+    }
+  ]
+}

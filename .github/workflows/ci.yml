@@ -1,0 +1,281 @@
+name: CI Validation
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - upstream/sync-openai-codex-app-server
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-validation-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  PNPM_VERSION: '11.2.2'
+
+jobs:
+  cheap-gates:
+    name: Cheap Gates
+    if: ${{ github.repository == 'oaslananka/codex-app-web' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Enable pnpm
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+
+      - name: Install workflow security tools
+        run: |
+          set -euo pipefail
+          mkdir -p "${HOME}/.local/bin"
+
+          actionlint_version="1.7.12"
+          actionlint_archive="actionlint_${actionlint_version}_linux_amd64.tar.gz"
+          actionlint_base_url="https://github.com/rhysd/actionlint/releases/download/v${actionlint_version}"
+          curl -fsSLO "${actionlint_base_url}/${actionlint_archive}"
+          curl -fsSLO "${actionlint_base_url}/actionlint_${actionlint_version}_checksums.txt"
+          grep " ${actionlint_archive}$" "actionlint_${actionlint_version}_checksums.txt" | sha256sum --check -
+          tar -xzf "${actionlint_archive}" actionlint
+          mv actionlint "${HOME}/.local/bin/actionlint"
+
+          gitleaks_version="8.30.1"
+          gitleaks_archive="gitleaks_${gitleaks_version}_linux_x64.tar.gz"
+          gitleaks_base_url="https://github.com/gitleaks/gitleaks/releases/download/v${gitleaks_version}"
+          curl -fsSLO "${gitleaks_base_url}/${gitleaks_archive}"
+          curl -fsSLO "${gitleaks_base_url}/gitleaks_${gitleaks_version}_checksums.txt"
+          grep " ${gitleaks_archive}$" "gitleaks_${gitleaks_version}_checksums.txt" | sha256sum --check -
+          tar -xzf "${gitleaks_archive}" gitleaks
+          mv gitleaks "${HOME}/.local/bin/gitleaks"
+
+          cargo install --locked zizmor --version 1.24.1
+          echo "${HOME}/.cargo/bin" >> "${GITHUB_PATH}"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Format check
+        run: |
+          set -euo pipefail
+          pnpm format:check
+
+      - name: Lint
+        run: |
+          set -euo pipefail
+          pnpm lint
+
+      - name: Repository hygiene
+        run: |
+          set -euo pipefail
+          pnpm repo:hygiene:check
+
+      - name: Protocol manifest
+        run: |
+          set -euo pipefail
+          pnpm protocol:manifest:check
+
+      - name: Protocol drift
+        run: |
+          set -euo pipefail
+          pnpm protocol:drift:check -- --base-ref origin/main
+
+      - name: Workflow lint
+        run: |
+          set -euo pipefail
+          actionlint
+
+      - name: Workflow security scan
+        run: |
+          set -euo pipefail
+          zizmor --offline .
+
+      - name: Secret scan
+        run: |
+          set -euo pipefail
+          pnpm security:secrets
+
+      - name: Fast unit subset
+        run: |
+          set -euo pipefail
+          pnpm test -- tests/unit/protocol.test.ts tests/unit/rate-limit.test.ts tests/unit/terminal-output.test.ts tests/unit/server-security.test.ts
+
+      - name: Release state
+        run: |
+          set -euo pipefail
+          pnpm release:state
+
+  full-validation:
+    name: Full Validation
+    needs: cheap-gates
+    if: ${{ github.repository == 'oaslananka/codex-app-web' && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Enable pnpm
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: |
+          set -euo pipefail
+          pnpm exec playwright install --with-deps chromium
+
+      - name: Typecheck
+        run: |
+          set -euo pipefail
+          pnpm typecheck
+
+      - name: Unit tests
+        run: |
+          set -euo pipefail
+          pnpm test
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          pnpm build
+
+      - name: Browser smoke
+        run: |
+          set -euo pipefail
+          cleanup() {
+            if [ -n "${ui_pid:-}" ]; then kill "${ui_pid}" 2>/dev/null || true; fi
+            if [ -n "${mock_pid:-}" ]; then kill "${mock_pid}" 2>/dev/null || true; fi
+          }
+          trap cleanup EXIT
+
+          MOCK_CODEX_PORT=41000 MOCK_SEND_APPROVAL=1 node scripts/mock-codex-app-server.mjs > ci-mock.log 2>&1 &
+          mock_pid=$!
+          PORT=1989 PORT_FALLBACK=1990 CODEX_BACKEND_URL=ws://127.0.0.1:41000 pnpm start:ui > ci-ui.log 2>&1 &
+          ui_pid=$!
+
+          ready=false
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:1989 >/dev/null; then
+              ready=true
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "${ready}" != "true" ]; then
+            cat ci-ui.log
+            cat ci-mock.log
+            exit 1
+          fi
+
+          SMOKE_APPROVAL=1 pnpm smoke
+
+  codeql:
+    name: CodeQL
+    needs: cheap-gates
+    if: ${{ github.repository == 'oaslananka/codex-app-web' && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@5e316336eb4f107009e477d4bfbfff13d7250fae
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@5e316336eb4f107009e477d4bfbfff13d7250fae
+
+  filesystem-security:
+    name: Filesystem Security
+    needs: cheap-gates
+    if: ${{ github.repository == 'oaslananka/codex-app-web' && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          version="0.70.0"
+          archive="trivy_${version}_Linux-64bit.tar.gz"
+          base_url="https://github.com/aquasecurity/trivy/releases/download/v${version}"
+          curl -fsSLO "${base_url}/${archive}"
+          curl -fsSLO "${base_url}/trivy_${version}_checksums.txt"
+          grep " ${archive}$" "trivy_${version}_checksums.txt" | sha256sum --check -
+          mkdir -p "${HOME}/.local/bin"
+          tar -xzf "${archive}" trivy
+          mv trivy "${HOME}/.local/bin/trivy"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Trivy filesystem scan
+        run: |
+          set -euo pipefail
+          trivy fs --scanners vuln,secret,misconfig --skip-dirs node_modules --skip-dirs .git --skip-dirs .next --exit-code 1 .

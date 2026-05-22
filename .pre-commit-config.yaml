@@ -1,0 +1,23 @@
+repos:
+  - repo: local
+    hooks:
+      - id: format-check
+        name: format check
+        entry: pnpm format:check
+        language: system
+        pass_filenames: false
+      - id: repository-hygiene
+        name: repository hygiene
+        entry: pnpm repo:hygiene:check
+        language: system
+        pass_filenames: false
+      - id: lint
+        name: lint
+        entry: pnpm lint
+        language: system
+        pass_filenames: false
+      - id: protocol-manifest
+        name: protocol manifest
+        entry: pnpm protocol:manifest:check
+        language: system
+        pass_filenames: false

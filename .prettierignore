@@ -1,0 +1,16 @@
+node_modules/
+.next/
+coverage/
+dist/
+build/
+public/vendor/
+next-env.d.ts
+pnpm-lock.yaml
+CHANGELOG.md
+codex-official-docs/generate-ts/
+codex-official-docs/generate-json-schema/
+src/lib/codex-runtime/official-manifest.generated.ts
+*.log
+*.pid
+.env.example
+.github/CODEOWNERS

@@ -1,0 +1,47 @@
+# Upstream Codex App-Server Sync
+
+This repository tracks OpenAI Codex app-server protocol artifacts as generated files, not as a git submodule. The sync source is the upstream `openai/codex` repository and a concrete Codex CLI release tag.
+
+Verified on 2026-05-08:
+
+- OpenAI Codex app-server README: `codex app-server generate-ts --out DIR` and `codex app-server generate-json-schema --out DIR` generate version-matched artifacts. The stable surface is the default; `--experimental` is an explicit opt-in.
+- GitHub Actions workflow syntax supports `workflow_dispatch`, `schedule`, `pull_request`, `push`, `workflow_run`, `permissions`, `concurrency`, and job timeouts.
+- GitHub's Node 20 runner deprecation notice requires migration toward Node 24-compatible JavaScript actions.
+- Azure hosted images include explicit `ubuntu-24.04`, which this repository uses instead of mutable `ubuntu-latest`.
+- pnpm `--frozen-lockfile` fails when the lockfile and manifest are out of sync, which is the desired CI behavior.
+
+## Local Sync
+
+```bash
+corepack enable
+corepack prepare pnpm@11.2.2 --activate
+pnpm install --frozen-lockfile
+pnpm protocol:sync:upstream -- --upstream-ref rust-v0.129.0
+pnpm protocol:manifest:check
+pnpm protocol:drift:check
+```
+
+PowerShell uses the same commands. `CODEX_BIN` may be set when the `codex` executable is not on `PATH`.
+
+## Generated Files
+
+The sync updates only protocol-derived files and metadata:
+
+- `codex-official-docs/generate-ts/**`
+- `codex-official-docs/generate-json-schema/**`
+- `codex-official-docs/upstream-metadata.json`
+- `src/lib/codex-runtime/official-manifest.generated.ts`
+
+The metadata file records the upstream ref, full upstream commit SHA, inspected upstream path, Codex CLI version, generation commands, and whether experimental API generation was enabled.
+
+## Drift Gate
+
+`pnpm protocol:drift:check` compares generated protocol surface against the base ref. It reports request methods, notifications, server requests, config fields, and categorized payload drift for approval, terminal, file, auth, MCP, app/plugin/skills, config, and experimental surfaces.
+
+Breaking drift must include a companion runtime, UI, test, or automation change. This keeps pure artifact refreshes from silently changing a security-sensitive protocol surface.
+
+## Scheduled PR Workflow
+
+`.github/workflows/upstream-codex-sync.yml` runs on weekdays at a non-round minute and can also be dispatched manually. It updates the single branch `upstream/sync-openai-codex-app-server` and opens or updates one draft PR titled `chore(protocol): sync OpenAI Codex app-server artifacts`.
+
+For validation-triggering PRs, configure `UPSTREAM_SYNC_TOKEN` as a fine-grained PAT or GitHub App token with minimal `contents:write` and `pull_requests:write` access. Without that secret, the workflow falls back to `GITHUB_TOKEN`; if required validation is not triggered by token-created PRs, treat the missing token as an external setup blocker.

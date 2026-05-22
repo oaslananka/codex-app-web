@@ -1,0 +1,13 @@
+* @oaslananka
+
+/.github/workflows/ @oaslananka
+/server.cjs @oaslananka
+/start-all.cjs @oaslananka
+/src/lib/server/ @oaslananka
+/src/lib/codex-runtime/ @oaslananka
+/scripts/ @oaslananka
+/release-please-config.json @oaslananka
+/.release-please-manifest.json @oaslananka
+/SECURITY.md @oaslananka
+/docs/THREAT_MODEL.md @oaslananka
+/docs/RELEASE.md @oaslananka
