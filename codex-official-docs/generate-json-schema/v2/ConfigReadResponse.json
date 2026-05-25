@@ -254,6 +254,13 @@
             "null"
           ]
         },
+        "desktop": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
         "developer_instructions": {
           "type": [
             "string",
@@ -261,9 +268,13 @@
           ]
         },
         "forced_chatgpt_workspace_id": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ForcedChatgptWorkspaceIds"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "forced_login_method": {
@@ -520,6 +531,13 @@
                   "$ref": "#/definitions/AbsolutePathBuf"
                 }
               ]
+            },
+            "profile": {
+              "description": "Name of the selected profile-v2 config layered on top of the base user config, when this layer represents one.",
+              "type": [
+                "string",
+                "null"
+              ]
             }
           }
         },
@@ -596,6 +614,20 @@
                 "legacyManagedConfigTomlFromMdm"
               ]
             }
+          }
+        }
+      ]
+    },
+    "ForcedChatgptWorkspaceIds": {
+      "description": "Backward-compatible API shape for ChatGPT workspace login restrictions.",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       ]
@@ -775,12 +807,6 @@
     "ToolsV2": {
       "type": "object",
       "properties": {
-        "view_image": {
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
         "web_search": {
           "anyOf": [
             {

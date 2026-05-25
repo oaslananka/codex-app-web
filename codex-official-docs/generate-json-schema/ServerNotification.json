@@ -3204,6 +3204,13 @@
         }
       }
     },
+    "ImageDetail": {
+      "type": "string",
+      "enum": [
+        "high",
+        "original"
+      ]
+    },
     "ItemCompletedNotification": {
       "type": "object",
       "required": [
@@ -4009,9 +4016,11 @@
       ]
     },
     "RemoteControlStatusChangedNotification": {
-      "description": "Current remote-control connection status and environment id exposed to clients.",
+      "description": "Current remote-control connection status and remote identity exposed to clients.",
       "type": "object",
       "required": [
+        "installationId",
+        "serverName",
         "status"
       ],
       "properties": {
@@ -4020,6 +4029,12 @@
             "string",
             "null"
           ]
+        },
+        "installationId": {
+          "type": "string"
+        },
+        "serverName": {
+          "type": "string"
         },
         "status": {
           "$ref": "#/definitions/RemoteControlConnectionStatus"
@@ -4515,6 +4530,8 @@
       "enum": [
         "active",
         "paused",
+        "blocked",
+        "usageLimited",
         "budgetLimited",
         "complete"
       ]
@@ -5870,6 +5887,17 @@
                 "image"
               ]
             },
+            "detail": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "url": {
               "type": "string"
             }
@@ -5888,6 +5916,17 @@
               "type": "string",
               "enum": [
                 "localImage"
+              ]
+            },
+            "detail": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "path": {

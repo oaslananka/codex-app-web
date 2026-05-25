@@ -1,18 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "PluginListResponse",
+  "title": "PluginInstalledResponse",
   "type": "object",
   "required": [
     "marketplaces"
   ],
   "properties": {
-    "featuredPluginIds": {
-      "type": "array",
-      "default": [],
-      "items": {
-        "type": "string"
-      }
-    },
     "marketplaceLoadErrors": {
       "type": "array",
       "default": [],

@@ -437,6 +437,13 @@
         }
       }
     },
+    "ImageDetail": {
+      "type": "string",
+      "enum": [
+        "high",
+        "original"
+      ]
+    },
     "McpToolCallError": {
       "type": "object",
       "required": [
@@ -1480,6 +1487,17 @@
                 "image"
               ]
             },
+            "detail": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "url": {
               "type": "string"
             }
@@ -1498,6 +1516,17 @@
               "type": "string",
               "enum": [
                 "localImage"
+              ]
+            },
+            "detail": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "path": {

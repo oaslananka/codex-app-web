@@ -178,6 +178,31 @@
       }
     },
     {
+      "title": "Attestation/generateRequest",
+      "description": "Generate a fresh upstream attestation result on demand.",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Attestation/generateRequestMethod",
+          "type": "string",
+          "enum": [
+            "attestation/generate"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/AttestationGenerateParams"
+        }
+      }
+    },
+    {
       "title": "ApplyPatchApprovalRequest",
       "description": "DEPRECATED APIs below Request to approve a patch. This request is used for Turns started via the legacy APIs (i.e. SendUserTurn, SendUserMessage).",
       "type": "object",
@@ -348,6 +373,9 @@
           ]
         }
       }
+    },
+    "AttestationGenerateParams": {
+      "type": "object"
     },
     "ChatgptAuthTokensRefreshParams": {
       "type": "object",

@@ -106,6 +106,26 @@
       "description": "A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem).\n\nIMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.",
       "type": "string"
     },
+    "ActivePermissionProfile": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "extends": {
+          "description": "Parent profile identifier once permissions profiles support inheritance. This is currently always `null`.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "id": {
+          "description": "Identifier from `default_permissions` or the implicit built-in default, such as `:workspace` or a user-defined `[permissions.<id>]` profile.",
+          "type": "string"
+        }
+      }
+    },
     "CommandExecTerminalSize": {
       "description": "PTY size in character cells for `command/exec` PTY sessions.",
       "type": "object",
@@ -128,337 +148,12 @@
         }
       }
     },
-    "FileSystemAccessMode": {
-      "type": "string",
-      "enum": [
-        "read",
-        "write",
-        "none"
-      ]
-    },
-    "FileSystemPath": {
-      "oneOf": [
-        {
-          "title": "PathFileSystemPath",
-          "type": "object",
-          "required": [
-            "path",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "PathFileSystemPathType",
-              "type": "string",
-              "enum": [
-                "path"
-              ]
-            },
-            "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
-            }
-          }
-        },
-        {
-          "title": "GlobPatternFileSystemPath",
-          "type": "object",
-          "required": [
-            "pattern",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "GlobPatternFileSystemPathType",
-              "type": "string",
-              "enum": [
-                "glob_pattern"
-              ]
-            },
-            "pattern": {
-              "type": "string"
-            }
-          }
-        },
-        {
-          "title": "SpecialFileSystemPath",
-          "type": "object",
-          "required": [
-            "type",
-            "value"
-          ],
-          "properties": {
-            "type": {
-              "title": "SpecialFileSystemPathType",
-              "type": "string",
-              "enum": [
-                "special"
-              ]
-            },
-            "value": {
-              "$ref": "#/definitions/FileSystemSpecialPath"
-            }
-          }
-        }
-      ]
-    },
-    "FileSystemSandboxEntry": {
-      "type": "object",
-      "required": [
-        "access",
-        "path"
-      ],
-      "properties": {
-        "access": {
-          "$ref": "#/definitions/FileSystemAccessMode"
-        },
-        "path": {
-          "$ref": "#/definitions/FileSystemPath"
-        }
-      }
-    },
-    "FileSystemSpecialPath": {
-      "oneOf": [
-        {
-          "title": "RootFileSystemSpecialPath",
-          "type": "object",
-          "required": [
-            "kind"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "enum": [
-                "root"
-              ]
-            }
-          }
-        },
-        {
-          "title": "MinimalFileSystemSpecialPath",
-          "type": "object",
-          "required": [
-            "kind"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "enum": [
-                "minimal"
-              ]
-            }
-          }
-        },
-        {
-          "title": "KindFileSystemSpecialPath",
-          "type": "object",
-          "required": [
-            "kind"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "enum": [
-                "project_roots"
-              ]
-            },
-            "subpath": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
-          }
-        },
-        {
-          "title": "TmpdirFileSystemSpecialPath",
-          "type": "object",
-          "required": [
-            "kind"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "enum": [
-                "tmpdir"
-              ]
-            }
-          }
-        },
-        {
-          "title": "SlashTmpFileSystemSpecialPath",
-          "type": "object",
-          "required": [
-            "kind"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "enum": [
-                "slash_tmp"
-              ]
-            }
-          }
-        },
-        {
-          "type": "object",
-          "required": [
-            "kind",
-            "path"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "enum": [
-                "unknown"
-              ]
-            },
-            "path": {
-              "type": "string"
-            },
-            "subpath": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
-          }
-        }
-      ]
-    },
     "NetworkAccess": {
       "type": "string",
       "enum": [
         "restricted",
         "enabled"
       ]
-    },
-    "PermissionProfile": {
-      "oneOf": [
-        {
-          "title": "ManagedPermissionProfile",
-          "description": "Codex owns sandbox construction for this profile.",
-          "type": "object",
-          "required": [
-            "fileSystem",
-            "network",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "ManagedPermissionProfileType",
-              "type": "string",
-              "enum": [
-                "managed"
-              ]
-            },
-            "fileSystem": {
-              "$ref": "#/definitions/PermissionProfileFileSystemPermissions"
-            },
-            "network": {
-              "$ref": "#/definitions/PermissionProfileNetworkPermissions"
-            }
-          }
-        },
-        {
-          "title": "DisabledPermissionProfile",
-          "description": "Do not apply an outer sandbox.",
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "DisabledPermissionProfileType",
-              "type": "string",
-              "enum": [
-                "disabled"
-              ]
-            }
-          }
-        },
-        {
-          "title": "ExternalPermissionProfile",
-          "description": "Filesystem isolation is enforced by an external caller.",
-          "type": "object",
-          "required": [
-            "network",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "ExternalPermissionProfileType",
-              "type": "string",
-              "enum": [
-                "external"
-              ]
-            },
-            "network": {
-              "$ref": "#/definitions/PermissionProfileNetworkPermissions"
-            }
-          }
-        }
-      ]
-    },
-    "PermissionProfileFileSystemPermissions": {
-      "oneOf": [
-        {
-          "title": "RestrictedPermissionProfileFileSystemPermissions",
-          "type": "object",
-          "required": [
-            "entries",
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "RestrictedPermissionProfileFileSystemPermissionsType",
-              "type": "string",
-              "enum": [
-                "restricted"
-              ]
-            },
-            "entries": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FileSystemSandboxEntry"
-              }
-            },
-            "globScanMaxDepth": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "format": "uint",
-              "minimum": 1
-            }
-          }
-        },
-        {
-          "title": "UnrestrictedPermissionProfileFileSystemPermissions",
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "title": "UnrestrictedPermissionProfileFileSystemPermissionsType",
-              "type": "string",
-              "enum": [
-                "unrestricted"
-              ]
-            }
-          }
-        }
-      ]
-    },
-    "PermissionProfileNetworkPermissions": {
-      "type": "object",
-      "required": [
-        "enabled"
-      ],
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        }
-      }
     },
     "SandboxPolicy": {
       "oneOf": [
