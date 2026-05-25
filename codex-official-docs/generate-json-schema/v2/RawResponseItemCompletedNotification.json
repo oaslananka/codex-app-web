@@ -158,6 +158,26 @@
               "type": "string"
             }
           }
+        },
+        {
+          "title": "EncryptedContentFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "encrypted_content",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EncryptedContentFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "encrypted_content"
+              ]
+            },
+            "encrypted_content": {
+              "type": "string"
+            }
+          }
         }
       ]
     },
