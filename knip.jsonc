@@ -1,0 +1,58 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "entry": [
+    "app/**/*.{ts,tsx}",
+    "server.cjs",
+    "start-all.cjs",
+    "scripts/**/*.{js,cjs,mjs}",
+    "tests/unit/**/*.{ts,tsx}",
+    "next.config.ts",
+    "eslint.config.mjs",
+    "postcss.config.mjs",
+    "vitest.config.ts",
+  ],
+  "project": [
+    "app/**/*.{ts,tsx}",
+    "src/**/*.{ts,tsx,cjs}",
+    "scripts/**/*.{js,cjs,mjs}",
+    "tests/unit/**/*.{ts,tsx}",
+    "*.cjs",
+    "*.mjs",
+    "*.ts",
+  ],
+  "ignoreFiles": ["codex-official-docs/**", "public/vendor/**"],
+  "ignoreIssues": {
+    // Protocol artifacts are generated from upstream Codex schemas and are drift-gated separately.
+    "codex-official-docs/**": ["files", "exports", "types", "dependencies", "unresolved"],
+    // UI/runtime modules intentionally expose typed adapter surfaces for tests and future protocol fields.
+    "src/lib/codex-ui-runtime.ts": ["exports", "types"],
+    "src/lib/codex-runtime/types.ts": ["types"],
+    "src/lib/codex-runtime/official-manifest.generated.ts": ["exports"],
+    "src/lib/codex-runtime/runtime-state.ts": ["exports", "types"],
+    "src/lib/codex-runtime/normalizers.ts": ["exports"],
+    "src/lib/codex-runtime/reasoning.ts": ["exports"],
+    "src/lib/codex-runtime/services/terminal-service.ts": ["exports"],
+    "src/lib/logging/**/*.ts": ["exports"],
+    "src/lib/logging/**/*.cjs": ["exports"],
+    "src/lib/next-runtime.cjs": ["exports"],
+    "src/lib/server/**/*.cjs": ["exports"],
+    "src/components/codex/ControlCenterContext.tsx": ["exports"],
+    "src/components/codex/hooks/useRuntimeSnapshot.ts": ["exports"],
+    "src/components/codex/panels/ConfigPanel.tsx": ["exports"],
+    "src/components/codex/panels/index.ts": ["exports", "types"],
+    "src/components/ui/index.ts": ["types"],
+  },
+  "ignoreDependencies": [
+    // Copied into public/vendor by scripts/sync-public-vendor-assets.mjs.
+    "@highlightjs/cdn-assets",
+    "highlight.js",
+    // Loaded by PostCSS/Tailwind tooling through config resolution.
+    "autoprefixer",
+    // Referenced from CSS through `@import 'tailwindcss'`.
+    "tailwindcss",
+  ],
+  "ignoreBinaries": [
+    // Provided by the local Codex CLI, not by this package.
+    "codex",
+  ],
+}

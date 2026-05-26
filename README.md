@@ -109,6 +109,8 @@ pnpm test
 pnpm build
 pnpm format:check
 pnpm lint
+pnpm quality:dead-code
+pnpm quality:size
 pnpm protocol:manifest:check
 pnpm protocol:drift:check
 pnpm repo:hygiene:check
@@ -125,6 +127,12 @@ pnpm smoke
 - The remote policy is documented in [`docs/automation/repository-mirror.md`](./docs/automation/repository-mirror.md).
 - Protocol metadata can be validated locally with `pnpm protocol:manifest:check` before opening a change.
 - Protocol drift is gated with `pnpm protocol:drift:check`; upstream artifact sync is documented in [`docs/automation/upstream-codex-sync.md`](./docs/automation/upstream-codex-sync.md).
+- Dead-code/export drift is gated with `pnpm quality:dead-code`; accepted
+  generated-code and public-adapter exclusions live in [`knip.jsonc`](./knip.jsonc).
+- Built UI browser assets and the release package tarball are budgeted with
+  `pnpm quality:size`. The command expects current `.next` artifacts, creates a
+  temporary `dist/quality-size` package tarball, and fails when explicit budgets
+  are exceeded.
 - Dependency updates are grouped by Dependabot for npm and GitHub Actions through [`.github/dependabot.yml`](./.github/dependabot.yml).
 - Review and dependency automation are documented in [`docs/automation.md`](./docs/automation.md).
 - GitHub Release is the first guarded release target and is managed by
