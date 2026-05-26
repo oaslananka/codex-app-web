@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   clearBrowserLogs,
   createBrowserLogger,
@@ -76,11 +76,35 @@ describe('logging helpers', () => {
   it('sanitizes control characters before storing browser log text', () => {
     const logger = createBrowserLogger('test:viewer\r\nspoofed');
 
-    logger.warn('First line\nsecond line');
+    logger.warn('First line\nsecond line', { raw: 'ok\r\n[ERROR] forged\tvalue' }, 'line\tbreak');
 
-    expect(getRecentBrowserLogs()[0]).toMatchObject({
+    const entry = getRecentBrowserLogs()[0]!;
+    expect(entry).toMatchObject({
       scope: 'test:viewer spoofed',
       message: 'First line second line',
     });
+    expect(entry.details[0]).toContain('ok\\r\\n[ERROR] forged\\tvalue');
+    expect(entry.details[0]).not.toMatch(/[\r\n\t]/);
+    expect(entry.details[1]).toBe('line break');
+  });
+
+  it('keeps untrusted detail payloads out of console log entries', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    updateBrowserLogSettings({ level: 'trace', timestamps: false });
+    const logger = createBrowserLogger('test:console');
+
+    try {
+      logger.warn('Payload received', { raw: 'ok\n[ERROR] forged' });
+
+      expect(warn).toHaveBeenCalledOnce();
+      const consoleArgs = warn.mock.calls[0]!;
+      expect(consoleArgs[0]).toBe('%c%s%c %s%s');
+      expect(consoleArgs.some((arg) => typeof arg === 'string' && arg.includes('forged'))).toBe(
+        false,
+      );
+      expect(getRecentBrowserLogs()[0]?.details[0]).toContain('forged');
+    } finally {
+      warn.mockRestore();
+    }
   });
 });

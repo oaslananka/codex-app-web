@@ -142,11 +142,17 @@ function writeLog(level: LogLevel, scope: string, message: string, args: unknown
     ? [timestamp, level.toUpperCase(), safeScope]
     : [level.toUpperCase(), safeScope];
   const prefix = prefixParts.join(' · ');
+  const detailSummary =
+    safeDetails.length > 0
+      ? ` (${safeDetails.length} detail${safeDetails.length === 1 ? '' : 's'})`
+      : '';
   getConsoleMethod(level)(
-    `%c${prefix}%c ${safeMessage}`,
+    '%c%s%c %s%s',
     getLevelStyles(level),
+    prefix,
     getScopeStyle(),
-    ...safeDetails,
+    safeMessage,
+    detailSummary,
   );
 }
 

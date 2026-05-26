@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7](https://github.com/oaslananka/codex-app-web/compare/codex-app-web-v1.1.6...codex-app-web-v1.1.7) (2026-05-26)
+
+
+### Bug Fixes
+
+* **security:** prevent browser log detail injection ([a666495](https://github.com/oaslananka/codex-app-web/commit/a666495d9b37580805b1c358afd4b860f4f86fd8)), closes [#3](https://github.com/oaslananka/codex-app-web/issues/3)
+
 ## [1.1.6](https://github.com/oaslananka/codex-app-web/compare/codex-app-web-v1.1.5...codex-app-web-v1.1.6) (2026-05-11)
 
 
