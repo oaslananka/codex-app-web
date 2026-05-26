@@ -92,6 +92,7 @@ jobs:
           pnpm typecheck
           pnpm test
           pnpm build
+          pnpm quality:size
 
       - name: Install Trivy
         run: |

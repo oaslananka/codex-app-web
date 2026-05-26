@@ -21,11 +21,13 @@ Run the relevant focused check while editing, then the full local gate before re
 pnpm format:check
 pnpm lint
 pnpm repo:hygiene:check
+pnpm quality:dead-code
 pnpm protocol:manifest:check
 pnpm protocol:drift:check
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm quality:size
 pnpm security:bootstrap
 pnpm security:scan
 pnpm release:state

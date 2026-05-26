@@ -43,3 +43,14 @@ Run `pnpm security:bootstrap` once before local scans. The same bootstrap path
 is used by the primary CI, scorecard, and release workflows.
 
 These checks are part of `pnpm security:scan` and the primary CI workflow.
+
+## Quality Regression Gates
+
+- `pnpm quality:dead-code` runs Knip to detect unused files, dependencies,
+  exports, and exported types. Accepted generated-code and adapter-surface
+  exclusions are documented in [`knip.jsonc`](../knip.jsonc).
+- `pnpm quality:size` checks explicit byte budgets for built browser assets and
+  the release package tarball. Run `pnpm build` first so `.next/static` reflects
+  the current source tree.
+- The primary CI runs the dead-code gate in Cheap Gates and the size gate after
+  the production build in Full Validation.
