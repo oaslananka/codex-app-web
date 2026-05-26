@@ -85,10 +85,10 @@ jobs:
           gh auth setup-git
           if git ls-remote --exit-code --heads origin "${SYNC_BRANCH}" >/dev/null 2>&1; then
             git fetch origin "${SYNC_BRANCH}"
-            git switch -c "${SYNC_BRANCH}" "origin/${SYNC_BRANCH}"
+            git switch -C "${SYNC_BRANCH}" "origin/${SYNC_BRANCH}"
             git merge --no-edit "origin/${GITHUB_REF_NAME}"
           else
-            git switch -c "${SYNC_BRANCH}"
+            git switch -C "${SYNC_BRANCH}"
           fi
 
       - name: Sync upstream artifacts
@@ -127,12 +127,30 @@ jobs:
           GH_TOKEN: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
         run: |
           set -euo pipefail
-          if git diff --quiet; then
+          remote_ref="refs/remotes/origin/${SYNC_BRANCH}"
+          remote_head=""
+          remote_exists=false
+          if git rev-parse --verify "${remote_ref}" >/dev/null 2>&1; then
+            remote_head="$(git rev-parse "${remote_ref}")"
+            remote_exists=true
+          fi
+
+          generated_changes=false
+          if ! git diff --quiet; then
+            generated_changes=true
+            git add codex-official-docs src/lib/codex-runtime/official-manifest.generated.ts
+            git commit -m "${COMMIT_MESSAGE}"
+          fi
+
+          local_head="$(git rev-parse HEAD)"
+          if [ "${remote_exists}" = "true" ] && [ "${local_head}" = "${remote_head}" ]; then
+            echo "Sync branch is already up to date."
+            exit 0
+          fi
+          if [ "${remote_exists}" = "false" ] && [ "${generated_changes}" = "false" ]; then
             echo "No upstream protocol changes detected."
             exit 0
           fi
-          git add codex-official-docs src/lib/codex-runtime/official-manifest.generated.ts
-          git commit -m "${COMMIT_MESSAGE}"
           git push origin "HEAD:${SYNC_BRANCH}"
 
       - name: Create or update draft PR
@@ -167,7 +185,8 @@ jobs:
             echo
             echo "## Credential note"
             echo
-            echo "If this PR was created with GITHUB_TOKEN and required validation did not trigger, configure UPSTREAM_SYNC_TOKEN with minimal contents and pull request write scopes."
+            echo "The repository must allow GitHub Actions to create and approve pull requests, with this workflow keeping write permissions scoped to the sync job."
+            echo "If organization policy disables that repository setting, configure UPSTREAM_SYNC_TOKEN with minimal contents and pull request write scopes."
           } > "${body_file}"
 
           existing="$(gh pr list --head "${SYNC_BRANCH}" --state open --json number --jq '.[0].number // empty')"
