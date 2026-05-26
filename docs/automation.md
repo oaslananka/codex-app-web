@@ -38,6 +38,9 @@ rules.
 - `pnpm security:secrets` runs `gitleaks` with repository policy.
 - `pnpm security:trivy` runs a filesystem scan for vulnerabilities, secrets,
   and misconfiguration.
+- `pnpm license:scan` runs REUSE SPDX validation and pnpm dependency license
+  policy enforcement. Dependency exceptions are reviewed in
+  [`license-policy.json`](../license-policy.json).
 
 Run `pnpm security:bootstrap` once before local scans. The same bootstrap path
 is used by the primary CI, scorecard, and release workflows.

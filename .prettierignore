@@ -14,3 +14,5 @@ src/lib/codex-runtime/official-manifest.generated.ts
 *.pid
 .env.example
 .github/CODEOWNERS
+REUSE.toml
+**/REUSE.toml

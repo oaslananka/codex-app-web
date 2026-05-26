@@ -81,6 +81,16 @@ jobs:
           set -euo pipefail
           pnpm repo:hygiene:check
 
+      - name: REUSE compliance
+        run: |
+          set -euo pipefail
+          pnpm license:reuse
+
+      - name: Dependency license scan
+        run: |
+          set -euo pipefail
+          pnpm license:dependencies
+
       - name: Dead-code check
         run: |
           set -euo pipefail
