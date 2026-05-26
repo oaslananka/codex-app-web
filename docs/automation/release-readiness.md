@@ -43,6 +43,10 @@ The required status checks are:
 - `Full Validation`
 - `CodeQL`
 - `Filesystem Security`
+- `Runtime Matrix (ubuntu-24.04 / Node 24)`
+- `Runtime Matrix (ubuntu-24.04 / Node 26)`
+- `Runtime Matrix (windows-2025 / Node 24)`
+- `Runtime Matrix (windows-2025 / Node 26)`
 - `Scorecard`
 
 Repository administrators may repair repository settings and failed automation,

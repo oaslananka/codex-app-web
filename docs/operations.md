@@ -3,6 +3,16 @@
 `codex-app-web` is intended to run as a local or private Node/Fastify
 service with a Next.js custom server and WebSocket proxy.
 
+## Supported Runtime Matrix
+
+| Surface                                              | Operating systems              | Node.js            | pnpm   |
+| ---------------------------------------------------- | ------------------------------ | ------------------ | ------ |
+| Local development                                    | Windows 11, Ubuntu 24.04 LTS   | 24 LTS, 26 Current | 11.x   |
+| CI compatibility matrix                              | `windows-2025`, `ubuntu-24.04` | 24, 26             | 11.2.2 |
+| Full security, release, and browser-smoke validation | `ubuntu-24.04`                 | 24                 | 11.2.2 |
+
+macOS is not a documented support target until the repository adds matching CI coverage.
+
 ## Production Start
 
 Build first:

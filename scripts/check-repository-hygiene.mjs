@@ -17,6 +17,7 @@ const forbiddenPatterns = [/\.transcript\./i, /\.chat\./i, /\.prompt\./i, /\.scr
 const skippedDirs = new Set(['.git', 'node_modules', '.next', 'coverage', 'dist', 'build']);
 const workflowUsesPattern = /^\s*uses:\s*([^#\s]+).*$/;
 const fullShaPattern = /^[^@\s]+@[0-9a-f]{40}$/i;
+const requiredRuntimeMatrixOs = ['ubuntu-24.04', 'windows-2025'];
 const findings = [];
 
 function relative(absolutePath) {
@@ -86,7 +87,58 @@ function checkWorkflow(filePath) {
   }
 }
 
+function extractYamlList(text, key) {
+  const lines = text.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const match = line.match(new RegExp(`^(\\s*)${key}:\\s*$`));
+    if (!match) continue;
+    const indent = match[1].length;
+    const values = [];
+    for (const child of lines.slice(index + 1)) {
+      if (!child.trim()) continue;
+      const childIndent = child.match(/^\s*/)[0].length;
+      if (childIndent <= indent) break;
+      const item = child.match(/^\s*-\s*['"]?([^'"]+)['"]?\s*$/);
+      if (item) values.push(item[1]);
+    }
+    if (values.length > 0) return values;
+  }
+  return [];
+}
+
+function expectedNodeMajors(engineRange) {
+  const match = engineRange.match(/^>=(\d+)\s+<(\d+)$/);
+  if (!match) return [];
+  const start = Number.parseInt(match[1], 10);
+  const end = Number.parseInt(match[2], 10);
+  const majors = [];
+  for (let major = start; major < end; major += 1) {
+    if (major % 2 === 0) majors.push(String(major));
+  }
+  return majors;
+}
+
+function checkRuntimeMatrix() {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
+  const ciText = fs.readFileSync(path.join(repoRoot, '.github', 'workflows', 'ci.yml'), 'utf8');
+  const expectedNodes = expectedNodeMajors(packageJson.engines?.node ?? '');
+  const actualNodes = extractYamlList(ciText, 'node-version');
+  const actualOs = extractYamlList(ciText, 'os');
+  if (expectedNodes.join(',') !== actualNodes.join(',')) {
+    findings.push(
+      `.github/workflows/ci.yml runtime matrix node-version [${actualNodes.join(', ')}] does not match package.json engines.node ${packageJson.engines?.node}`,
+    );
+  }
+  for (const os of requiredRuntimeMatrixOs) {
+    if (!actualOs.includes(os)) {
+      findings.push(`.github/workflows/ci.yml runtime matrix is missing ${os}`);
+    }
+  }
+}
+
 visit(repoRoot);
+checkRuntimeMatrix();
 
 const workflowsDir = path.join(repoRoot, '.github', 'workflows');
 if (fs.existsSync(workflowsDir)) {

@@ -220,6 +220,61 @@ jobs:
 
           SMOKE_APPROVAL=1 pnpm smoke
 
+  runtime-matrix:
+    name: Runtime Matrix (${{ matrix.os }} / Node ${{ matrix.node-version }})
+    needs: cheap-gates
+    if: ${{ github.repository == 'oaslananka/codex-app-web' && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - windows-2025
+        node-version:
+          - 24
+          - 26
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: ${{ matrix.node-version }}
+          package-manager-cache: false
+
+      - name: Enable pnpm
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: |
+          set -euo pipefail
+          pnpm typecheck
+
+      - name: Unit tests
+        run: |
+          set -euo pipefail
+          pnpm test
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          pnpm build
+
   codeql:
     name: CodeQL
     needs: cheap-gates
