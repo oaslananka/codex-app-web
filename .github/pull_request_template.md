@@ -12,6 +12,7 @@
 - [ ] `pnpm typecheck`
 - [ ] `pnpm test`
 - [ ] `pnpm build`
+- [ ] `pnpm license:scan`
 - [ ] `pnpm security:bootstrap`
 - [ ] `pnpm security:scan`
 - [ ] `pnpm release:state`

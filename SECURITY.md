@@ -15,7 +15,7 @@ Do not open public issues containing secrets, tokens, private prompts, logs with
 - Do not place OpenAI API keys, ChatGPT tokens, refresh tokens, SSH keys, PATs, registry tokens, Azure service connection credentials, or GitHub App keys in issues, PRs, logs, screenshots, or fixtures.
 - Keep terminal execution, file operations, approval handling, auth, MCP, plugin, and workspace behavior protocol-compatible.
 - Keep LAN/dev exposure opt-in and documented.
-- Run `pnpm format:check`, `pnpm lint`, `pnpm repo:hygiene:check`, `pnpm protocol:manifest:check`, `pnpm protocol:drift:check`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm security:scan`, and `pnpm release:state` before requesting review.
+- Run `pnpm format:check`, `pnpm lint`, `pnpm repo:hygiene:check`, `pnpm license:scan`, `pnpm protocol:manifest:check`, `pnpm protocol:drift:check`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm security:scan`, and `pnpm release:state` before requesting review.
 
 ## Local Exposure Model
 

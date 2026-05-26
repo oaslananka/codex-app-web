@@ -1,0 +1,7 @@
+version = 1
+
+[[annotations]]
+path = "**"
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 Osman Aslan and codex-app-web contributors"
+SPDX-License-Identifier = "MIT"

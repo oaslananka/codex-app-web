@@ -111,6 +111,9 @@ pnpm format:check
 pnpm lint
 pnpm quality:dead-code
 pnpm quality:size
+pnpm license:reuse
+pnpm license:dependencies
+pnpm license:scan
 pnpm protocol:manifest:check
 pnpm protocol:drift:check
 pnpm repo:hygiene:check
@@ -133,6 +136,10 @@ pnpm smoke
   `pnpm quality:size`. The command expects current `.next` artifacts, creates a
   temporary `dist/quality-size` package tarball, and fails when explicit budgets
   are exceeded.
+- Source and dependency licenses are gated with `pnpm license:scan`. REUSE
+  metadata is declared through [`REUSE.toml`](./REUSE.toml), upstream generated
+  Codex artifacts are marked Apache-2.0, and dependency exceptions are reviewed
+  in [`license-policy.json`](./license-policy.json).
 - Dependency updates are grouped by Dependabot for npm and GitHub Actions through [`.github/dependabot.yml`](./.github/dependabot.yml).
 - Review and dependency automation are documented in [`docs/automation.md`](./docs/automation.md).
 - GitHub Release is the first guarded release target and is managed by

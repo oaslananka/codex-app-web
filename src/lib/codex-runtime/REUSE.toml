@@ -1,0 +1,7 @@
+version = 1
+
+[[annotations]]
+path = "official-manifest.generated.ts"
+precedence = "override"
+SPDX-FileCopyrightText = "2025 OpenAI"
+SPDX-License-Identifier = "Apache-2.0"

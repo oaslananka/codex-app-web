@@ -11,6 +11,11 @@ repos:
         entry: pnpm repo:hygiene:check
         language: system
         pass_filenames: false
+      - id: license-scan
+        name: license scan
+        entry: pnpm license:scan
+        language: system
+        pass_filenames: false
       - id: lint
         name: lint
         entry: pnpm lint

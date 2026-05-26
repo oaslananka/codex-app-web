@@ -26,3 +26,32 @@ trusted toolchain or runtime surface.
 
 Each exception must be removed during the next dependency refresh after the
 release-age window has elapsed, unless a newer stable version replaces it.
+
+## License Policy
+
+The repository source is MIT-licensed. REUSE metadata is centralized in
+[`REUSE.toml`](../REUSE.toml) so generated and binary assets remain covered
+without noisy per-file headers. Upstream Codex app-server artifacts generated
+from `openai/codex` are annotated separately as Apache-2.0 in
+[`codex-official-docs/REUSE.toml`](../codex-official-docs/REUSE.toml) and
+[`src/lib/codex-runtime/REUSE.toml`](../src/lib/codex-runtime/REUSE.toml).
+
+Dependency license enforcement is configured in
+[`license-policy.json`](../license-policy.json). Permissive licenses and
+approved weak-copyleft or data-license exceptions pass automatically; unknown,
+strong-copyleft, source-available, or Commons Clause style expressions fail
+until reviewed.
+
+Run the license gates locally before opening a PR:
+
+```bash
+pnpm license:reuse
+pnpm license:dependencies
+pnpm license:scan
+pnpm license:reuse:report
+```
+
+`pnpm license:dependencies` writes
+`dist/license-report/pnpm-license-report.json`. `pnpm license:reuse:report`
+writes `dist/license-report/reuse.spdx`. Both outputs are local review
+artifacts and are intentionally ignored by Git.

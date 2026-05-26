@@ -364,6 +364,8 @@ async function runScan() {
   runChecked(process.execPath, ['scripts/check-repository-hygiene.mjs'], {
     env: securityToolEnv(),
   });
+  runChecked(process.execPath, ['scripts/check-reuse-compliance.mjs']);
+  runChecked(process.execPath, ['scripts/check-dependency-licenses.mjs']);
   await runActions();
   await runSecrets();
   await runTrivy();

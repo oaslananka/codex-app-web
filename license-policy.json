@@ -1,0 +1,33 @@
+{
+  "allowedLicenses": [
+    "0BSD",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BlueOak-1.0.0",
+    "ISC",
+    "MIT",
+    "MPL-2.0"
+  ],
+  "allowedExpressions": ["(MPL-2.0 OR Apache-2.0)"],
+  "reviewedExceptions": [
+    {
+      "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "packages": ["@img/sharp-win32-x64"],
+      "reason": "Optional Sharp Windows native package used by Next.js image tooling; re-review on Sharp major upgrades."
+    },
+    {
+      "license": "CC-BY-4.0",
+      "packages": ["caniuse-lite"],
+      "reason": "Browser compatibility dataset used by build tooling; attribution remains in upstream package metadata."
+    }
+  ],
+  "deniedLicensePatterns": [
+    "\\bAGPL(?:-|$)",
+    "\\bGPL(?:-|$)",
+    "\\bSSPL(?:-|$)",
+    "\\bBUSL(?:-|$)",
+    "Commons[- ]Clause",
+    "\\bPolyForm\\b"
+  ]
+}
