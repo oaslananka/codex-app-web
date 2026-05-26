@@ -39,6 +39,8 @@ The GitHub repository is the canonical source, CI/CD, and release authority:
 - [`src/styles/`](./src/styles): Control center styling, responsive behavior, and overlay/panel presentation
 - [`scripts/`](./scripts): Manifest generation, smoke tooling, vendor sync, and local backend helpers
 - [`tests/unit/`](./tests/unit): Unit coverage for runtime behavior, protocol handling, overlays, and panel utilities
+- [`docs/api/`](./docs/api/README.md): Generated TypeDoc protocol/runtime API reference
+- [`docs/adr/`](./docs/adr/README.md): Architecture decision records for durable technical choices
 - [`.github/workflows/ci.yml`](./.github/workflows/ci.yml): GitHub Actions CI and release-authority validation workflow
 - [`azure-pipelines.yml`](./azure-pipelines.yml): Secondary Azure validation pipeline
 - [`TECH_DEBT.md`](./TECH_DEBT.md): Explicitly accepted debt and known boundaries
@@ -109,6 +111,8 @@ pnpm test
 pnpm build
 pnpm format:check
 pnpm lint
+pnpm docs:build
+pnpm docs:check
 pnpm quality:dead-code
 pnpm quality:size
 pnpm license:reuse
@@ -130,6 +134,10 @@ pnpm smoke
 - The remote policy is documented in [`docs/automation/repository-mirror.md`](./docs/automation/repository-mirror.md).
 - Protocol metadata can be validated locally with `pnpm protocol:manifest:check` before opening a change.
 - Protocol drift is gated with `pnpm protocol:drift:check`; upstream artifact sync is documented in [`docs/automation/upstream-codex-sync.md`](./docs/automation/upstream-codex-sync.md).
+- Generated protocol API docs live in [`docs/api/`](./docs/api/README.md)
+  and are refreshed with `pnpm docs:build`; `pnpm docs:check` fails when
+  committed docs are stale.
+- Durable technical decisions live in [`docs/adr/`](./docs/adr/README.md).
 - Dead-code/export drift is gated with `pnpm quality:dead-code`; accepted
   generated-code and public-adapter exclusions live in [`knip.jsonc`](./knip.jsonc).
 - Built UI browser assets and the release package tarball are budgeted with

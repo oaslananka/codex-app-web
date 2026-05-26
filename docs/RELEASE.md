@@ -59,6 +59,7 @@ pnpm repo:hygiene:check
 pnpm license:scan
 pnpm protocol:manifest:check
 pnpm protocol:drift:check
+pnpm docs:check
 pnpm typecheck
 pnpm test
 pnpm build

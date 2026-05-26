@@ -16,3 +16,4 @@ src/lib/codex-runtime/official-manifest.generated.ts
 .github/CODEOWNERS
 REUSE.toml
 **/REUSE.toml
+docs/api/

@@ -81,6 +81,11 @@ jobs:
 
       - script: |
           set -euo pipefail
+          pnpm docs:check
+        displayName: Generated docs
+
+      - script: |
+          set -euo pipefail
           pnpm typecheck
         displayName: Typecheck
 

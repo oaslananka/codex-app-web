@@ -26,3 +26,8 @@ repos:
         entry: pnpm protocol:manifest:check
         language: system
         pass_filenames: false
+      - id: generated-docs
+        name: generated docs
+        entry: pnpm docs:check
+        language: system
+        pass_filenames: false

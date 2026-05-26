@@ -49,6 +49,8 @@ These checks are part of `pnpm security:scan` and the primary CI workflow.
 
 ## Quality Regression Gates
 
+- `pnpm docs:check` regenerates TypeDoc Markdown output under `docs/api/` and
+  fails when generated API documentation is stale.
 - `pnpm quality:dead-code` runs Knip to detect unused files, dependencies,
   exports, and exported types. Accepted generated-code and adapter-surface
   exclusions are documented in [`knip.jsonc`](../knip.jsonc).
