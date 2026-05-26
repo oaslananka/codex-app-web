@@ -16,6 +16,11 @@ const policy = {
       packages: ['browser-data'],
       reason: 'reviewed dataset exception',
     },
+    {
+      license: 'LGPL-3.0-or-later',
+      packages: ['native-image-lib'],
+      reason: 'reviewed native tooling exception',
+    },
   ],
   deniedLicensePatterns: ['\\bGPL(?:-|$)', 'Commons[- ]Clause'],
 };
@@ -44,6 +49,9 @@ describe('dependency license policy', () => {
     expect(classifyLicense({ name: 'browser-data', license: 'CC-BY-4.0' }, policy).status).toBe(
       'exception',
     );
+    expect(
+      classifyLicense({ name: 'native-image-lib', license: 'LGPL-3.0-or-later' }, policy).status,
+    ).toBe('exception');
     expect(classifyLicense({ name: 'blocked', license: 'GPL-3.0-only' }, policy).status).toBe(
       'denied',
     );

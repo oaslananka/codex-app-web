@@ -17,6 +17,11 @@
       "reason": "Optional Sharp Windows native package used by Next.js image tooling; re-review on Sharp major upgrades."
     },
     {
+      "license": "LGPL-3.0-or-later",
+      "packages": ["@img/sharp-libvips-linux-x64"],
+      "reason": "Optional Sharp Linux libvips package used by Next.js image tooling; re-review on Sharp major upgrades."
+    },
+    {
       "license": "CC-BY-4.0",
       "packages": ["caniuse-lite"],
       "reason": "Browser compatibility dataset used by build tooling; attribution remains in upstream package metadata."
