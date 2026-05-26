@@ -1,7 +1,7 @@
 name: Bug report
 description: Report a reproducible problem in the web control center.
 title: 'bug: '
-labels: ['bug']
+labels: ['type:bug', 'risk:medium']
 body:
   - type: textarea
     id: summary
@@ -23,6 +23,23 @@ body:
       label: Expected behavior
     validations:
       required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - area:compatibility
+        - area:ci
+        - area:dx
+        - area:packaging
+        - area:release
+        - area:security
+        - area:testing
+        - area:docs
+        - area:infra
+        - area:governance
+    validations:
+      required: true
   - type: textarea
     id: environment
     attributes:
@@ -30,3 +47,10 @@ body:
       description: OS, Node.js version, pnpm version, browser, and Codex CLI version.
     validations:
       required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - label: I removed secrets, tokens, private prompts, and private logs from this report.
+          required: true

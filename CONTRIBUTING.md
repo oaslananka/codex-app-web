@@ -38,6 +38,17 @@ If you touch protocol artifacts, regenerate them with `pnpm protocol:sync:upstre
 - Do not weaken approval, file, terminal, auth, CSP, rate-limit, or WebSocket safety defaults.
 - Do not disable tests to make CI pass.
 
+## Governance And Support
+
+- Follow the project [Code of Conduct](./CODE_OF_CONDUCT.md).
+- Use [GitHub Discussions](https://github.com/oaslananka/codex-app-web/discussions)
+  for usage questions and non-actionable design discussion.
+- Use issue templates for reproducible bugs, feature requests, documentation
+  gaps, release blockers, and public security-safe hardening reports.
+- Follow the support and stale policy in [SUPPORT.md](./SUPPORT.md).
+- Triage labels and issue flow are documented in
+  [docs/governance.md](./docs/governance.md).
+
 ## Release Rules
 
 - Use Conventional Commits.

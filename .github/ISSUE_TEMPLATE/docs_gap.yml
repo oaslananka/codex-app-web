@@ -1,0 +1,26 @@
+name: Documentation gap
+description: Report missing, stale, or confusing documentation.
+title: 'docs: '
+labels: ['type:docs', 'area:docs', 'priority:P2', 'risk:medium']
+body:
+  - type: textarea
+    id: gap
+    attributes:
+      label: Documentation gap
+      description: What is missing, stale, misleading, or hard to follow?
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Current location
+      description: Link or name the current file, heading, or workflow.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected documentation
+      description: What should the docs explain or link to?
+    validations:
+      required: true
