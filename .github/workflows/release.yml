@@ -90,6 +90,7 @@ jobs:
           pnpm license:scan
           pnpm protocol:manifest:check
           pnpm protocol:drift:check -- --base-ref origin/main
+          pnpm docs:check
           pnpm typecheck
           pnpm test
           pnpm build

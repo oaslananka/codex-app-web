@@ -7,6 +7,7 @@
 - [ ] `pnpm format:check`
 - [ ] `pnpm lint`
 - [ ] `pnpm repo:hygiene:check`
+- [ ] `pnpm docs:check`
 - [ ] `pnpm protocol:manifest:check`
 - [ ] `pnpm protocol:drift:check`
 - [ ] `pnpm typecheck`

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "codex-app-web Protocol API",
+  "entryPoints": [
+    "src/lib/codex-runtime/protocol.ts",
+    "src/lib/codex-runtime/types.ts",
+    "src/lib/codex-runtime/collaboration.ts",
+    "src/lib/codex-runtime/official-manifest.generated.ts"
+  ],
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "hideGenerator": true,
+  "treatWarningsAsErrors": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "sourceLinkTemplate": "https://github.com/oaslananka/codex-app-web/blob/main/{path}#L{line}"
+}

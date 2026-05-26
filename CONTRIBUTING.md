@@ -21,6 +21,7 @@ Run the relevant focused check while editing, then the full local gate before re
 pnpm format:check
 pnpm lint
 pnpm repo:hygiene:check
+pnpm docs:check
 pnpm quality:dead-code
 pnpm license:scan
 pnpm protocol:manifest:check
@@ -35,6 +36,8 @@ pnpm release:state
 ```
 
 If you touch protocol artifacts, regenerate them with `pnpm protocol:sync:upstream` and include the drift summary in the PR.
+If you touch exported protocol/runtime types, run `pnpm docs:build` and include
+the generated `docs/api/` changes in the PR.
 
 ## Pull Requests
 
