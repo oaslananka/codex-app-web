@@ -77,6 +77,14 @@
         "defaultReasoningEffort": {
           "$ref": "#/definitions/ReasoningEffort"
         },
+        "defaultServiceTier": {
+          "description": "Catalog default service tier id for this model, when one is configured.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
         "displayName": {
           "type": "string"
         },

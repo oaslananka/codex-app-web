@@ -139,7 +139,7 @@
       ],
       "properties": {
         "extends": {
-          "description": "Parent profile identifier once permissions profiles support inheritance. This is currently always `null`.",
+          "description": "Parent profile identifier from the selected permissions profile's `extends` setting, when present.",
           "type": [
             "string",
             "null"
@@ -828,6 +828,25 @@
         }
       ]
     },
+    "AutoCompactTokenLimitScope": {
+      "description": "Selects which part of the active context is charged against `model_auto_compact_token_limit`.",
+      "oneOf": [
+        {
+          "description": "Count the full active context against the limit.",
+          "type": "string",
+          "enum": [
+            "total"
+          ]
+        },
+        {
+          "description": "Count sampled output and later growth after the carried window prefix.",
+          "type": "string",
+          "enum": [
+            "body_after_prefix"
+          ]
+        }
+      ]
+    },
     "AutoReviewDecisionSource": {
       "description": "[UNSTABLE] Source that produced a terminal approval auto-review decision.",
       "type": "string",
@@ -1079,6 +1098,78 @@
             },
             "params": {
               "$ref": "#/definitions/ThreadSetNameParams"
+            }
+          }
+        },
+        {
+          "title": "Thread/goal/setRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "Thread/goal/setRequestMethod",
+              "type": "string",
+              "enum": [
+                "thread/goal/set"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ThreadGoalSetParams"
+            }
+          }
+        },
+        {
+          "title": "Thread/goal/getRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "Thread/goal/getRequestMethod",
+              "type": "string",
+              "enum": [
+                "thread/goal/get"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ThreadGoalGetParams"
+            }
+          }
+        },
+        {
+          "title": "Thread/goal/clearRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "Thread/goal/clearRequestMethod",
+              "type": "string",
+              "enum": [
+                "thread/goal/clear"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ThreadGoalClearParams"
             }
           }
         },
@@ -2136,6 +2227,30 @@
             },
             "params": {
               "$ref": "#/definitions/ExperimentalFeatureListParams"
+            }
+          }
+        },
+        {
+          "title": "PermissionProfile/listRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "PermissionProfile/listRequestMethod",
+              "type": "string",
+              "enum": [
+                "permissionProfile/list"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/PermissionProfileListParams"
             }
           }
         },
@@ -3461,6 +3576,17 @@
         }
       }
     },
+    "ComputerUseRequirements": {
+      "type": "object",
+      "properties": {
+        "allowLockedComputerUse": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
     "Config": {
       "type": "object",
       "properties": {
@@ -3552,6 +3678,16 @@
             "null"
           ],
           "format": "int64"
+        },
+        "model_auto_compact_token_limit_scope": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AutoCompactTokenLimitScope"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "model_context_window": {
           "type": [
@@ -3980,6 +4116,15 @@
             "$ref": "#/definitions/AskForApproval"
           }
         },
+        "allowedPermissions": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
         "allowedSandboxModes": {
           "type": [
             "array",
@@ -3997,6 +4142,16 @@
           "items": {
             "$ref": "#/definitions/WebSearchMode"
           }
+        },
+        "computerUse": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ComputerUseRequirements"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "enforceResidency": {
           "anyOf": [
@@ -4887,7 +5042,7 @@
       "enum": [
         "read",
         "write",
-        "none"
+        "deny"
       ]
     },
     "FileSystemPath": {
@@ -5559,6 +5714,26 @@
               "type": "string"
             }
           }
+        },
+        {
+          "title": "EncryptedContentFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "encrypted_content",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EncryptedContentFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "encrypted_content"
+              ]
+            },
+            "encrypted_content": {
+              "type": "string"
+            }
+          }
         }
       ]
     },
@@ -6098,6 +6273,8 @@
         "postCompact",
         "sessionStart",
         "userPromptSubmit",
+        "subagentStart",
+        "subagentStop",
         "stop"
       ]
     },
@@ -7002,6 +7179,8 @@
         "PreToolUse",
         "SessionStart",
         "Stop",
+        "SubagentStart",
+        "SubagentStop",
         "UserPromptSubmit"
       ],
       "properties": {
@@ -7042,6 +7221,18 @@
           }
         },
         "Stop": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ConfiguredHookMatcherGroup"
+          }
+        },
+        "SubagentStart": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ConfiguredHookMatcherGroup"
+          }
+        },
+        "SubagentStop": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ConfiguredHookMatcherGroup"
@@ -7709,6 +7900,14 @@
         "defaultReasoningEffort": {
           "$ref": "#/definitions/ReasoningEffort"
         },
+        "defaultServiceTier": {
+          "description": "Catalog default service tier id for this model, when one is configured.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
         "displayName": {
           "type": "string"
         },
@@ -8201,6 +8400,78 @@
         }
       ]
     },
+    "PermissionProfileListParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PermissionProfileListParams",
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "description": "Opaque pagination cursor returned by a previous call.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cwd": {
+          "description": "Optional working directory to resolve project config layers.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limit": {
+          "description": "Optional page size; defaults to the full result set.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      }
+    },
+    "PermissionProfileListResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PermissionProfileListResponse",
+      "type": "object",
+      "required": [
+        "data"
+      ],
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PermissionProfileSummary"
+          }
+        },
+        "nextCursor": {
+          "description": "Opaque cursor to pass to the next call to continue after the last item. If None, there are no more items to return.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "PermissionProfileSummary": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "description": {
+          "description": "Optional user-facing description for display in clients.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "description": "Available permission profile identifier.",
+          "type": "string"
+        }
+      }
+    },
     "Personality": {
       "type": "string",
       "enum": [
@@ -8591,6 +8862,7 @@
       "type": "string",
       "enum": [
         "local",
+        "vertical",
         "workspace-directory",
         "shared-with-me"
       ]
@@ -11236,6 +11508,26 @@
           }
         },
         {
+          "title": "Thread/settings/updatedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Thread/settings/updatedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "thread/settings/updated"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ThreadSettingsUpdatedNotification"
+            }
+          }
+        },
+        {
           "title": "Thread/tokenUsage/updatedNotification",
           "type": "object",
           "required": [
@@ -13160,7 +13452,7 @@
     "ThreadForkParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ThreadForkParams",
-      "description": "There are two ways to fork a thread: 1. By thread_id: load the thread from disk by thread_id and fork it into a new thread. 2. By path: load the thread from disk by path and fork it into a new thread.\n\nIf using path, the thread_id param will be ignored.\n\nPrefer using thread_id whenever possible.",
+      "description": "There are two ways to fork a thread: 1. By thread_id: load the thread from disk by thread_id and fork it into a new thread. 2. By path: load the thread from disk by path and fork it into a new thread.\n\nIf using a non-empty path, the thread_id param will be ignored. Empty string path values are treated as absent.\n\nPrefer using thread_id whenever possible.",
       "type": "object",
       "required": [
         "threadId"
@@ -13377,6 +13669,32 @@
         }
       }
     },
+    "ThreadGoalClearParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadGoalClearParams",
+      "type": "object",
+      "required": [
+        "threadId"
+      ],
+      "properties": {
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
+    "ThreadGoalClearResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadGoalClearResponse",
+      "type": "object",
+      "required": [
+        "cleared"
+      ],
+      "properties": {
+        "cleared": {
+          "type": "boolean"
+        }
+      }
+    },
     "ThreadGoalClearedNotification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ThreadGoalClearedNotification",
@@ -13387,6 +13705,85 @@
       "properties": {
         "threadId": {
           "type": "string"
+        }
+      }
+    },
+    "ThreadGoalGetParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadGoalGetParams",
+      "type": "object",
+      "required": [
+        "threadId"
+      ],
+      "properties": {
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
+    "ThreadGoalGetResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadGoalGetResponse",
+      "type": "object",
+      "properties": {
+        "goal": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ThreadGoal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ThreadGoalSetParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadGoalSetParams",
+      "type": "object",
+      "required": [
+        "threadId"
+      ],
+      "properties": {
+        "objective": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ThreadGoalStatus"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "threadId": {
+          "type": "string"
+        },
+        "tokenBudget": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        }
+      }
+    },
+    "ThreadGoalSetResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadGoalSetResponse",
+      "type": "object",
+      "required": [
+        "goal"
+      ],
+      "properties": {
+        "goal": {
+          "$ref": "#/definitions/ThreadGoal"
         }
       }
     },
@@ -13769,6 +14166,12 @@
               "type": "string"
             },
             "mcpAppResourceUri": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "pluginId": {
               "type": [
                 "string",
                 "null"
@@ -14658,7 +15061,7 @@
     "ThreadResumeParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ThreadResumeParams",
-      "description": "There are three ways to resume a thread: 1. By thread_id: load the thread from disk by thread_id and resume it. 2. By history: instantiate the thread from memory and resume it. 3. By path: load the thread from disk by path and resume it.\n\nThe precedence is: history > path > thread_id. If using history or path, the thread_id param will be ignored.\n\nPrefer using thread_id whenever possible.",
+      "description": "There are three ways to resume a thread: 1. By thread_id: load the thread from disk by thread_id and resume it. 2. By history: instantiate the thread from memory and resume it. 3. By path: load the thread from disk by path and resume it.\n\nFor non-running threads, the precedence is: history > non-empty path > thread_id. If using history or a non-empty path for a non-running thread, the thread_id param will be ignored.\n\nIf thread_id identifies a running thread, app-server rejoins that thread and treats a non-empty path as a consistency check against the active rollout path. Empty string path values are treated as absent.\n\nPrefer using thread_id whenever possible.",
       "type": "object",
       "required": [
         "threadId"
@@ -14884,6 +15287,104 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ThreadSetNameResponse",
       "type": "object"
+    },
+    "ThreadSettings": {
+      "type": "object",
+      "required": [
+        "approvalPolicy",
+        "approvalsReviewer",
+        "collaborationMode",
+        "cwd",
+        "model",
+        "modelProvider",
+        "sandboxPolicy"
+      ],
+      "properties": {
+        "activePermissionProfile": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ActivePermissionProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approvalPolicy": {
+          "$ref": "#/definitions/AskForApproval"
+        },
+        "approvalsReviewer": {
+          "$ref": "#/definitions/ApprovalsReviewer"
+        },
+        "collaborationMode": {
+          "$ref": "#/definitions/CollaborationMode"
+        },
+        "cwd": {
+          "$ref": "#/definitions/AbsolutePathBuf"
+        },
+        "effort": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ReasoningEffort"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "model": {
+          "type": "string"
+        },
+        "modelProvider": {
+          "type": "string"
+        },
+        "personality": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Personality"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sandboxPolicy": {
+          "$ref": "#/definitions/SandboxPolicy"
+        },
+        "serviceTier": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ReasoningSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ThreadSettingsUpdatedNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadSettingsUpdatedNotification",
+      "type": "object",
+      "required": [
+        "threadId",
+        "threadSettings"
+      ],
+      "properties": {
+        "threadId": {
+          "type": "string"
+        },
+        "threadSettings": {
+          "$ref": "#/definitions/ThreadSettings"
+        }
+      }
     },
     "ThreadShellCommandParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",

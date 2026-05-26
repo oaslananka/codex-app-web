@@ -23,6 +23,9 @@ export const OFFICIAL_REQUEST_METHODS = [
   "thread/archive",
   "thread/unsubscribe",
   "thread/name/set",
+  "thread/goal/set",
+  "thread/goal/get",
+  "thread/goal/clear",
   "thread/metadata/update",
   "thread/unarchive",
   "thread/compact/start",
@@ -67,6 +70,7 @@ export const OFFICIAL_REQUEST_METHODS = [
   "model/list",
   "modelProvider/capabilities/read",
   "experimentalFeature/list",
+  "permissionProfile/list",
   "experimentalFeature/enablement/set",
   "mcpServer/oauth/login",
   "config/mcpServer/reload",
@@ -110,6 +114,7 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "thread/name/updated",
   "thread/goal/updated",
   "thread/goal/cleared",
+  "thread/settings/updated",
   "thread/tokenUsage/updated",
   "turn/started",
   "hook/started",
@@ -333,6 +338,21 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
       "null"
     ],
     "enumValues": [],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "model_auto_compact_token_limit_scope": {
+    "description": "Count the full active context against the limit.",
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "total",
+      "body_after_prefix"
+    ],
     "hasObjectShape": false,
     "hasArrayShape": false,
     "unstable": false,
