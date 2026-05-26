@@ -51,7 +51,7 @@ Before merging release-affecting work, run:
 
 ```bash
 corepack enable
-corepack prepare pnpm@11.2.2 --activate
+corepack prepare pnpm@11.3.0 --activate
 pnpm install --frozen-lockfile
 pnpm format:check
 pnpm lint

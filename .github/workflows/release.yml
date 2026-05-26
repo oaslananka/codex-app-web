@@ -18,7 +18,7 @@ defaults:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-  PNPM_VERSION: '11.2.2'
+  PNPM_VERSION: '11.3.0'
 
 jobs:
   release-please:
