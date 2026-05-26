@@ -29,7 +29,7 @@ The GitHub repository is the canonical source, CI/CD, and release authority:
 - WebSocket transport with `ws`
 - TypeScript
 - pnpm
-- Node.js 24 LTS for local development, CI, and release automation
+- Node.js 24 LTS and Node.js 26 Current for supported local development and compatibility validation
 
 **Project Structure**
 
@@ -86,6 +86,16 @@ That command binds the development server to `0.0.0.0` and enables
 `DEV_LAN_ACCESS=1`, which accepts private IPv4 LAN Host/Origin values only
 while `NODE_ENV=development`. Production LAN deployments still require explicit
 `ALLOWED_HOSTS`, `ALLOWED_ORIGINS`, and `CODEX_UI_TOKEN` values.
+
+**Supported Runtime Matrix**
+
+| Surface                                              | Operating systems              | Node.js            | pnpm   |
+| ---------------------------------------------------- | ------------------------------ | ------------------ | ------ |
+| Local development                                    | Windows 11, Ubuntu 24.04 LTS   | 24 LTS, 26 Current | 11.x   |
+| CI compatibility matrix                              | `windows-2025`, `ubuntu-24.04` | 24, 26             | 11.2.2 |
+| Full security, release, and browser-smoke validation | `ubuntu-24.04`                 | 24                 | 11.2.2 |
+
+macOS is not a documented support target yet. Add it here and in the CI matrix before treating it as supported.
 
 **Useful Commands**
 
