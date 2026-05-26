@@ -81,6 +81,11 @@ jobs:
           set -euo pipefail
           pnpm install --frozen-lockfile
 
+      - name: Install Playwright browser
+        run: |
+          set -euo pipefail
+          pnpm exec playwright install --with-deps chromium
+
       - name: Validate release source
         run: |
           set -euo pipefail
@@ -92,8 +97,10 @@ jobs:
           pnpm protocol:drift:check -- --base-ref origin/main
           pnpm docs:check
           pnpm typecheck
-          pnpm test
+          pnpm test:coverage
           pnpm build
+          pnpm test:e2e:ci
+          pnpm test:mutation
           pnpm quality:size
 
       - name: Install Trivy

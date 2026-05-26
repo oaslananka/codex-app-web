@@ -353,6 +353,8 @@ async function runTrivy() {
     '.next',
     '--skip-dirs',
     '.tools',
+    '--skip-dirs',
+    '.stryker-tmp',
     '--exit-code',
     '1',
     '.',

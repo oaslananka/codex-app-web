@@ -187,6 +187,16 @@ jobs:
           set -euo pipefail
           pnpm build
 
+      - name: Browser E2E accessibility and performance
+        run: |
+          set -euo pipefail
+          pnpm test:e2e:ci
+
+      - name: Mutation testing
+        run: |
+          set -euo pipefail
+          pnpm test:mutation
+
       - name: Size budgets
         run: |
           set -euo pipefail

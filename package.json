@@ -29,7 +29,7 @@
     "security:scan": "node scripts/security-tools.mjs scan",
     "release:state": "node scripts/check-release-state.mjs",
     "release:dry-run": "node scripts/check-release-state.mjs",
-    "ci": "pnpm format:check && pnpm lint && pnpm repo:hygiene:check && pnpm quality:dead-code && pnpm protocol:manifest:check && pnpm protocol:drift:check && pnpm docs:check && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm quality:size && pnpm security:scan && pnpm release:dry-run",
+    "ci": "pnpm format:check && pnpm lint && pnpm repo:hygiene:check && pnpm quality:dead-code && pnpm protocol:manifest:check && pnpm protocol:drift:check && pnpm docs:check && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm test:e2e:ci && pnpm test:mutation && pnpm quality:size && pnpm security:scan && pnpm release:dry-run",
     "sync:vendor": "node scripts/sync-public-vendor-assets.mjs",
     "postinstall": "node scripts/sync-public-vendor-assets.mjs",
     "start": "node scripts/sync-public-vendor-assets.mjs && cross-env NODE_ENV=production PORT=1989 PORT_FALLBACK=1990 node server.cjs",
@@ -45,6 +45,9 @@
     "build": "node scripts/sync-public-vendor-assets.mjs && next build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ci": "cross-env E2E_SKIP_BUILD=1 playwright test",
+    "test:mutation": "stryker run",
     "test:watch": "vitest",
     "smoke": "node scripts/sync-public-vendor-assets.mjs && cross-env BASE_URL=http://127.0.0.1:1989 node scripts/smoke-control-center.mjs"
   },
@@ -66,7 +69,11 @@
     "pnpm": ">=11 <12"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.11.3",
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.60.0",
+    "@stryker-mutator/core": "9.6.1",
+    "@stryker-mutator/vitest-runner": "9.6.1",
     "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",

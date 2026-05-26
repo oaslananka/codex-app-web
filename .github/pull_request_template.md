@@ -12,6 +12,8 @@
 - [ ] `pnpm protocol:drift:check`
 - [ ] `pnpm typecheck`
 - [ ] `pnpm test`
+- [ ] `pnpm test:e2e`
+- [ ] `pnpm test:mutation`
 - [ ] `pnpm build`
 - [ ] `pnpm license:scan`
 - [ ] `pnpm security:bootstrap`
