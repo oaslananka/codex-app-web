@@ -108,6 +108,9 @@ pnpm start:prod
 pnpm start:mock-codex
 pnpm typecheck
 pnpm test
+pnpm test:coverage
+pnpm test:e2e
+pnpm test:mutation
 pnpm build
 pnpm format:check
 pnpm lint
@@ -140,6 +143,12 @@ pnpm smoke
 - Durable technical decisions live in [`docs/adr/`](./docs/adr/README.md).
 - Dead-code/export drift is gated with `pnpm quality:dead-code`; accepted
   generated-code and public-adapter exclusions live in [`knip.jsonc`](./knip.jsonc).
+- Critical browser flows are gated with Playwright in [`tests/e2e/`](./tests/README.md).
+  `pnpm test:e2e` starts a deterministic Codex fixture, runs accessibility scans
+  with axe, and enforces the first usable UI performance budget.
+- Mutation testing is scoped in [`stryker.config.json`](./stryker.config.json)
+  and runs with `pnpm test:mutation`; the initial ratchet protects well-covered
+  runtime helpers before expanding to larger modules.
 - Built UI browser assets and the release package tarball are budgeted with
   `pnpm quality:size`. The command expects current `.next` artifacts, creates a
   temporary `dist/quality-size` package tarball, and fails when explicit budgets
@@ -190,7 +199,8 @@ pnpm smoke
 - Preserve compatibility with existing Codex app-server backends unless a change is intentionally versioned.
 - Keep schema-driven config behavior generic enough to handle unknown or forward-compatible fields.
 - Add or update focused tests when runtime behavior, transport behavior, or UI state coordination changes.
-- Run `pnpm typecheck`, `pnpm test`, and `pnpm build` before proposing a change.
+- Run `pnpm typecheck`, `pnpm test:coverage`, `pnpm test:e2e`, `pnpm test:mutation`,
+  and `pnpm build` before proposing a change that touches runtime or UI behavior.
 - If you touch protocol-facing metadata, also run `pnpm protocol:manifest:check`.
 
 **Compatibility Goals**

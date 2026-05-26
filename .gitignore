@@ -37,6 +37,7 @@ tsconfig.tsbuildinfo
 # Playwright artifacts
 playwright-report/
 test-results/
+.stryker-tmp/
 
 
 # OS / editor

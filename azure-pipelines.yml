@@ -101,6 +101,16 @@ jobs:
 
       - script: |
           set -euo pipefail
+          E2E_SKIP_BUILD=1 pnpm test:e2e
+        displayName: Browser E2E accessibility and performance
+
+      - script: |
+          set -euo pipefail
+          pnpm test:mutation
+        displayName: Mutation testing
+
+      - script: |
+          set -euo pipefail
           cleanup() {
             if [ -f ci-ui.pid ]; then kill "$(cat ci-ui.pid)" 2>/dev/null || true; fi
             if [ -f ci-mock.pid ]; then kill "$(cat ci-mock.pid)" 2>/dev/null || true; fi
