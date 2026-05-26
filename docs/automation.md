@@ -32,9 +32,14 @@ rules.
 
 - GitHub Actions are pinned to full commit SHAs.
 - `pnpm repo:hygiene:check` enforces SHA-pinned external actions.
+- `pnpm security:bootstrap` installs pinned local scanner binaries under
+  `.tools/security/bin` with SHA-256 verification.
 - `pnpm security:actions` runs `actionlint` and `zizmor --offline`.
 - `pnpm security:secrets` runs `gitleaks` with repository policy.
 - `pnpm security:trivy` runs a filesystem scan for vulnerabilities, secrets,
   and misconfiguration.
+
+Run `pnpm security:bootstrap` once before local scans. The same bootstrap path
+is used by the primary CI, scorecard, and release workflows.
 
 These checks are part of `pnpm security:scan` and the primary CI workflow.

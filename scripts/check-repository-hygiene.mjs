@@ -14,10 +14,18 @@ const forbiddenExact = new Set([
 ]);
 const forbiddenDirs = new Set(['.agent', '.cursor', '.claude', '.codex']);
 const forbiddenPatterns = [/\.transcript\./i, /\.chat\./i, /\.prompt\./i, /\.scratch\./i];
-const skippedDirs = new Set(['.git', 'node_modules', '.next', 'coverage', 'dist', 'build']);
+const skippedDirs = new Set([
+  '.git',
+  'node_modules',
+  '.next',
+  'coverage',
+  'dist',
+  'build',
+  '.tools',
+]);
 const workflowUsesPattern = /^\s*uses:\s*([^#\s]+).*$/;
 const fullShaPattern = /^[^@\s]+@[0-9a-f]{40}$/i;
-const requiredRuntimeMatrixOs = ['ubuntu-24.04', 'windows-2025'];
+const requiredRuntimeMatrixOs = ['ubuntu-24.04', 'windows-2025-vs2026'];
 const findings = [];
 
 function relative(absolutePath) {

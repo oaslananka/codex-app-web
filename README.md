@@ -89,11 +89,11 @@ while `NODE_ENV=development`. Production LAN deployments still require explicit
 
 **Supported Runtime Matrix**
 
-| Surface                                              | Operating systems              | Node.js            | pnpm   |
-| ---------------------------------------------------- | ------------------------------ | ------------------ | ------ |
-| Local development                                    | Windows 11, Ubuntu 24.04 LTS   | 24 LTS, 26 Current | 11.x   |
-| CI compatibility matrix                              | `windows-2025`, `ubuntu-24.04` | 24, 26             | 11.3.0 |
-| Full security, release, and browser-smoke validation | `ubuntu-24.04`                 | 24                 | 11.3.0 |
+| Surface                                              | Operating systems                     | Node.js            | pnpm   |
+| ---------------------------------------------------- | ------------------------------------- | ------------------ | ------ |
+| Local development                                    | Windows 11, Ubuntu 24.04 LTS          | 24 LTS, 26 Current | 11.x   |
+| CI compatibility matrix                              | `windows-2025-vs2026`, `ubuntu-24.04` | 24, 26             | 11.3.0 |
+| Full security, release, and browser-smoke validation | `ubuntu-24.04`                        | 24                 | 11.3.0 |
 
 macOS is not a documented support target yet. Add it here and in the CI matrix before treating it as supported.
 
@@ -112,6 +112,7 @@ pnpm lint
 pnpm protocol:manifest:check
 pnpm protocol:drift:check
 pnpm repo:hygiene:check
+pnpm security:bootstrap
 pnpm security:scan
 pnpm release:state
 pnpm smoke

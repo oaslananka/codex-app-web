@@ -34,9 +34,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
+      PNPM_VERSION: '11.3.0'
       SCORECARD_MINIMUM_SCORE: '6.6'
       SCORECARD_MINIMUM_VULNERABILITIES_SCORE: '9'
-      TRIVY_VERSION: '0.70.0'
 
     steps:
       - name: Checkout
@@ -52,29 +52,32 @@ jobs:
           results_format: json
           publish_results: false
 
-      - name: Install Trivy
-        run: |
-          set -euo pipefail
-          archive="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
-          base_url="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}"
-          curl -fsSLO "${base_url}/${archive}"
-          curl -fsSLO "${base_url}/trivy_${TRIVY_VERSION}_checksums.txt"
-          grep " ${archive}$" "trivy_${TRIVY_VERSION}_checksums.txt" | sha256sum --check -
-          mkdir -p "${HOME}/.local/bin"
-          tar -xzf "${archive}" trivy
-          mv trivy "${HOME}/.local/bin/trivy"
-          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
-
-      - name: Current dependency vulnerability scan
-        run: |
-          set -euo pipefail
-          trivy fs --scanners vuln --skip-dirs node_modules --skip-dirs .git --skip-dirs .next --exit-code 1 .
-
       - name: Setup Node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 24
           package-manager-cache: false
+
+      - name: Enable pnpm
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          pnpm security:bootstrap -- --tools trivy
+
+      - name: Current dependency vulnerability scan
+        run: |
+          set -euo pipefail
+          trivy fs --scanners vuln --skip-dirs node_modules --skip-dirs .git --skip-dirs .next --skip-dirs .tools --exit-code 1 .
 
       - name: Enforce Scorecard policy
         run: |
