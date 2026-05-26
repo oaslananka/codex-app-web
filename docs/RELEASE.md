@@ -61,6 +61,7 @@ pnpm protocol:drift:check
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm security:bootstrap
 pnpm security:scan
 pnpm release:state
 ```

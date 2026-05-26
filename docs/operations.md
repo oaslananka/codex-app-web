@@ -5,11 +5,11 @@ service with a Next.js custom server and WebSocket proxy.
 
 ## Supported Runtime Matrix
 
-| Surface                                              | Operating systems              | Node.js            | pnpm   |
-| ---------------------------------------------------- | ------------------------------ | ------------------ | ------ |
-| Local development                                    | Windows 11, Ubuntu 24.04 LTS   | 24 LTS, 26 Current | 11.x   |
-| CI compatibility matrix                              | `windows-2025`, `ubuntu-24.04` | 24, 26             | 11.3.0 |
-| Full security, release, and browser-smoke validation | `ubuntu-24.04`                 | 24                 | 11.3.0 |
+| Surface                                              | Operating systems                     | Node.js            | pnpm   |
+| ---------------------------------------------------- | ------------------------------------- | ------------------ | ------ |
+| Local development                                    | Windows 11, Ubuntu 24.04 LTS          | 24 LTS, 26 Current | 11.x   |
+| CI compatibility matrix                              | `windows-2025-vs2026`, `ubuntu-24.04` | 24, 26             | 11.3.0 |
+| Full security, release, and browser-smoke validation | `ubuntu-24.04`                        | 24                 | 11.3.0 |
 
 macOS is not a documented support target until the repository adds matching CI coverage.
 

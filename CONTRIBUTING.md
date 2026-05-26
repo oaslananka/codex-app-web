@@ -8,6 +8,7 @@ Thanks for helping improve `codex-app-web`.
 corepack enable
 corepack prepare pnpm@11.3.0 --activate
 pnpm install --frozen-lockfile
+pnpm security:bootstrap
 ```
 
 Use the repo-declared package manager. Do not add npm, Yarn, or Bun lockfiles.
@@ -25,6 +26,7 @@ pnpm protocol:drift:check
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm security:bootstrap
 pnpm security:scan
 pnpm release:state
 ```

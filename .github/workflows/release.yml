@@ -96,16 +96,7 @@ jobs:
       - name: Install Trivy
         run: |
           set -euo pipefail
-          version="0.70.0"
-          archive="trivy_${version}_Linux-64bit.tar.gz"
-          base_url="https://github.com/aquasecurity/trivy/releases/download/v${version}"
-          curl -fsSLO "${base_url}/${archive}"
-          curl -fsSLO "${base_url}/trivy_${version}_checksums.txt"
-          grep " ${archive}$" "trivy_${version}_checksums.txt" | sha256sum --check -
-          mkdir -p "${HOME}/.local/bin"
-          tar -xzf "${archive}" trivy
-          mv trivy "${HOME}/.local/bin/trivy"
-          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+          pnpm security:bootstrap -- --tools trivy
 
       - name: Build release assets
         env:
@@ -114,7 +105,7 @@ jobs:
           set -euo pipefail
           mkdir -p dist/release
           pnpm pack --pack-destination dist/release
-          trivy fs --format cyclonedx --output "dist/release/codex-app-web-${VERSION}.sbom.cdx.json" --skip-dirs node_modules --skip-dirs .git --skip-dirs .next .
+          trivy fs --format cyclonedx --output "dist/release/codex-app-web-${VERSION}.sbom.cdx.json" --skip-dirs node_modules --skip-dirs .git --skip-dirs .next --skip-dirs .tools .
 
       - name: Attest release assets
         id: attest

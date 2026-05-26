@@ -50,6 +50,7 @@ Thumbs.db
 # Temp
 *.tmp
 *.temp
+.tools/
 
 # Optional local files
 *.local

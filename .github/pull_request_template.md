@@ -12,6 +12,7 @@
 - [ ] `pnpm typecheck`
 - [ ] `pnpm test`
 - [ ] `pnpm build`
+- [ ] `pnpm security:bootstrap`
 - [ ] `pnpm security:scan`
 - [ ] `pnpm release:state`
 - [ ] `pnpm smoke` when UI/runtime behavior changed

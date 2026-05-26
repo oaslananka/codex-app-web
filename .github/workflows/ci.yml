@@ -64,29 +64,7 @@ jobs:
       - name: Install workflow security tools
         run: |
           set -euo pipefail
-          mkdir -p "${HOME}/.local/bin"
-
-          actionlint_version="1.7.12"
-          actionlint_archive="actionlint_${actionlint_version}_linux_amd64.tar.gz"
-          actionlint_base_url="https://github.com/rhysd/actionlint/releases/download/v${actionlint_version}"
-          curl -fsSLO "${actionlint_base_url}/${actionlint_archive}"
-          curl -fsSLO "${actionlint_base_url}/actionlint_${actionlint_version}_checksums.txt"
-          grep " ${actionlint_archive}$" "actionlint_${actionlint_version}_checksums.txt" | sha256sum --check -
-          tar -xzf "${actionlint_archive}" actionlint
-          mv actionlint "${HOME}/.local/bin/actionlint"
-
-          gitleaks_version="8.30.1"
-          gitleaks_archive="gitleaks_${gitleaks_version}_linux_x64.tar.gz"
-          gitleaks_base_url="https://github.com/gitleaks/gitleaks/releases/download/v${gitleaks_version}"
-          curl -fsSLO "${gitleaks_base_url}/${gitleaks_archive}"
-          curl -fsSLO "${gitleaks_base_url}/gitleaks_${gitleaks_version}_checksums.txt"
-          grep " ${gitleaks_archive}$" "gitleaks_${gitleaks_version}_checksums.txt" | sha256sum --check -
-          tar -xzf "${gitleaks_archive}" gitleaks
-          mv gitleaks "${HOME}/.local/bin/gitleaks"
-
-          cargo install --locked zizmor --version 1.24.1
-          echo "${HOME}/.cargo/bin" >> "${GITHUB_PATH}"
-          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+          pnpm security:bootstrap -- --tools actionlint,zizmor,gitleaks
 
       - name: Format check
         run: |
@@ -231,7 +209,7 @@ jobs:
       matrix:
         os:
           - ubuntu-24.04
-          - windows-2025
+          - windows-2025-vs2026
         node-version:
           - 24
           - 26
@@ -319,18 +297,9 @@ jobs:
       - name: Install Trivy
         run: |
           set -euo pipefail
-          version="0.70.0"
-          archive="trivy_${version}_Linux-64bit.tar.gz"
-          base_url="https://github.com/aquasecurity/trivy/releases/download/v${version}"
-          curl -fsSLO "${base_url}/${archive}"
-          curl -fsSLO "${base_url}/trivy_${version}_checksums.txt"
-          grep " ${archive}$" "trivy_${version}_checksums.txt" | sha256sum --check -
-          mkdir -p "${HOME}/.local/bin"
-          tar -xzf "${archive}" trivy
-          mv trivy "${HOME}/.local/bin/trivy"
-          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+          pnpm security:bootstrap -- --tools trivy
 
       - name: Trivy filesystem scan
         run: |
           set -euo pipefail
-          trivy fs --scanners vuln,secret,misconfig --skip-dirs node_modules --skip-dirs .git --skip-dirs .next --exit-code 1 .
+          pnpm security:trivy
