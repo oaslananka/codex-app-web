@@ -14,7 +14,7 @@ Verified on 2026-05-26:
 
 ```bash
 corepack enable
-corepack prepare pnpm@11.2.2 --activate
+corepack prepare pnpm@11.3.0 --activate
 pnpm install --frozen-lockfile
 pnpm protocol:sync:upstream -- --upstream-ref rust-v0.129.0
 pnpm protocol:manifest:check

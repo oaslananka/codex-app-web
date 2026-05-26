@@ -3,7 +3,7 @@
   "version": "1.1.7",
   "description": "Independent, open-source web control center compatible with Codex app-server workflows",
   "type": "module",
-  "packageManager": "pnpm@11.2.2",
+  "packageManager": "pnpm@11.3.0",
   "main": "server.cjs",
   "scripts": {
     "typecheck": "next typegen && tsc --noEmit",
@@ -43,14 +43,14 @@
     "@fastify/helmet": "^13.0.2",
     "@fastify/rate-limit": "^10.3.0",
     "@highlightjs/cdn-assets": "11.11.1",
-    "dompurify": "3.4.2",
+    "dompurify": "3.4.6",
     "fastify": "^5.8.5",
     "highlight.js": "11.11.1",
     "marked": "17.0.6",
     "next": "^16.2.6",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "ws": "^8.20.1"
+    "ws": "^8.21.0"
   },
   "engines": {
     "node": ">=24 <27",
@@ -58,21 +58,21 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@tailwindcss/postcss": "^4.2.2",
-    "@types/node": "^25.5.2",
-    "@types/react": "^19.2.14",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
-    "@vitest/coverage-v8": "^4.1.5",
-    "autoprefixer": "^10.4.27",
+    "@vitest/coverage-v8": "^4.1.7",
+    "autoprefixer": "^10.5.0",
     "cross-env": "^10.1.0",
-    "eslint": "10.3.0",
-    "happy-dom": "^20.8.9",
-    "playwright": "^1.59.1",
-    "postcss": "^8.5.14",
-    "prettier": "^3.8.1",
-    "tailwindcss": "^4.2.2",
+    "eslint": "10.4.0",
+    "happy-dom": "^20.9.0",
+    "playwright": "^1.60.0",
+    "postcss": "8.5.15",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "8.59.2",
-    "vitest": "^4.1.5"
+    "typescript-eslint": "8.60.0",
+    "vitest": "^4.1.7"
   }
 }

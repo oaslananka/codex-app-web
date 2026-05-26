@@ -6,7 +6,7 @@ Thanks for helping improve `codex-app-web`.
 
 ```bash
 corepack enable
-corepack prepare pnpm@11.2.2 --activate
+corepack prepare pnpm@11.3.0 --activate
 pnpm install --frozen-lockfile
 ```
 
