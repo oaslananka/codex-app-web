@@ -30,6 +30,25 @@ and must include:
 
 The release flow is documented in [`../RELEASE.md`](../RELEASE.md).
 
+## Default Branch Protection
+
+`main` is the protected release authority branch. Changes must land through a
+pull request with an up-to-date branch and resolved conversations before merge.
+Linear history is required, force pushes and branch deletion are blocked, and
+CODEOWNERS review is required for protected paths.
+
+The required status checks are:
+
+- `Cheap Gates`
+- `Full Validation`
+- `CodeQL`
+- `Filesystem Security`
+- `Scorecard`
+
+Repository administrators may repair repository settings and failed automation,
+but normal feature, fix, documentation, and release-readiness changes should use
+the same pull request path as external contributors.
+
 ## Scorecard Policy
 
 The OSSF Scorecard workflow enforces a repository aggregate threshold and
