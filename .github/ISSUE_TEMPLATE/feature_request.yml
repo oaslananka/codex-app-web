@@ -1,0 +1,43 @@
+name: Feature request
+description: Propose a focused new capability or workflow improvement.
+title: 'feat: '
+labels: ['type:enhancement', 'priority:P2', 'risk:medium']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or maintainer problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the smallest useful change.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - area:dx
+        - area:compatibility
+        - area:testing
+        - area:docs
+        - area:ci
+        - area:release
+        - area:packaging
+        - area:security
+        - area:infra
+        - area:governance
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: How should maintainers know the feature works?
+    validations:
+      required: true

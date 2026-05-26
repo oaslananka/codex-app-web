@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Usage questions and support
+    url: https://github.com/oaslananka/codex-app-web/discussions
+    about: Ask questions or discuss ideas that are not yet actionable issues.
   - name: Security reports
     url: https://github.com/oaslananka/codex-app-web/security/advisories/new
     about: Report sensitive security issues privately. Do not include secrets in public issues.

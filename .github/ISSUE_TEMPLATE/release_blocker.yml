@@ -1,0 +1,28 @@
+name: Release blocker
+description: Report a blocker for release, package integrity, or public artifacts.
+title: 'release: '
+labels: ['type:bug', 'area:release', 'priority:P0', 'risk:high']
+body:
+  - type: textarea
+    id: blocker
+    attributes:
+      label: Blocker
+      description: What prevents a safe release or artifact verification?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Link failing runs, release assets, checksums, provenance, or logs with secrets removed.
+    validations:
+      required: true
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - label: CI, release automation, public artifact integrity, or package verification is blocked.
+          required: true
+        - label: I removed secrets, tokens, and private logs from this report.
+          required: true
