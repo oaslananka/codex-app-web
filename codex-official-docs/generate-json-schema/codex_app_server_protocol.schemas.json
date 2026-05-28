@@ -7363,19 +7363,6 @@
               }
             ]
           },
-          "profile": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "profiles": {
-            "type": "object",
-            "default": {},
-            "additionalProperties": {
-              "$ref": "#/definitions/v2/ProfileV2"
-            }
-          },
           "review_model": {
             "type": [
               "string",
@@ -7695,8 +7682,7 @@
             ]
           },
           "includeLayers": {
-            "type": "boolean",
-            "default": false
+            "type": "boolean"
           }
         }
       },
@@ -7732,6 +7718,12 @@
       "ConfigRequirements": {
         "type": "object",
         "properties": {
+          "allowAppshots": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
           "allowManagedHooksOnly": {
             "type": [
               "boolean",
@@ -8559,8 +8551,7 @@
         "title": "FeedbackUploadParams",
         "type": "object",
         "required": [
-          "classification",
-          "includeLogs"
+          "classification"
         ],
         "properties": {
           "classification": {
@@ -9375,8 +9366,7 @@
         "properties": {
           "refreshToken": {
             "description": "When `true`, requests a proactive token refresh before returning.\n\nIn managed auth mode this triggers the normal refresh-token flow. In external auth mode this flag is ignored. Clients should refresh tokens themselves and call `account/login/start` with `chatgptAuthTokens`.",
-            "type": "boolean",
-            "default": false
+            "type": "boolean"
           }
         }
       },
@@ -13175,107 +13165,6 @@
           }
         }
       },
-      "ProfileV2": {
-        "type": "object",
-        "properties": {
-          "approval_policy": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/v2/AskForApproval"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "approvals_reviewer": {
-            "description": "[UNSTABLE] Optional profile-level override for where approval requests are routed for review. If omitted, the enclosing config default is used.",
-            "anyOf": [
-              {
-                "$ref": "#/definitions/v2/ApprovalsReviewer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "chatgpt_base_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "model": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "model_provider": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "model_reasoning_effort": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/v2/ReasoningEffort"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "model_reasoning_summary": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/v2/ReasoningSummary"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "model_verbosity": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/v2/Verbosity"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "service_tier": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "tools": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/v2/ToolsV2"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "web_search": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/v2/WebSearchMode"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "additionalProperties": true
-      },
       "RateLimitReachedType": {
         "type": "string",
         "enum": [
@@ -16973,8 +16862,7 @@
         "properties": {
           "includeTurns": {
             "description": "When true, include turns and their items from rollout history.",
-            "type": "boolean",
-            "default": false
+            "type": "boolean"
           },
           "threadId": {
             "type": "string"
@@ -17439,6 +17327,21 @@
                 "$ref": "#/definitions/v2/Thread"
               }
             ]
+          }
+        }
+      },
+      "ThreadSearchResult": {
+        "type": "object",
+        "required": [
+          "snippet",
+          "thread"
+        ],
+        "properties": {
+          "snippet": {
+            "type": "string"
+          },
+          "thread": {
+            "$ref": "#/definitions/v2/Thread"
           }
         }
       },
