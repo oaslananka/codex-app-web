@@ -89,6 +89,12 @@
     "ConfigRequirements": {
       "type": "object",
       "properties": {
+        "allowAppshots": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "allowManagedHooksOnly": {
           "type": [
             "boolean",

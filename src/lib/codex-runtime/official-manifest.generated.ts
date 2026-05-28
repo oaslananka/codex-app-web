@@ -434,29 +434,6 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "unstable": false,
     "deprecated": false
   },
-  "profile": {
-    "description": null,
-    "types": [
-      "string",
-      "null"
-    ],
-    "enumValues": [],
-    "hasObjectShape": false,
-    "hasArrayShape": false,
-    "unstable": false,
-    "deprecated": false
-  },
-  "profiles": {
-    "description": null,
-    "types": [
-      "object"
-    ],
-    "enumValues": [],
-    "hasObjectShape": true,
-    "hasArrayShape": false,
-    "unstable": false,
-    "deprecated": false
-  },
   "review_model": {
     "description": null,
     "types": [

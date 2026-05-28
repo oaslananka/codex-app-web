@@ -3732,19 +3732,6 @@
             }
           ]
         },
-        "profile": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "profiles": {
-          "type": "object",
-          "default": {},
-          "additionalProperties": {
-            "$ref": "#/definitions/ProfileV2"
-          }
-        },
         "review_model": {
           "type": [
             "string",
@@ -4064,8 +4051,7 @@
           ]
         },
         "includeLayers": {
-          "type": "boolean",
-          "default": false
+          "type": "boolean"
         }
       }
     },
@@ -4101,6 +4087,12 @@
     "ConfigRequirements": {
       "type": "object",
       "properties": {
+        "allowAppshots": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "allowManagedHooksOnly": {
           "type": [
             "boolean",
@@ -4928,8 +4920,7 @@
       "title": "FeedbackUploadParams",
       "type": "object",
       "required": [
-        "classification",
-        "includeLogs"
+        "classification"
       ],
       "properties": {
         "classification": {
@@ -5855,8 +5846,7 @@
       "properties": {
         "refreshToken": {
           "description": "When `true`, requests a proactive token refresh before returning.\n\nIn managed auth mode this triggers the normal refresh-token flow. In external auth mode this flag is ignored. Clients should refresh tokens themselves and call `account/login/start` with `chatgptAuthTokens`.",
-          "type": "boolean",
-          "default": false
+          "type": "boolean"
         }
       }
     },
@@ -9703,107 +9693,6 @@
           "minimum": 0
         }
       }
-    },
-    "ProfileV2": {
-      "type": "object",
-      "properties": {
-        "approval_policy": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/AskForApproval"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "approvals_reviewer": {
-          "description": "[UNSTABLE] Optional profile-level override for where approval requests are routed for review. If omitted, the enclosing config default is used.",
-          "anyOf": [
-            {
-              "$ref": "#/definitions/ApprovalsReviewer"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "chatgpt_base_url": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "model": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "model_provider": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "model_reasoning_effort": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/ReasoningEffort"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "model_reasoning_summary": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/ReasoningSummary"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "model_verbosity": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/Verbosity"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "service_tier": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "tools": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/ToolsV2"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "web_search": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/WebSearchMode"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      },
-      "additionalProperties": true
     },
     "RateLimitReachedType": {
       "type": "string",
@@ -14797,8 +14686,7 @@
       "properties": {
         "includeTurns": {
           "description": "When true, include turns and their items from rollout history.",
-          "type": "boolean",
-          "default": false
+          "type": "boolean"
         },
         "threadId": {
           "type": "string"
@@ -15263,6 +15151,21 @@
               "$ref": "#/definitions/Thread"
             }
           ]
+        }
+      }
+    },
+    "ThreadSearchResult": {
+      "type": "object",
+      "required": [
+        "snippet",
+        "thread"
+      ],
+      "properties": {
+        "snippet": {
+          "type": "string"
+        },
+        "thread": {
+          "$ref": "#/definitions/Thread"
         }
       }
     },
