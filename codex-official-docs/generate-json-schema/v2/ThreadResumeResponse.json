@@ -598,6 +598,8 @@
     "ImageDetail": {
       "type": "string",
       "enum": [
+        "auto",
+        "low",
         "high",
         "original"
       ]
@@ -1199,6 +1201,12 @@
               "type": "string",
               "enum": [
                 "userMessage"
+              ]
+            },
+            "clientId": {
+              "type": [
+                "string",
+                "null"
               ]
             },
             "content": {
@@ -2060,6 +2068,32 @@
         "failed",
         "inProgress"
       ]
+    },
+    "TurnsPage": {
+      "type": "object",
+      "required": [
+        "data"
+      ],
+      "properties": {
+        "backwardsCursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Turn"
+          }
+        },
+        "nextCursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     },
     "UserInput": {
       "oneOf": [

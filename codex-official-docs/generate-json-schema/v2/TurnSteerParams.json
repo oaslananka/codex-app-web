@@ -8,6 +8,12 @@
     "threadId"
   ],
   "properties": {
+    "clientUserMessageId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "expectedTurnId": {
       "description": "Required active turn id precondition. The request fails when it does not match the currently active turn.",
       "type": "string"
@@ -23,6 +29,28 @@
     }
   },
   "definitions": {
+    "AdditionalContextEntry": {
+      "type": "object",
+      "required": [
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/AdditionalContextKind"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "AdditionalContextKind": {
+      "type": "string",
+      "enum": [
+        "untrusted",
+        "application"
+      ]
+    },
     "ByteRange": {
       "type": "object",
       "required": [
@@ -45,6 +73,8 @@
     "ImageDetail": {
       "type": "string",
       "enum": [
+        "auto",
+        "low",
         "high",
         "original"
       ]

@@ -37,6 +37,7 @@ export const OFFICIAL_REQUEST_METHODS = [
   "thread/read",
   "thread/inject_items",
   "skills/list",
+  "skills/extraRoots/set",
   "hooks/list",
   "marketplace/add",
   "marketplace/remove",

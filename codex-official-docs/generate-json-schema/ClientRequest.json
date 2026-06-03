@@ -510,6 +510,30 @@
       }
     },
     {
+      "title": "Skills/extraRoots/setRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Skills/extraRoots/setRequestMethod",
+          "type": "string",
+          "enum": [
+            "skills/extraRoots/set"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/SkillsExtraRootsSetParams"
+        }
+      }
+    },
+    {
       "title": "Hooks/listRequest",
       "type": "object",
       "required": [
@@ -1961,6 +1985,28 @@
         "usage_limit"
       ]
     },
+    "AdditionalContextEntry": {
+      "type": "object",
+      "required": [
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/AdditionalContextKind"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "AdditionalContextKind": {
+      "type": "string",
+      "enum": [
+        "untrusted",
+        "application"
+      ]
+    },
     "ApprovalsReviewer": {
       "description": "Configures who approval requests are routed to for review. Examples include sandbox escapes, blocked network access, MCP approval prompts, and ARC escalations. Defaults to `user`. `auto_review` uses a carefully prompted subagent to gather relevant context and apply a risk-based decision framework before approving or denying the request. The legacy value `guardian_subagent` is accepted for compatibility.",
       "type": "string",
@@ -3013,6 +3059,8 @@
     "ImageDetail": {
       "type": "string",
       "enum": [
+        "auto",
+        "low",
         "high",
         "original"
       ]
@@ -3093,6 +3141,12 @@
           ],
           "format": "uint32",
           "minimum": 0
+        },
+        "threadId": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -4907,6 +4961,20 @@
         }
       }
     },
+    "SkillsExtraRootsSetParams": {
+      "type": "object",
+      "required": [
+        "extraRoots"
+      ],
+      "properties": {
+        "extraRoots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AbsolutePathBuf"
+          }
+        }
+      }
+    },
     "SkillsListParams": {
       "type": "object",
       "properties": {
@@ -5462,6 +5530,42 @@
         }
       ]
     },
+    "ThreadResumeInitialTurnsPageParams": {
+      "type": "object",
+      "properties": {
+        "itemsView": {
+          "description": "How much item detail to include for each returned turn; defaults to summary.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TurnItemsView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "description": "Optional turn page size.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sortDirection": {
+          "description": "Optional turn pagination direction; defaults to descending.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SortDirection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     "ThreadResumeParams": {
       "description": "There are three ways to resume a thread: 1. By thread_id: load the thread from disk by thread_id and resume it. 2. By history: instantiate the thread from memory and resume it. 3. By path: load the thread from disk by path and resume it.\n\nFor non-running threads, the precedence is: history > non-empty path > thread_id. If using history or a non-empty path for a non-running thread, the thread_id param will be ignored.\n\nIf thread_id identifies a running thread, app-server rejoins that thread and treats a non-empty path as a consistency check against the active rollout path. Empty string path values are treated as absent.\n\nPrefer using thread_id whenever possible.",
       "type": "object",
@@ -5873,6 +5977,12 @@
             }
           ]
         },
+        "clientUserMessageId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "cwd": {
           "description": "Override the working directory for this turn and subsequent turns.",
           "type": [
@@ -5960,6 +6070,12 @@
         "threadId"
       ],
       "properties": {
+        "clientUserMessageId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "expectedTurnId": {
           "description": "Required active turn id precondition. The request fails when it does not match the currently active turn.",
           "type": "string"

@@ -461,6 +461,8 @@
     "ImageDetail": {
       "type": "string",
       "enum": [
+        "auto",
+        "low",
         "high",
         "original"
       ]
@@ -956,6 +958,12 @@
               "type": "string",
               "enum": [
                 "userMessage"
+              ]
+            },
+            "clientId": {
+              "type": [
+                "string",
+                "null"
               ]
             },
             "content": {

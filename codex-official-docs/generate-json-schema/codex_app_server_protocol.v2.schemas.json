@@ -166,6 +166,28 @@
         "cooldown_active"
       ]
     },
+    "AdditionalContextEntry": {
+      "type": "object",
+      "required": [
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/AdditionalContextKind"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "AdditionalContextKind": {
+      "type": "string",
+      "enum": [
+        "untrusted",
+        "application"
+      ]
+    },
     "AdditionalFileSystemPermissions": {
       "type": "object",
       "properties": {
@@ -1435,6 +1457,30 @@
             },
             "params": {
               "$ref": "#/definitions/SkillsListParams"
+            }
+          }
+        },
+        {
+          "title": "Skills/extraRoots/setRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "Skills/extraRoots/setRequestMethod",
+              "type": "string",
+              "enum": [
+                "skills/extraRoots/set"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/SkillsExtraRootsSetParams"
             }
           }
         },
@@ -4135,6 +4181,15 @@
             "$ref": "#/definitions/WebSearchMode"
           }
         },
+        "allowedWindowsSandboxImplementations": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/WindowsSandboxSetupMode"
+          }
+        },
         "computerUse": {
           "anyOf": [
             {
@@ -6621,6 +6676,8 @@
     "ImageDetail": {
       "type": "string",
       "enum": [
+        "auto",
+        "low",
         "high",
         "original"
       ]
@@ -6876,6 +6933,12 @@
           ],
           "format": "uint32",
           "minimum": 0
+        },
+        "threadId": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -7465,6 +7528,47 @@
         }
       }
     },
+    "McpServerInfo": {
+      "description": "Presentation metadata advertised by an initialized MCP server.",
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "icons": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": true
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "websiteUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
     "McpServerMigration": {
       "type": "object",
       "required": [
@@ -7582,6 +7686,16 @@
           "items": {
             "$ref": "#/definitions/Resource"
           }
+        },
+        "serverInfo": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/McpServerInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "tools": {
           "type": "object",
@@ -8296,7 +8410,7 @@
       "type": "string",
       "enum": [
         "allow",
-        "none"
+        "deny"
       ]
     },
     "NonSteerableTurnKind": {
@@ -12866,6 +12980,27 @@
         }
       }
     },
+    "SkillsExtraRootsSetParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SkillsExtraRootsSetParams",
+      "type": "object",
+      "required": [
+        "extraRoots"
+      ],
+      "properties": {
+        "extraRoots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AbsolutePathBuf"
+          }
+        }
+      }
+    },
+    "SkillsExtraRootsSetResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SkillsExtraRootsSetResponse",
+      "type": "object"
+    },
     "SkillsListEntry": {
       "type": "object",
       "required": [
@@ -13753,6 +13888,12 @@
               "type": "string",
               "enum": [
                 "userMessage"
+              ]
+            },
+            "clientId": {
+              "type": [
+                "string",
+                "null"
               ]
             },
             "content": {
@@ -14946,6 +15087,42 @@
         }
       }
     },
+    "ThreadResumeInitialTurnsPageParams": {
+      "type": "object",
+      "properties": {
+        "itemsView": {
+          "description": "How much item detail to include for each returned turn; defaults to summary.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TurnItemsView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "description": "Optional turn page size.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sortDirection": {
+          "description": "Optional turn pagination direction; defaults to descending.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SortDirection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     "ThreadResumeParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ThreadResumeParams",
@@ -16128,6 +16305,12 @@
             }
           ]
         },
+        "clientUserMessageId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "cwd": {
           "description": "Override the working directory for this turn and subsequent turns.",
           "type": [
@@ -16256,6 +16439,12 @@
         "threadId"
       ],
       "properties": {
+        "clientUserMessageId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "expectedTurnId": {
           "description": "Required active turn id precondition. The request fails when it does not match the currently active turn.",
           "type": "string"
@@ -16281,6 +16470,32 @@
       "properties": {
         "turnId": {
           "type": "string"
+        }
+      }
+    },
+    "TurnsPage": {
+      "type": "object",
+      "required": [
+        "data"
+      ],
+      "properties": {
+        "backwardsCursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Turn"
+          }
+        },
+        "nextCursor": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
