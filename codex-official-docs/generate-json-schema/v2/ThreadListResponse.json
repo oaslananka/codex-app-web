@@ -659,16 +659,9 @@
       ]
     },
     "ReasoningEffort": {
-      "description": "See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning",
+      "description": "A non-empty reasoning effort value advertised by the model.",
       "type": "string",
-      "enum": [
-        "none",
-        "minimal",
-        "low",
-        "medium",
-        "high",
-        "xhigh"
-      ]
+      "minLength": 1
     },
     "SessionSource": {
       "oneOf": [
@@ -888,6 +881,13 @@
         },
         "name": {
           "description": "Optional user-facing thread title.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parentThreadId": {
+          "description": "The ID of the parent thread. This will only be set if this thread is a subagent.",
           "type": [
             "string",
             "null"

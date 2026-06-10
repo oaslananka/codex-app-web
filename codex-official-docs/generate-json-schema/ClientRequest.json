@@ -1634,6 +1634,29 @@
       }
     },
     {
+      "title": "Account/usage/readRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Account/usage/readRequestMethod",
+          "type": "string",
+          "enum": [
+            "account/usage/read"
+          ]
+        },
+        "params": {
+          "type": "null"
+        }
+      }
+    },
+    {
       "title": "Account/sendAddCreditsNudgeEmailRequest",
       "type": "object",
       "required": [
@@ -2005,6 +2028,30 @@
       "enum": [
         "untrusted",
         "application"
+      ]
+    },
+    "AgentMessageInputContent": {
+      "oneOf": [
+        {
+          "title": "EncryptedContentAgentMessageInputContent",
+          "type": "object",
+          "required": [
+            "encrypted_content",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EncryptedContentAgentMessageInputContentType",
+              "type": "string",
+              "enum": [
+                "encrypted_content"
+              ]
+            },
+            "encrypted_content": {
+              "type": "string"
+            }
+          }
+        }
       ]
     },
     "ApprovalsReviewer": {
@@ -3944,16 +3991,9 @@
       ]
     },
     "ReasoningEffort": {
-      "description": "See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning",
+      "description": "A non-empty reasoning effort value advertised by the model.",
       "type": "string",
-      "enum": [
-        "none",
-        "minimal",
-        "low",
-        "medium",
-        "high",
-        "xhigh"
-      ]
+      "minLength": 1
     },
     "ReasoningItemContent": {
       "oneOf": [
@@ -4096,6 +4136,37 @@
               ]
             },
             "role": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AgentMessageResponseItem",
+          "type": "object",
+          "required": [
+            "author",
+            "content",
+            "recipient",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "AgentMessageResponseItemType",
+              "type": "string",
+              "enum": [
+                "agent_message"
+              ]
+            },
+            "author": {
+              "type": "string"
+            },
+            "content": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AgentMessageInputContent"
+              }
+            },
+            "recipient": {
               "type": "string"
             }
           }

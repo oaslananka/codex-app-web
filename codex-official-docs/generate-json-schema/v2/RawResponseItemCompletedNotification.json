@@ -19,6 +19,30 @@
     }
   },
   "definitions": {
+    "AgentMessageInputContent": {
+      "oneOf": [
+        {
+          "title": "EncryptedContentAgentMessageInputContent",
+          "type": "object",
+          "required": [
+            "encrypted_content",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EncryptedContentAgentMessageInputContentType",
+              "type": "string",
+              "enum": [
+                "encrypted_content"
+              ]
+            },
+            "encrypted_content": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
     "ContentItem": {
       "oneOf": [
         {
@@ -383,6 +407,37 @@
               ]
             },
             "role": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AgentMessageResponseItem",
+          "type": "object",
+          "required": [
+            "author",
+            "content",
+            "recipient",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "AgentMessageResponseItemType",
+              "type": "string",
+              "enum": [
+                "agent_message"
+              ]
+            },
+            "author": {
+              "type": "string"
+            },
+            "content": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AgentMessageInputContent"
+              }
+            },
+            "recipient": {
               "type": "string"
             }
           }

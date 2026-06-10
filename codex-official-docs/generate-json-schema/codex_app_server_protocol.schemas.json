@@ -1837,6 +1837,29 @@
           }
         },
         {
+          "title": "Account/usage/readRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "title": "Account/usage/readRequestMethod",
+              "type": "string",
+              "enum": [
+                "account/usage/read"
+              ]
+            },
+            "params": {
+              "type": "null"
+            }
+          }
+        },
+        {
           "title": "Account/sendAddCreditsNudgeEmailRequest",
           "type": "object",
           "required": [
@@ -3795,6 +3818,13 @@
         "cwd": {
           "$ref": "#/definitions/v2/AbsolutePathBuf"
         },
+        "environmentId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
         "itemId": {
           "type": "string"
         },
@@ -4901,6 +4931,26 @@
           }
         },
         {
+          "title": "Turn/moderationMetadataNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Turn/moderationMetadataNotificationMethod",
+              "type": "string",
+              "enum": [
+                "turn/moderationMetadata"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/v2/TurnModerationMetadataNotification"
+            }
+          }
+        },
+        {
           "title": "WarningNotification",
           "type": "object",
           "required": [
@@ -5723,6 +5773,7 @@
       "AccountRateLimitsUpdatedNotification": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "AccountRateLimitsUpdatedNotification",
+        "description": "Sparse rolling rate-limit update.\n\nClients should merge available values into the most recent `account/rateLimits/read` response or refetch that snapshot. Nullable account metadata may be unavailable in a rolling update and does not clear a previously observed value.",
         "type": "object",
         "required": [
           "rateLimits"
@@ -5730,6 +5781,62 @@
         "properties": {
           "rateLimits": {
             "$ref": "#/definitions/v2/RateLimitSnapshot"
+          }
+        }
+      },
+      "AccountTokenUsageDailyBucket": {
+        "type": "object",
+        "required": [
+          "startDate",
+          "tokens"
+        ],
+        "properties": {
+          "startDate": {
+            "type": "string"
+          },
+          "tokens": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "AccountTokenUsageSummary": {
+        "type": "object",
+        "properties": {
+          "currentStreakDays": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "lifetimeTokens": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "longestRunningTurnSec": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "longestStreakDays": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "peakDailyTokens": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
           }
         }
       },
@@ -5894,6 +6001,30 @@
           }
         }
       },
+      "AgentMessageInputContent": {
+        "oneOf": [
+          {
+            "title": "EncryptedContentAgentMessageInputContent",
+            "type": "object",
+            "required": [
+              "encrypted_content",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "title": "EncryptedContentAgentMessageInputContentType",
+                "type": "string",
+                "enum": [
+                  "encrypted_content"
+                ]
+              },
+              "encrypted_content": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
       "AgentPath": {
         "type": "string"
       },
@@ -5954,6 +6085,16 @@
       "AppConfig": {
         "type": "object",
         "properties": {
+          "approvals_reviewer": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/ApprovalsReviewer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "default_tools_approval_mode": {
             "anyOf": [
               {
@@ -6262,6 +6403,69 @@
           }
         }
       },
+      "AppTemplateSummary": {
+        "type": "object",
+        "required": [
+          "materializedAppIds",
+          "name",
+          "templateId"
+        ],
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "canonicalConnectorId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "logoUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "logoUrlDark": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "materializedAppIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/AppTemplateUnavailableReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "templateId": {
+            "type": "string"
+          }
+        }
+      },
+      "AppTemplateUnavailableReason": {
+        "type": "string",
+        "enum": [
+          "NOT_CONFIGURED_FOR_WORKSPACE",
+          "NO_ACTIVE_WORKSPACE"
+        ]
+      },
       "AppToolApproval": {
         "type": "string",
         "enum": [
@@ -6474,6 +6678,13 @@
             "type": "string",
             "enum": [
               "agentIdentity"
+            ]
+          },
+          {
+            "description": "Programmatic Codex auth backed by a personal access token.",
+            "type": "string",
+            "enum": [
+              "personalAccessToken"
             ]
           }
         ]
@@ -7606,6 +7817,33 @@
             }
           },
           {
+            "title": "EnterpriseManagedConfigLayerSource",
+            "description": "Enterprise-managed config layer delivered by the cloud config bundle.",
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "title": "EnterpriseManagedConfigLayerSourceType",
+                "type": "string",
+                "enum": [
+                  "enterpriseManaged"
+                ]
+              },
+              "id": {
+                "description": "Stable identifier for the delivered layer.",
+                "type": "string"
+              },
+              "name": {
+                "description": "Admin-facing name for the delivered layer. This is surfaced in diagnostics so users know which cloud layer needs administrator attention.",
+                "type": "string"
+              }
+            }
+          },
+          {
             "title": "UserConfigLayerSource",
             "description": "User config layer from $CODEX_HOME/config.toml. This layer is special in that it is expected to be: - writable by the user - generally outside the workspace directory",
             "type": "object",
@@ -7785,13 +8023,13 @@
               "$ref": "#/definitions/v2/AskForApproval"
             }
           },
-          "allowedPermissions": {
+          "allowedPermissionProfiles": {
             "type": [
-              "array",
+              "object",
               "null"
             ],
-            "items": {
-              "type": "string"
+            "additionalProperties": {
+              "type": "boolean"
             }
           },
           "allowedSandboxModes": {
@@ -7829,6 +8067,12 @@
               {
                 "type": "null"
               }
+            ]
+          },
+          "defaultPermissions": {
+            "type": [
+              "string",
+              "null"
             ]
           },
           "enforceResidency": {
@@ -9476,6 +9720,28 @@
           }
         }
       },
+      "GetAccountTokenUsageResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "GetAccountTokenUsageResponse",
+        "type": "object",
+        "required": [
+          "summary"
+        ],
+        "properties": {
+          "dailyUsageBuckets": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/definitions/v2/AccountTokenUsageDailyBucket"
+            }
+          },
+          "summary": {
+            "$ref": "#/definitions/v2/AccountTokenUsageSummary"
+          }
+        }
+      },
       "GitInfo": {
         "type": "object",
         "properties": {
@@ -10094,6 +10360,7 @@
           "sessionFlags",
           "plugin",
           "cloudRequirements",
+          "cloudManagedConfig",
           "legacyManagedConfigFile",
           "legacyManagedConfigMdm",
           "unknown"
@@ -12125,6 +12392,7 @@
       "PluginDetail": {
         "type": "object",
         "required": [
+          "appTemplates",
           "apps",
           "hooks",
           "marketplaceName",
@@ -12138,6 +12406,12 @@
               "string",
               "null"
             ]
+          },
+          "appTemplates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/v2/AppTemplateSummary"
+            }
           },
           "apps": {
             "type": "array",
@@ -13302,6 +13576,16 @@
               }
             ]
           },
+          "individualLimit": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/SpendControlLimitSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "limitId": {
             "type": [
               "string",
@@ -13471,16 +13755,9 @@
         }
       },
       "ReasoningEffort": {
-        "description": "See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning",
+        "description": "A non-empty reasoning effort value advertised by the model.",
         "type": "string",
-        "enum": [
-          "none",
-          "minimal",
-          "low",
-          "medium",
-          "high",
-          "xhigh"
-        ]
+        "minLength": 1
       },
       "ReasoningEffortOption": {
         "type": "object",
@@ -13929,6 +14206,37 @@
                 ]
               },
               "role": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "AgentMessageResponseItem",
+            "type": "object",
+            "required": [
+              "author",
+              "content",
+              "recipient",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "title": "AgentMessageResponseItemType",
+                "type": "string",
+                "enum": [
+                  "agent_message"
+                ]
+              },
+              "author": {
+                "type": "string"
+              },
+              "content": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/v2/AgentMessageInputContent"
+                }
+              },
+              "recipient": {
                 "type": "string"
               }
             }
@@ -15243,6 +15551,31 @@
           "desc"
         ]
       },
+      "SpendControlLimitSnapshot": {
+        "type": "object",
+        "required": [
+          "limit",
+          "remainingPercent",
+          "resetsAt",
+          "used"
+        ],
+        "properties": {
+          "limit": {
+            "type": "string"
+          },
+          "remainingPercent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resetsAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "used": {
+            "type": "string"
+          }
+        }
+      },
       "SubAgentSource": {
         "oneOf": [
           {
@@ -15497,6 +15830,13 @@
           },
           "name": {
             "description": "Optional user-facing thread title.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "parentThreadId": {
+            "description": "The ID of the parent thread. This will only be set if this thread is a subagent.",
             "type": [
               "string",
               "null"
@@ -18396,6 +18736,25 @@
             ]
           }
         ]
+      },
+      "TurnModerationMetadataNotification": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "TurnModerationMetadataNotification",
+        "type": "object",
+        "required": [
+          "metadata",
+          "threadId",
+          "turnId"
+        ],
+        "properties": {
+          "metadata": true,
+          "threadId": {
+            "type": "string"
+          },
+          "turnId": {
+            "type": "string"
+          }
+        }
       },
       "TurnPlanStep": {
         "type": "object",

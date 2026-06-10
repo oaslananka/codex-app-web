@@ -84,6 +84,7 @@ export const OFFICIAL_REQUEST_METHODS = [
   "account/login/cancel",
   "account/logout",
   "account/rateLimits/read",
+  "account/usage/read",
   "account/sendAddCreditsNudgeEmail",
   "feedback/upload",
   "command/exec",
@@ -153,6 +154,7 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "thread/compacted",
   "model/rerouted",
   "model/verification",
+  "turn/moderationMetadata",
   "warning",
   "guardianWarning",
   "deprecationNotice",
@@ -384,19 +386,12 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "deprecated": false
   },
   "model_reasoning_effort": {
-    "description": "See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning",
+    "description": "A non-empty reasoning effort value advertised by the model.",
     "types": [
       "string",
       "null"
     ],
-    "enumValues": [
-      "none",
-      "minimal",
-      "low",
-      "medium",
-      "high",
-      "xhigh"
-    ],
+    "enumValues": [],
     "hasObjectShape": false,
     "hasArrayShape": false,
     "unstable": false,
