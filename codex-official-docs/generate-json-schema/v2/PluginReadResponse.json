@@ -20,11 +20,16 @@
       "type": "object",
       "required": [
         "id",
-        "name",
-        "needsAuth"
+        "name"
       ],
       "properties": {
         "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "category": {
           "type": [
             "string",
             "null"
@@ -41,9 +46,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "needsAuth": {
-          "type": "boolean"
         }
       }
     },
@@ -62,6 +64,12 @@
           ]
         },
         "canonicalConnectorId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "category": {
           "type": [
             "string",
             "null"
@@ -203,6 +211,12 @@
           "items": {
             "type": "string"
           }
+        },
+        "shareUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "skills": {
           "type": "array",

@@ -703,6 +703,14 @@
         }
       ]
     },
+    "SubAgentActivityKind": {
+      "type": "string",
+      "enum": [
+        "started",
+        "interacted",
+        "interrupted"
+      ]
+    },
     "SubAgentSource": {
       "oneOf": [
         {
@@ -1460,6 +1468,38 @@
           }
         },
         {
+          "title": "SubAgentActivityThreadItem",
+          "type": "object",
+          "required": [
+            "agentPath",
+            "agentThreadId",
+            "id",
+            "kind",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "SubAgentActivityThreadItemType",
+              "type": "string",
+              "enum": [
+                "subAgentActivity"
+              ]
+            },
+            "agentPath": {
+              "type": "string"
+            },
+            "agentThreadId": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "kind": {
+              "$ref": "#/definitions/SubAgentActivityKind"
+            }
+          }
+        },
+        {
           "title": "WebSearchThreadItem",
           "type": "object",
           "required": [
@@ -1632,12 +1672,7 @@
       ]
     },
     "ThreadSource": {
-      "type": "string",
-      "enum": [
-        "user",
-        "subagent",
-        "memory_consolidation"
-      ]
+      "type": "string"
     },
     "ThreadStatus": {
       "oneOf": [

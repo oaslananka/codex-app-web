@@ -125,6 +125,30 @@
       }
     },
     {
+      "title": "Thread/deleteRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Thread/deleteRequestMethod",
+          "type": "string",
+          "enum": [
+            "thread/delete"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadDeleteParams"
+        }
+      }
+    },
+    {
       "title": "Thread/unsubscribeRequest",
       "type": "object",
       "required": [
@@ -2033,6 +2057,26 @@
     "AgentMessageInputContent": {
       "oneOf": [
         {
+          "title": "InputTextAgentMessageInputContent",
+          "type": "object",
+          "required": [
+            "text",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputTextAgentMessageInputContentType",
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "EncryptedContentAgentMessageInputContent",
           "type": "object",
           "required": [
@@ -2175,6 +2219,36 @@
           "type": "string"
         }
       }
+    },
+    "CapabilityRootLocation": {
+      "description": "Location used to resolve a selected capability root.",
+      "oneOf": [
+        {
+          "title": "EnvironmentCapabilityRootLocation",
+          "description": "A path owned by an execution environment.",
+          "type": "object",
+          "required": [
+            "environmentId",
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EnvironmentCapabilityRootLocationType",
+              "type": "string",
+              "enum": [
+                "environment"
+              ]
+            },
+            "environmentId": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        }
+      ]
     },
     "ClientInfo": {
       "type": "object",
@@ -2572,6 +2646,13 @@
             }
           }
         }
+      ]
+    },
+    "ConversationTextRole": {
+      "type": "string",
+      "enum": [
+        "user",
+        "developer"
       ]
     },
     "DynamicToolSpec": {
@@ -3959,6 +4040,20 @@
         }
       }
     },
+    "RealtimeConversationArchitecture": {
+      "type": "string",
+      "enum": [
+        "realtimeapi",
+        "avas"
+      ]
+    },
+    "RealtimeConversationVersion": {
+      "type": "string",
+      "enum": [
+        "v1",
+        "v2"
+      ]
+    },
     "RealtimeOutputModality": {
       "type": "string",
       "enum": [
@@ -4082,6 +4177,22 @@
           ]
         }
       ]
+    },
+    "RemoteControlDisableParams": {
+      "type": "object",
+      "properties": {
+        "ephemeral": {
+          "type": "boolean"
+        }
+      }
+    },
+    "RemoteControlEnableParams": {
+      "type": "object",
+      "properties": {
+        "ephemeral": {
+          "type": "boolean"
+        }
+      }
     },
     "RequestId": {
       "anyOf": [
@@ -4943,6 +5054,28 @@
         }
       ]
     },
+    "SelectedCapabilityRoot": {
+      "description": "A user-selected root that can expose one or more runtime capabilities.",
+      "type": "object",
+      "required": [
+        "id",
+        "location"
+      ],
+      "properties": {
+        "id": {
+          "description": "Stable identifier supplied by the capability selection platform.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Where the selected root can be resolved.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CapabilityRootLocation"
+            }
+          ]
+        }
+      }
+    },
     "SendAddCreditsNudgeEmailParams": {
       "type": "object",
       "required": [
@@ -5130,6 +5263,17 @@
       }
     },
     "ThreadCompactStartParams": {
+      "type": "object",
+      "required": [
+        "threadId"
+      ],
+      "properties": {
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
+    "ThreadDeleteParams": {
       "type": "object",
       "required": [
         "threadId"
@@ -5791,12 +5935,7 @@
       ]
     },
     "ThreadSource": {
-      "type": "string",
-      "enum": [
-        "user",
-        "subagent",
-        "memory_consolidation"
-      ]
+      "type": "string"
     },
     "ThreadSourceKind": {
       "type": "string",

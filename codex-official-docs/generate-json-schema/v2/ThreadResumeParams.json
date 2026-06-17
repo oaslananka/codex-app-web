@@ -104,6 +104,26 @@
     "AgentMessageInputContent": {
       "oneOf": [
         {
+          "title": "InputTextAgentMessageInputContent",
+          "type": "object",
+          "required": [
+            "text",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputTextAgentMessageInputContentType",
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "EncryptedContentAgentMessageInputContent",
           "type": "object",
           "required": [

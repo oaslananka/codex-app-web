@@ -490,6 +490,14 @@
       "type": "string",
       "minLength": 1
     },
+    "SubAgentActivityKind": {
+      "type": "string",
+      "enum": [
+        "started",
+        "interacted",
+        "interrupted"
+      ]
+    },
     "TextElement": {
       "type": "object",
       "required": [
@@ -1010,6 +1018,38 @@
                   "$ref": "#/definitions/CollabAgentTool"
                 }
               ]
+            }
+          }
+        },
+        {
+          "title": "SubAgentActivityThreadItem",
+          "type": "object",
+          "required": [
+            "agentPath",
+            "agentThreadId",
+            "id",
+            "kind",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "SubAgentActivityThreadItemType",
+              "type": "string",
+              "enum": [
+                "subAgentActivity"
+              ]
+            },
+            "agentPath": {
+              "type": "string"
+            },
+            "agentThreadId": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "kind": {
+              "$ref": "#/definitions/SubAgentActivityKind"
             }
           }
         },

@@ -1950,6 +1950,15 @@
         "turnId"
       ],
       "properties": {
+        "autoResolutionMs": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null,
+          "format": "uint64",
+          "minimum": 0
+        },
         "itemId": {
           "type": "string"
         },

@@ -326,6 +326,26 @@
     "AgentMessageInputContent": {
       "oneOf": [
         {
+          "title": "InputTextAgentMessageInputContent",
+          "type": "object",
+          "required": [
+            "text",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputTextAgentMessageInputContentType",
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "EncryptedContentAgentMessageInputContent",
           "type": "object",
           "required": [
@@ -698,11 +718,16 @@
       "type": "object",
       "required": [
         "id",
-        "name",
-        "needsAuth"
+        "name"
       ],
       "properties": {
         "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "category": {
           "type": [
             "string",
             "null"
@@ -719,9 +744,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "needsAuth": {
-          "type": "boolean"
         }
       }
     },
@@ -740,6 +762,12 @@
           ]
         },
         "canonicalConnectorId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "category": {
           "type": [
             "string",
             "null"
@@ -848,6 +876,16 @@
     "AppsDefaultConfig": {
       "type": "object",
       "properties": {
+        "approvals_reviewer": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ApprovalsReviewer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "destructive_enabled": {
           "type": "boolean",
           "default": true
@@ -1008,6 +1046,13 @@
           "enum": [
             "personalAccessToken"
           ]
+        },
+        {
+          "description": "Amazon Bedrock bearer token managed by Codex.",
+          "type": "string",
+          "enum": [
+            "bedrockApiKey"
+          ]
         }
       ]
     },
@@ -1087,6 +1132,36 @@
       "enum": [
         "canceled",
         "notFound"
+      ]
+    },
+    "CapabilityRootLocation": {
+      "description": "Location used to resolve a selected capability root.",
+      "oneOf": [
+        {
+          "title": "EnvironmentCapabilityRootLocation",
+          "description": "A path owned by an execution environment.",
+          "type": "object",
+          "required": [
+            "environmentId",
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EnvironmentCapabilityRootLocationType",
+              "type": "string",
+              "enum": [
+                "environment"
+              ]
+            },
+            "environmentId": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        }
       ]
     },
     "ClientInfo": {
@@ -1233,6 +1308,30 @@
             },
             "params": {
               "$ref": "#/definitions/ThreadArchiveParams"
+            }
+          }
+        },
+        {
+          "title": "Thread/deleteRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "Thread/deleteRequestMethod",
+              "type": "string",
+              "enum": [
+                "thread/delete"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ThreadDeleteParams"
             }
           }
         },
@@ -4356,6 +4455,12 @@
             "null"
           ]
         },
+        "allowRemoteControl": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "allowedApprovalPolicies": {
           "type": [
             "array",
@@ -4754,6 +4859,13 @@
           "type": "string"
         }
       }
+    },
+    "ConversationTextRole": {
+      "type": "string",
+      "enum": [
+        "user",
+        "developer"
+      ]
     },
     "CreditsSnapshot": {
       "type": "object",
@@ -7972,6 +8084,12 @@
         },
         "status": {
           "$ref": "#/definitions/McpServerStartupState"
+        },
+        "threadId": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -8945,6 +9063,12 @@
           "items": {
             "type": "string"
           }
+        },
+        "shareUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "skills": {
           "type": "array",
@@ -10189,6 +10313,13 @@
         }
       }
     },
+    "RealtimeConversationArchitecture": {
+      "type": "string",
+      "enum": [
+        "realtimeapi",
+        "avas"
+      ]
+    },
     "RealtimeConversationVersion": {
       "type": "string",
       "enum": [
@@ -10458,6 +10589,22 @@
         "connected",
         "errored"
       ]
+    },
+    "RemoteControlDisableParams": {
+      "type": "object",
+      "properties": {
+        "ephemeral": {
+          "type": "boolean"
+        }
+      }
+    },
+    "RemoteControlEnableParams": {
+      "type": "object",
+      "properties": {
+        "ephemeral": {
+          "type": "boolean"
+        }
+      }
     },
     "RemoteControlStatusChangedNotification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -11559,6 +11706,28 @@
         }
       }
     },
+    "SelectedCapabilityRoot": {
+      "description": "A user-selected root that can expose one or more runtime capabilities.",
+      "type": "object",
+      "required": [
+        "id",
+        "location"
+      ],
+      "properties": {
+        "id": {
+          "description": "Stable identifier supplied by the capability selection platform.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Where the selected root can be resolved.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CapabilityRootLocation"
+            }
+          ]
+        }
+      }
+    },
     "SendAddCreditsNudgeEmailParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "SendAddCreditsNudgeEmailParams",
@@ -11668,6 +11837,26 @@
             },
             "params": {
               "$ref": "#/definitions/ThreadArchivedNotification"
+            }
+          }
+        },
+        {
+          "title": "Thread/deletedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Thread/deletedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "thread/deleted"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ThreadDeletedNotification"
             }
           }
         },
@@ -13393,6 +13582,14 @@
         }
       }
     },
+    "SubAgentActivityKind": {
+      "type": "string",
+      "enum": [
+        "started",
+        "interacted",
+        "interrupted"
+      ]
+    },
     "SubAgentSource": {
       "oneOf": [
         {
@@ -13805,6 +14002,37 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ThreadCompactStartResponse",
       "type": "object"
+    },
+    "ThreadDeleteParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadDeleteParams",
+      "type": "object",
+      "required": [
+        "threadId"
+      ],
+      "properties": {
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
+    "ThreadDeleteResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadDeleteResponse",
+      "type": "object"
+    },
+    "ThreadDeletedNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadDeletedNotification",
+      "type": "object",
+      "required": [
+        "threadId"
+      ],
+      "properties": {
+        "threadId": {
+          "type": "string"
+        }
+      }
     },
     "ThreadForkParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -14702,6 +14930,38 @@
                   "$ref": "#/definitions/CollabAgentTool"
                 }
               ]
+            }
+          }
+        },
+        {
+          "title": "SubAgentActivityThreadItem",
+          "type": "object",
+          "required": [
+            "agentPath",
+            "agentThreadId",
+            "id",
+            "kind",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "SubAgentActivityThreadItemType",
+              "type": "string",
+              "enum": [
+                "subAgentActivity"
+              ]
+            },
+            "agentPath": {
+              "type": "string"
+            },
+            "agentThreadId": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "kind": {
+              "$ref": "#/definitions/SubAgentActivityKind"
             }
           }
         },
@@ -15830,12 +16090,7 @@
       ]
     },
     "ThreadSource": {
-      "type": "string",
-      "enum": [
-        "user",
-        "subagent",
-        "memory_consolidation"
-      ]
+      "type": "string"
     },
     "ThreadSourceKind": {
       "type": "string",
