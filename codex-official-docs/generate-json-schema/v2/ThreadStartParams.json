@@ -215,31 +215,102 @@
         }
       ]
     },
-    "DynamicToolSpec": {
-      "type": "object",
-      "required": [
-        "description",
-        "inputSchema",
-        "name"
-      ],
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "deferLoading": {
-          "type": "boolean"
-        },
-        "inputSchema": true,
-        "name": {
-          "type": "string"
-        },
-        "namespace": {
-          "type": [
-            "string",
-            "null"
-          ]
+    "DynamicToolNamespaceTool": {
+      "oneOf": [
+        {
+          "title": "FunctionDynamicToolNamespaceTool",
+          "type": "object",
+          "required": [
+            "description",
+            "inputSchema",
+            "name",
+            "type"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "type": {
+              "title": "FunctionDynamicToolNamespaceToolType",
+              "type": "string",
+              "enum": [
+                "function"
+              ]
+            },
+            "deferLoading": {
+              "type": "boolean"
+            },
+            "inputSchema": true,
+            "name": {
+              "type": "string"
+            }
+          }
         }
-      }
+      ]
+    },
+    "DynamicToolSpec": {
+      "oneOf": [
+        {
+          "title": "FunctionDynamicToolSpec",
+          "type": "object",
+          "required": [
+            "description",
+            "inputSchema",
+            "name",
+            "type"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "type": {
+              "title": "FunctionDynamicToolSpecType",
+              "type": "string",
+              "enum": [
+                "function"
+              ]
+            },
+            "deferLoading": {
+              "type": "boolean"
+            },
+            "inputSchema": true,
+            "name": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "NamespaceDynamicToolSpec",
+          "type": "object",
+          "required": [
+            "description",
+            "name",
+            "tools",
+            "type"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "type": {
+              "title": "NamespaceDynamicToolSpecType",
+              "type": "string",
+              "enum": [
+                "namespace"
+              ]
+            },
+            "name": {
+              "type": "string"
+            },
+            "tools": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DynamicToolNamespaceTool"
+              }
+            }
+          }
+        }
+      ]
     },
     "Personality": {
       "type": "string",

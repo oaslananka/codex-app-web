@@ -85,6 +85,7 @@ export const OFFICIAL_REQUEST_METHODS = [
   "account/login/cancel",
   "account/logout",
   "account/rateLimits/read",
+  "account/rateLimitResetCredit/consume",
   "account/usage/read",
   "account/sendAddCreditsNudgeEmail",
   "feedback/upload",

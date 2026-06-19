@@ -1784,6 +1784,32 @@
           }
         },
         {
+          "title": "SleepThreadItem",
+          "type": "object",
+          "required": [
+            "durationMs",
+            "id",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "SleepThreadItemType",
+              "type": "string",
+              "enum": [
+                "sleep"
+              ]
+            },
+            "durationMs": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "ImageGenerationThreadItem",
           "type": "object",
           "required": [

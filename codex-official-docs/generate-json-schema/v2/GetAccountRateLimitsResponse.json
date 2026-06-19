@@ -6,6 +6,16 @@
     "rateLimits"
   ],
   "properties": {
+    "rateLimitResetCredits": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/RateLimitResetCreditsSummary"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "rateLimits": {
       "description": "Backward-compatible single-bucket view; mirrors the historical payload.",
       "allOf": [
@@ -73,6 +83,18 @@
         "workspace_owner_usage_limit_reached",
         "workspace_member_usage_limit_reached"
       ]
+    },
+    "RateLimitResetCreditsSummary": {
+      "type": "object",
+      "required": [
+        "availableCount"
+      ],
+      "properties": {
+        "availableCount": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
     },
     "RateLimitSnapshot": {
       "type": "object",

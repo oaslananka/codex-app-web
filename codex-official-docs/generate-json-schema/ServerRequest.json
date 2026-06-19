@@ -285,7 +285,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/ApiPathString"
           }
         },
         "write": {
@@ -295,7 +295,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/ApiPathString"
           }
         }
       }
@@ -336,6 +336,9 @@
           ]
         }
       }
+    },
+    "ApiPathString": {
+      "type": "string"
     },
     "ApplyPatchApprovalParams": {
       "type": "object",
@@ -906,7 +909,7 @@
               ]
             },
             "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/ApiPathString"
             }
           }
         },

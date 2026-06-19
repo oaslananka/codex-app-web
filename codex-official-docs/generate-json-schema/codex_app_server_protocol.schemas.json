@@ -1861,6 +1861,30 @@
           }
         },
         {
+          "title": "Account/rateLimitResetCredit/consumeRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "title": "Account/rateLimitResetCredit/consumeRequestMethod",
+              "type": "string",
+              "enum": [
+                "account/rateLimitResetCredit/consume"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/v2/ConsumeAccountRateLimitResetCreditParams"
+            }
+          }
+        },
+        {
           "title": "Account/usage/readRequest",
           "type": "object",
           "required": [
@@ -6003,7 +6027,7 @@
               "null"
             ],
             "items": {
-              "$ref": "#/definitions/v2/AbsolutePathBuf"
+              "$ref": "#/definitions/v2/ApiPathString"
             }
           },
           "write": {
@@ -6013,7 +6037,7 @@
               "null"
             ],
             "items": {
-              "$ref": "#/definitions/v2/AbsolutePathBuf"
+              "$ref": "#/definitions/v2/ApiPathString"
             }
           }
         }
@@ -6112,6 +6136,9 @@
           }
         },
         "additionalProperties": true
+      },
+      "ApiPathString": {
+        "type": "string"
       },
       "AppBranding": {
         "description": "EXPERIMENTAL - app metadata returned by app-list APIs.",
@@ -8455,6 +8482,65 @@
           }
         }
       },
+      "ConsumeAccountRateLimitResetCreditOutcome": {
+        "oneOf": [
+          {
+            "description": "A reset credit was consumed and the eligible rate-limit windows were reset.",
+            "type": "string",
+            "enum": [
+              "reset"
+            ]
+          },
+          {
+            "description": "No current rate-limit window is eligible for a reset.",
+            "type": "string",
+            "enum": [
+              "nothingToReset"
+            ]
+          },
+          {
+            "description": "The account has no earned reset credits available.",
+            "type": "string",
+            "enum": [
+              "noCredit"
+            ]
+          },
+          {
+            "description": "The same idempotency key already completed a reset successfully.",
+            "type": "string",
+            "enum": [
+              "alreadyRedeemed"
+            ]
+          }
+        ]
+      },
+      "ConsumeAccountRateLimitResetCreditParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ConsumeAccountRateLimitResetCreditParams",
+        "type": "object",
+        "required": [
+          "idempotencyKey"
+        ],
+        "properties": {
+          "idempotencyKey": {
+            "description": "Identifies one logical reset attempt. A UUID is recommended; reuse the same value when retrying that attempt.",
+            "type": "string"
+          }
+        }
+      },
+      "ConsumeAccountRateLimitResetCreditResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ConsumeAccountRateLimitResetCreditResponse",
+        "type": "object",
+        "required": [
+          "outcome"
+        ],
+        "properties": {
+          "outcome": {
+            "$ref": "#/definitions/v2/ConsumeAccountRateLimitResetCreditOutcome"
+          }
+        }
+      },
       "ContentItem": {
         "oneOf": [
           {
@@ -8648,31 +8734,102 @@
           "failed"
         ]
       },
-      "DynamicToolSpec": {
-        "type": "object",
-        "required": [
-          "description",
-          "inputSchema",
-          "name"
-        ],
-        "properties": {
-          "description": {
-            "type": "string"
-          },
-          "deferLoading": {
-            "type": "boolean"
-          },
-          "inputSchema": true,
-          "name": {
-            "type": "string"
-          },
-          "namespace": {
-            "type": [
-              "string",
-              "null"
-            ]
+      "DynamicToolNamespaceTool": {
+        "oneOf": [
+          {
+            "title": "FunctionDynamicToolNamespaceTool",
+            "type": "object",
+            "required": [
+              "description",
+              "inputSchema",
+              "name",
+              "type"
+            ],
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "title": "FunctionDynamicToolNamespaceToolType",
+                "type": "string",
+                "enum": [
+                  "function"
+                ]
+              },
+              "deferLoading": {
+                "type": "boolean"
+              },
+              "inputSchema": true,
+              "name": {
+                "type": "string"
+              }
+            }
           }
-        }
+        ]
+      },
+      "DynamicToolSpec": {
+        "oneOf": [
+          {
+            "title": "FunctionDynamicToolSpec",
+            "type": "object",
+            "required": [
+              "description",
+              "inputSchema",
+              "name",
+              "type"
+            ],
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "title": "FunctionDynamicToolSpecType",
+                "type": "string",
+                "enum": [
+                  "function"
+                ]
+              },
+              "deferLoading": {
+                "type": "boolean"
+              },
+              "inputSchema": true,
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "NamespaceDynamicToolSpec",
+            "type": "object",
+            "required": [
+              "description",
+              "name",
+              "tools",
+              "type"
+            ],
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "title": "NamespaceDynamicToolSpecType",
+                "type": "string",
+                "enum": [
+                  "namespace"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "tools": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/v2/DynamicToolNamespaceTool"
+                }
+              }
+            }
+          }
+        ]
       },
       "ErrorNotification": {
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -8917,7 +9074,82 @@
       "ExternalAgentConfigImportCompletedNotification": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "ExternalAgentConfigImportCompletedNotification",
-        "type": "object"
+        "type": "object",
+        "required": [
+          "importId",
+          "itemTypeResults"
+        ],
+        "properties": {
+          "importId": {
+            "type": "string"
+          },
+          "itemTypeResults": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/v2/ExternalAgentConfigImportTypeResult"
+            }
+          }
+        }
+      },
+      "ExternalAgentConfigImportItemTypeFailure": {
+        "type": "object",
+        "required": [
+          "failureStage",
+          "itemType",
+          "message"
+        ],
+        "properties": {
+          "cwd": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "failureStage": {
+            "type": "string"
+          },
+          "itemType": {
+            "$ref": "#/definitions/v2/ExternalAgentConfigMigrationItemType"
+          },
+          "message": {
+            "type": "string"
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "ExternalAgentConfigImportItemTypeSuccess": {
+        "type": "object",
+        "required": [
+          "itemType"
+        ],
+        "properties": {
+          "cwd": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "itemType": {
+            "$ref": "#/definitions/v2/ExternalAgentConfigMigrationItemType"
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "target": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
       },
       "ExternalAgentConfigImportParams": {
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -8938,7 +9170,40 @@
       "ExternalAgentConfigImportResponse": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "ExternalAgentConfigImportResponse",
-        "type": "object"
+        "type": "object",
+        "required": [
+          "importId"
+        ],
+        "properties": {
+          "importId": {
+            "type": "string"
+          }
+        }
+      },
+      "ExternalAgentConfigImportTypeResult": {
+        "type": "object",
+        "required": [
+          "failures",
+          "itemType",
+          "successes"
+        ],
+        "properties": {
+          "failures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/v2/ExternalAgentConfigImportItemTypeFailure"
+            }
+          },
+          "itemType": {
+            "$ref": "#/definitions/v2/ExternalAgentConfigMigrationItemType"
+          },
+          "successes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/v2/ExternalAgentConfigImportItemTypeSuccess"
+            }
+          }
+        }
       },
       "ExternalAgentConfigMigrationItem": {
         "type": "object",
@@ -9125,7 +9390,7 @@
                 ]
               },
               "path": {
-                "$ref": "#/definitions/v2/AbsolutePathBuf"
+                "$ref": "#/definitions/v2/ApiPathString"
               }
             }
           },
@@ -9818,6 +10083,16 @@
           "rateLimits"
         ],
         "properties": {
+          "rateLimitResetCredits": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/RateLimitResetCreditsSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "rateLimits": {
             "description": "Backward-compatible single-bucket view; mirrors the historical payload.",
             "allOf": [
@@ -12866,7 +13141,8 @@
           "local",
           "vertical",
           "workspace-directory",
-          "shared-with-me"
+          "shared-with-me",
+          "created-by-me-remote"
         ]
       },
       "PluginListParams": {
@@ -13716,6 +13992,18 @@
           "workspace_member_usage_limit_reached"
         ]
       },
+      "RateLimitResetCreditsSummary": {
+        "type": "object",
+        "required": [
+          "availableCount"
+        ],
+        "properties": {
+          "availableCount": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "RateLimitSnapshot": {
         "type": "object",
         "properties": {
@@ -14371,6 +14659,16 @@
                 ],
                 "writeOnly": true
               },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "phase": {
                 "anyOf": [
                   {
@@ -14412,6 +14710,16 @@
                   "$ref": "#/definitions/v2/AgentMessageInputContent"
                 }
               },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "recipient": {
                 "type": "string"
               }
@@ -14446,6 +14754,16 @@
                 "type": [
                   "string",
                   "null"
+                ]
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "summary": {
@@ -14490,6 +14808,16 @@
                 ],
                 "writeOnly": true
               },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "status": {
                 "$ref": "#/definitions/v2/LocalShellStatus"
               }
@@ -14524,6 +14852,16 @@
                   "null"
                 ],
                 "writeOnly": true
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "name": {
                 "type": "string"
@@ -14569,6 +14907,16 @@
                 ],
                 "writeOnly": true
               },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "status": {
                 "type": [
                   "string",
@@ -14595,6 +14943,16 @@
               },
               "call_id": {
                 "type": "string"
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "output": {
                 "$ref": "#/definitions/v2/FunctionCallOutputBody"
@@ -14631,6 +14989,16 @@
               "input": {
                 "type": "string"
               },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -14660,6 +15028,16 @@
               },
               "call_id": {
                 "type": "string"
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "name": {
                 "type": [
@@ -14697,6 +15075,16 @@
               },
               "execution": {
                 "type": "string"
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "status": {
                 "type": "string"
@@ -14738,6 +15126,16 @@
                 ],
                 "writeOnly": true
               },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "status": {
                 "type": [
                   "string",
@@ -14765,6 +15163,16 @@
               },
               "id": {
                 "type": "string"
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "result": {
                 "type": "string"
@@ -14797,6 +15205,16 @@
               },
               "encrypted_content": {
                 "type": "string"
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           },
@@ -14812,6 +15230,16 @@
                 "type": "string",
                 "enum": [
                   "compaction_trigger"
+                ]
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               }
             }
@@ -14835,6 +15263,16 @@
                   "string",
                   "null"
                 ]
+              },
+              "metadata": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ResponseItemMetadata"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           },
@@ -14855,6 +15293,17 @@
             }
           }
         ]
+      },
+      "ResponseItemMetadata": {
+        "type": "object",
+        "properties": {
+          "turn_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
       },
       "ResponsesApiWebSearchAction": {
         "oneOf": [
@@ -17212,6 +17661,32 @@
               },
               "path": {
                 "$ref": "#/definitions/v2/AbsolutePathBuf"
+              }
+            }
+          },
+          {
+            "title": "SleepThreadItem",
+            "type": "object",
+            "required": [
+              "durationMs",
+              "id",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "title": "SleepThreadItemType",
+                "type": "string",
+                "enum": [
+                  "sleep"
+                ]
+              },
+              "durationMs": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0
+              },
+              "id": {
+                "type": "string"
               }
             }
           },
