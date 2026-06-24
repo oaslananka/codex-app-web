@@ -42,7 +42,10 @@
               ]
             },
             "email": {
-              "type": "string"
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "planType": {
               "$ref": "#/definitions/PlanType"
@@ -61,6 +64,14 @@
               "type": "string",
               "enum": [
                 "amazonBedrock"
+              ]
+            },
+            "credentialSource": {
+              "default": "awsManaged",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/AmazonBedrockCredentialSource"
+                }
               ]
             }
           }
@@ -272,7 +283,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "write": {
@@ -282,7 +293,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         }
       }
@@ -370,6 +381,13 @@
     "AgentPath": {
       "type": "string"
     },
+    "AmazonBedrockCredentialSource": {
+      "type": "string",
+      "enum": [
+        "codexManaged",
+        "awsManaged"
+      ]
+    },
     "AnalyticsConfig": {
       "type": "object",
       "properties": {
@@ -381,9 +399,6 @@
         }
       },
       "additionalProperties": true
-    },
-    "ApiPathString": {
-      "type": "string"
     },
     "AppBranding": {
       "description": "EXPERIMENTAL - app metadata returned by app-list APIs.",
@@ -883,6 +898,16 @@
           "anyOf": [
             {
               "$ref": "#/definitions/ApprovalsReviewer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "default_tools_approval_mode": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AppToolApproval"
             },
             {
               "type": "null"
@@ -2895,6 +2920,29 @@
           }
         },
         {
+          "title": "Account/workspaceMessages/readRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "Account/workspaceMessages/readRequestMethod",
+              "type": "string",
+              "enum": [
+                "account/workspaceMessages/read"
+              ]
+            },
+            "params": {
+              "type": "null"
+            }
+          }
+        },
+        {
           "title": "Account/sendAddCreditsNudgeEmailRequest",
           "type": "object",
           "required": [
@@ -3111,6 +3159,29 @@
             },
             "params": {
               "$ref": "#/definitions/ExternalAgentConfigImportParams"
+            }
+          }
+        },
+        {
+          "title": "ExternalAgentConfig/import/readHistoriesRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "ExternalAgentConfig/import/readHistoriesRequestMethod",
+              "type": "string",
+              "enum": [
+                "externalAgentConfig/import/readHistories"
+              ]
+            },
+            "params": {
+              "type": "null"
             }
           }
         },
@@ -4950,7 +5021,8 @@
       "type": "string",
       "enum": [
         "user",
-        "developer"
+        "developer",
+        "assistant"
       ]
     },
     "CreditsSnapshot": {
@@ -5363,7 +5435,7 @@
           }
         },
         "includeHome": {
-          "description": "If true, include detection under the user's home (~/.claude, ~/.codex, etc.).",
+          "description": "If true, include detection under the user's home directory.",
           "type": "boolean"
         }
       }
@@ -5404,6 +5476,52 @@
         }
       }
     },
+    "ExternalAgentConfigImportHistoriesReadResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ExternalAgentConfigImportHistoriesReadResponse",
+      "type": "object",
+      "required": [
+        "data"
+      ],
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportHistory"
+          }
+        }
+      }
+    },
+    "ExternalAgentConfigImportHistory": {
+      "type": "object",
+      "required": [
+        "completedAtMs",
+        "failures",
+        "importId",
+        "successes"
+      ],
+      "properties": {
+        "completedAtMs": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "failures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeFailure"
+          }
+        },
+        "importId": {
+          "type": "string"
+        },
+        "successes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeSuccess"
+          }
+        }
+      }
+    },
     "ExternalAgentConfigImportItemTypeFailure": {
       "type": "object",
       "required": [
@@ -5413,6 +5531,12 @@
       ],
       "properties": {
         "cwd": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorType": {
           "type": [
             "string",
             "null"
@@ -5476,6 +5600,33 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/ExternalAgentConfigMigrationItem"
+          }
+        },
+        "source": {
+          "description": "Source product that produced the migration items. Missing means unspecified.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "ExternalAgentConfigImportProgressNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ExternalAgentConfigImportProgressNotification",
+      "type": "object",
+      "required": [
+        "importId",
+        "itemTypeResults"
+      ],
+      "properties": {
+        "importId": {
+          "type": "string"
+        },
+        "itemTypeResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportTypeResult"
           }
         }
       }
@@ -5703,7 +5854,7 @@
               ]
             },
             "path": {
-              "$ref": "#/definitions/ApiPathString"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -6582,6 +6733,28 @@
         }
       }
     },
+    "GetWorkspaceMessagesResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GetWorkspaceMessagesResponse",
+      "type": "object",
+      "required": [
+        "featureEnabled",
+        "messages"
+      ],
+      "properties": {
+        "featureEnabled": {
+          "description": "Whether the workspace-message backend route is available for this client.",
+          "type": "boolean"
+        },
+        "messages": {
+          "description": "Active workspace messages returned by the backend.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WorkspaceMessage"
+          }
+        }
+      }
+    },
     "GitInfo": {
       "type": "object",
       "properties": {
@@ -7318,6 +7491,10 @@
           "type": "boolean",
           "default": false
         },
+        "mcpServerOpenaiFormElicitation": {
+          "description": "Allow downstream MCP servers to request OpenAI extended form elicitations.",
+          "type": "boolean"
+        },
         "optOutNotificationMethods": {
           "description": "Exact notification method names that should be suppressed for this connection (for example `thread/started`).",
           "type": [
@@ -7376,6 +7553,18 @@
           ]
         }
       ]
+    },
+    "InternalChatMessageMetadataPassthrough": {
+      "description": "Internal Responses API passthrough metadata copied into underlying chat messages.\n\nResponses API strongly types this payload. Do not modify it without first getting API approval and making the corresponding Responses API change.",
+      "type": "object",
+      "properties": {
+        "turn_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     },
     "ItemCompletedNotification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -7528,6 +7717,9 @@
           "type": "string"
         }
       }
+    },
+    "LegacyAppPathString": {
+      "type": "string"
     },
     "ListMcpServerStatusParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -8413,6 +8605,29 @@
         "structuredContent": true
       }
     },
+    "McpToolCallAppContext": {
+      "type": "object",
+      "required": [
+        "connectorId"
+      ],
+      "properties": {
+        "connectorId": {
+          "type": "string"
+        },
+        "linkId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resourceUri": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
     "McpToolCallError": {
       "type": "object",
       "required": [
@@ -8830,6 +9045,41 @@
         }
       }
     },
+    "ModelSafetyBufferingUpdatedNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ModelSafetyBufferingUpdatedNotification",
+      "type": "object",
+      "required": [
+        "model",
+        "reasons",
+        "threadId",
+        "turnId",
+        "useCases"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "threadId": {
+          "type": "string"
+        },
+        "turnId": {
+          "type": "string"
+        },
+        "useCases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ModelServiceTier": {
       "type": "object",
       "required": [
@@ -8907,6 +9157,15 @@
           }
         }
       }
+    },
+    "MultiAgentMode": {
+      "description": "Controls whether the model receives multi-agent delegation instructions and, when it does, whether it should only spawn sub-agents after an explicit user request or may delegate proactively when doing so would help. `none` leaves the multi-agent tools available without injecting delegation instructions.",
+      "type": "string",
+      "enum": [
+        "none",
+        "explicitRequestOnly",
+        "proactive"
+      ]
     },
     "NetworkAccess": {
       "type": "string",
@@ -9193,6 +9452,7 @@
     "PermissionProfileSummary": {
       "type": "object",
       "required": [
+        "allowed",
         "id"
       ],
       "properties": {
@@ -9202,6 +9462,10 @@
             "string",
             "null"
           ]
+        },
+        "allowed": {
+          "description": "Whether the effective requirements allow selecting this profile.",
+          "type": "boolean"
         },
         "id": {
           "description": "Available permission profile identifier.",
@@ -10601,13 +10865,6 @@
         }
       }
     },
-    "RealtimeConversationArchitecture": {
-      "type": "string",
-      "enum": [
-        "realtimeapi",
-        "avas"
-      ]
-    },
     "RealtimeConversationVersion": {
       "type": "string",
       "enum": [
@@ -11129,13 +11386,12 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
             },
-            "metadata": {
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11183,10 +11439,16 @@
                 "$ref": "#/definitions/AgentMessageInputContent"
               }
             },
-            "metadata": {
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11229,10 +11491,16 @@
                 "null"
               ]
             },
-            "metadata": {
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11278,13 +11546,12 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
             },
-            "metadata": {
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11323,13 +11590,12 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
             },
-            "metadata": {
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11377,13 +11643,12 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
             },
-            "metadata": {
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11417,10 +11682,16 @@
             "call_id": {
               "type": "string"
             },
-            "metadata": {
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11456,16 +11727,15 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
             },
             "input": {
               "type": "string"
             },
-            "metadata": {
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11502,10 +11772,16 @@
             "call_id": {
               "type": "string"
             },
-            "metadata": {
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11549,10 +11825,16 @@
             "execution": {
               "type": "string"
             },
-            "metadata": {
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11596,13 +11878,12 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
             },
-            "metadata": {
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11621,7 +11902,6 @@
           "title": "ImageGenerationCallResponseItem",
           "type": "object",
           "required": [
-            "id",
             "result",
             "status",
             "type"
@@ -11635,12 +11915,15 @@
               ]
             },
             "id": {
-              "type": "string"
+              "type": [
+                "string",
+                "null"
+              ]
             },
-            "metadata": {
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11679,10 +11962,16 @@
             "encrypted_content": {
               "type": "string"
             },
-            "metadata": {
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11705,10 +11994,10 @@
                 "compaction_trigger"
               ]
             },
-            "metadata": {
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11737,10 +12026,16 @@
                 "null"
               ]
             },
-            "metadata": {
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/ResponseItemMetadata"
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
                 },
                 {
                   "type": "null"
@@ -11766,17 +12061,6 @@
           }
         }
       ]
-    },
-    "ResponseItemMetadata": {
-      "type": "object",
-      "properties": {
-        "turn_id": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      }
     },
     "ResponsesApiWebSearchAction": {
       "oneOf": [
@@ -13015,6 +13299,26 @@
           }
         },
         {
+          "title": "ExternalAgentConfig/import/progressNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "ExternalAgentConfig/import/progressNotificationMethod",
+              "type": "string",
+              "enum": [
+                "externalAgentConfig/import/progress"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ExternalAgentConfigImportProgressNotification"
+            }
+          }
+        },
+        {
           "title": "ExternalAgentConfig/import/completedNotification",
           "type": "object",
           "required": [
@@ -13192,6 +13496,26 @@
             },
             "params": {
               "$ref": "#/definitions/TurnModerationMetadataNotification"
+            }
+          }
+        },
+        {
+          "title": "Model/safetyBuffering/updatedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Model/safetyBuffering/updatedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "model/safetyBuffering/updated"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ModelSafetyBufferingUpdatedNotification"
             }
           }
         },
@@ -14316,6 +14640,14 @@
           "description": "Usually the first user message in the thread, if available.",
           "type": "string"
         },
+        "recencyAt": {
+          "description": "Unix timestamp (in seconds) used for thread recency ordering.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
         "sessionId": {
           "description": "Session id shared by threads that belong to the same session tree.",
           "type": "string"
@@ -14615,11 +14947,11 @@
           "$ref": "#/definitions/AbsolutePathBuf"
         },
         "instructionSources": {
-          "description": "Instruction source files currently loaded for this thread.",
+          "description": "Environment-native paths to instruction source files currently loaded for this thread.",
           "type": "array",
           "default": [],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "model": {
@@ -15090,7 +15422,7 @@
               "description": "The command's working directory.",
               "allOf": [
                 {
-                  "$ref": "#/definitions/AbsolutePathBuf"
+                  "$ref": "#/definitions/LegacyAppPathString"
                 }
               ]
             },
@@ -15183,6 +15515,16 @@
                 "mcpToolCall"
               ]
             },
+            "appContext": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/McpToolCallAppContext"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "arguments": true,
             "durationMs": {
               "description": "The duration of the MCP tool call in milliseconds.",
@@ -15206,6 +15548,7 @@
               "type": "string"
             },
             "mcpAppResourceUri": {
+              "description": "Deprecated: use `appContext.resourceUri` instead.",
               "type": [
                 "string",
                 "null"
@@ -16319,11 +16662,11 @@
           "$ref": "#/definitions/AbsolutePathBuf"
         },
         "instructionSources": {
-          "description": "Instruction source files currently loaded for this thread.",
+          "description": "Environment-native paths to instruction source files currently loaded for this thread.",
           "type": "array",
           "default": [],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "model": {
@@ -16561,7 +16904,8 @@
       "type": "string",
       "enum": [
         "created_at",
-        "updated_at"
+        "updated_at",
+        "recency_at"
       ]
     },
     "ThreadSource": {
@@ -16735,11 +17079,11 @@
           "$ref": "#/definitions/AbsolutePathBuf"
         },
         "instructionSources": {
-          "description": "Instruction source files currently loaded for this thread.",
+          "description": "Environment-native paths to instruction source files currently loaded for this thread.",
           "type": "array",
           "default": [],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "model": {
@@ -17202,7 +17546,7 @@
       ],
       "properties": {
         "cwd": {
-          "$ref": "#/definitions/AbsolutePathBuf"
+          "$ref": "#/definitions/LegacyAppPathString"
         },
         "environmentId": {
           "type": "string"
@@ -17897,6 +18241,7 @@
       "enum": [
         "disabled",
         "cached",
+        "indexed",
         "live"
       ]
     },
@@ -18047,6 +18392,49 @@
           }
         }
       }
+    },
+    "WorkspaceMessage": {
+      "type": "object",
+      "required": [
+        "messageBody",
+        "messageId",
+        "messageType"
+      ],
+      "properties": {
+        "archivedAt": {
+          "description": "Unix timestamp (in seconds) when the message was archived.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "createdAt": {
+          "description": "Unix timestamp (in seconds) when the message was created.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "messageBody": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "messageType": {
+          "$ref": "#/definitions/WorkspaceMessageType"
+        }
+      }
+    },
+    "WorkspaceMessageType": {
+      "type": "string",
+      "enum": [
+        "headline",
+        "announcement",
+        "unknown"
+      ]
     },
     "WriteStatus": {
       "type": "string",

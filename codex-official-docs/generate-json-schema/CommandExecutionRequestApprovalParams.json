@@ -37,12 +37,20 @@
       "description": "The command's working directory.",
       "anyOf": [
         {
-          "$ref": "#/definitions/AbsolutePathBuf"
+          "$ref": "#/definitions/LegacyAppPathString"
         },
         {
           "type": "null"
         }
       ]
+    },
+    "environmentId": {
+      "description": "Environment in which the command will run.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null
     },
     "itemId": {
       "type": "string"
@@ -129,7 +137,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "write": {
@@ -139,7 +147,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         }
       }
@@ -180,9 +188,6 @@
           ]
         }
       }
-    },
-    "ApiPathString": {
-      "type": "string"
     },
     "CommandAction": {
       "oneOf": [
@@ -399,7 +404,7 @@
               ]
             },
             "path": {
-              "$ref": "#/definitions/ApiPathString"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -568,6 +573,9 @@
           }
         }
       ]
+    },
+    "LegacyAppPathString": {
+      "type": "string"
     },
     "NetworkApprovalContext": {
       "type": "object",

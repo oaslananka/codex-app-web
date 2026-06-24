@@ -810,6 +810,26 @@
       }
     },
     {
+      "title": "ExternalAgentConfig/import/progressNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "ExternalAgentConfig/import/progressNotificationMethod",
+          "type": "string",
+          "enum": [
+            "externalAgentConfig/import/progress"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ExternalAgentConfigImportProgressNotification"
+        }
+      }
+    },
+    {
       "title": "ExternalAgentConfig/import/completedNotification",
       "type": "object",
       "required": [
@@ -987,6 +1007,26 @@
         },
         "params": {
           "$ref": "#/definitions/TurnModerationMetadataNotification"
+        }
+      }
+    },
+    {
+      "title": "Model/safetyBuffering/updatedNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "Model/safetyBuffering/updatedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "model/safetyBuffering/updated"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ModelSafetyBufferingUpdatedNotification"
         }
       }
     },
@@ -1444,7 +1484,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "write": {
@@ -1454,7 +1494,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         }
       }
@@ -1494,9 +1534,6 @@
       }
     },
     "AgentPath": {
-      "type": "string"
-    },
-    "ApiPathString": {
       "type": "string"
     },
     "AppBranding": {
@@ -2505,6 +2542,12 @@
             "null"
           ]
         },
+        "errorType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "failureStage": {
           "type": "string"
         },
@@ -2548,6 +2591,24 @@
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "ExternalAgentConfigImportProgressNotification": {
+      "type": "object",
+      "required": [
+        "importId",
+        "itemTypeResults"
+      ],
+      "properties": {
+        "importId": {
+          "type": "string"
+        },
+        "itemTypeResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportTypeResult"
+          }
         }
       }
     },
@@ -2666,7 +2727,7 @@
               ]
             },
             "path": {
-              "$ref": "#/definitions/ApiPathString"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -3647,6 +3708,9 @@
         }
       }
     },
+    "LegacyAppPathString": {
+      "type": "string"
+    },
     "McpServerOauthLoginCompletedNotification": {
       "type": "object",
       "required": [
@@ -3697,6 +3761,29 @@
           "$ref": "#/definitions/McpServerStartupState"
         },
         "threadId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "McpToolCallAppContext": {
+      "type": "object",
+      "required": [
+        "connectorId"
+      ],
+      "properties": {
+        "connectorId": {
+          "type": "string"
+        },
+        "linkId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resourceUri": {
           "type": [
             "string",
             "null"
@@ -3868,6 +3955,39 @@
         }
       }
     },
+    "ModelSafetyBufferingUpdatedNotification": {
+      "type": "object",
+      "required": [
+        "model",
+        "reasons",
+        "threadId",
+        "turnId",
+        "useCases"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "threadId": {
+          "type": "string"
+        },
+        "turnId": {
+          "type": "string"
+        },
+        "useCases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ModelVerification": {
       "type": "string",
       "enum": [
@@ -3895,6 +4015,15 @@
           }
         }
       }
+    },
+    "MultiAgentMode": {
+      "description": "Controls whether the model receives multi-agent delegation instructions and, when it does, whether it should only spawn sub-agents after an explicit user request or may delegate proactively when doing so would help. `none` leaves the multi-agent tools available without injecting delegation instructions.",
+      "type": "string",
+      "enum": [
+        "none",
+        "explicitRequestOnly",
+        "proactive"
+      ]
     },
     "NetworkAccess": {
       "type": "string",
@@ -4905,6 +5034,14 @@
           "description": "Usually the first user message in the thread, if available.",
           "type": "string"
         },
+        "recencyAt": {
+          "description": "Unix timestamp (in seconds) used for thread recency ordering.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
         "sessionId": {
           "description": "Session id shared by threads that belong to the same session tree.",
           "type": "string"
@@ -5290,7 +5427,7 @@
               "description": "The command's working directory.",
               "allOf": [
                 {
-                  "$ref": "#/definitions/AbsolutePathBuf"
+                  "$ref": "#/definitions/LegacyAppPathString"
                 }
               ]
             },
@@ -5383,6 +5520,16 @@
                 "mcpToolCall"
               ]
             },
+            "appContext": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/McpToolCallAppContext"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "arguments": true,
             "durationMs": {
               "description": "The duration of the MCP tool call in milliseconds.",
@@ -5406,6 +5553,7 @@
               "type": "string"
             },
             "mcpAppResourceUri": {
+              "description": "Deprecated: use `appContext.resourceUri` instead.",
               "type": [
                 "string",
                 "null"

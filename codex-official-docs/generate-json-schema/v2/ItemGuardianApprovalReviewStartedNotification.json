@@ -73,7 +73,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "write": {
@@ -83,7 +83,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         }
       }
@@ -98,9 +98,6 @@
           ]
         }
       }
-    },
-    "ApiPathString": {
-      "type": "string"
     },
     "FileSystemAccessMode": {
       "type": "string",
@@ -128,7 +125,7 @@
               ]
             },
             "path": {
-              "$ref": "#/definitions/ApiPathString"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -569,6 +566,9 @@
         "medium",
         "high"
       ]
+    },
+    "LegacyAppPathString": {
+      "type": "string"
     },
     "NetworkApprovalProtocol": {
       "type": "string",

@@ -56,7 +56,10 @@
               ]
             },
             "email": {
-              "type": "string"
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "planType": {
               "$ref": "#/definitions/PlanType"
@@ -76,9 +79,24 @@
               "enum": [
                 "amazonBedrock"
               ]
+            },
+            "credentialSource": {
+              "default": "awsManaged",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/AmazonBedrockCredentialSource"
+                }
+              ]
             }
           }
         }
+      ]
+    },
+    "AmazonBedrockCredentialSource": {
+      "type": "string",
+      "enum": [
+        "codexManaged",
+        "awsManaged"
       ]
     },
     "PlanType": {

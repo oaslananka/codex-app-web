@@ -27,11 +27,11 @@
       "$ref": "#/definitions/AbsolutePathBuf"
     },
     "instructionSources": {
-      "description": "Instruction source files currently loaded for this thread.",
+      "description": "Environment-native paths to instruction source files currently loaded for this thread.",
       "type": "array",
       "default": [],
       "items": {
-        "$ref": "#/definitions/AbsolutePathBuf"
+        "$ref": "#/definitions/LegacyAppPathString"
       }
     },
     "model": {
@@ -604,6 +604,32 @@
         "original"
       ]
     },
+    "LegacyAppPathString": {
+      "type": "string"
+    },
+    "McpToolCallAppContext": {
+      "type": "object",
+      "required": [
+        "connectorId"
+      ],
+      "properties": {
+        "connectorId": {
+          "type": "string"
+        },
+        "linkId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resourceUri": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
     "McpToolCallError": {
       "type": "object",
       "required": [
@@ -702,6 +728,15 @@
             "final_answer"
           ]
         }
+      ]
+    },
+    "MultiAgentMode": {
+      "description": "Controls whether the model receives multi-agent delegation instructions and, when it does, whether it should only spawn sub-agents after an explicit user request or may delegate proactively when doing so would help. `none` leaves the multi-agent tools available without injecting delegation instructions.",
+      "type": "string",
+      "enum": [
+        "none",
+        "explicitRequestOnly",
+        "proactive"
       ]
     },
     "NetworkAccess": {
@@ -1138,6 +1173,14 @@
           "description": "Usually the first user message in the thread, if available.",
           "type": "string"
         },
+        "recencyAt": {
+          "description": "Unix timestamp (in seconds) used for thread recency ordering.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
         "sessionId": {
           "description": "Session id shared by threads that belong to the same session tree.",
           "type": "string"
@@ -1401,7 +1444,7 @@
               "description": "The command's working directory.",
               "allOf": [
                 {
-                  "$ref": "#/definitions/AbsolutePathBuf"
+                  "$ref": "#/definitions/LegacyAppPathString"
                 }
               ]
             },
@@ -1494,6 +1537,16 @@
                 "mcpToolCall"
               ]
             },
+            "appContext": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/McpToolCallAppContext"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "arguments": true,
             "durationMs": {
               "description": "The duration of the MCP tool call in milliseconds.",
@@ -1517,6 +1570,7 @@
               "type": "string"
             },
             "mcpAppResourceUri": {
+              "description": "Deprecated: use `appContext.resourceUri` instead.",
               "type": [
                 "string",
                 "null"

@@ -285,7 +285,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "write": {
@@ -295,7 +295,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ApiPathString"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         }
       }
@@ -336,9 +336,6 @@
           ]
         }
       }
-    },
-    "ApiPathString": {
-      "type": "string"
     },
     "ApplyPatchApprovalParams": {
       "type": "object",
@@ -635,12 +632,20 @@
           "description": "The command's working directory.",
           "anyOf": [
             {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             },
             {
               "type": "null"
             }
           ]
+        },
+        "environmentId": {
+          "description": "Environment in which the command will run.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
         },
         "itemId": {
           "type": "string"
@@ -909,7 +914,7 @@
               ]
             },
             "path": {
-              "$ref": "#/definitions/ApiPathString"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -1078,6 +1083,9 @@
           }
         }
       ]
+    },
+    "LegacyAppPathString": {
+      "type": "string"
     },
     "McpElicitationArrayType": {
       "type": "string",
@@ -1653,6 +1661,27 @@
             "requestedSchema": {
               "$ref": "#/definitions/McpElicitationSchema"
             }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "message",
+            "mode",
+            "requestedSchema"
+          ],
+          "properties": {
+            "_meta": true,
+            "message": {
+              "type": "string"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "openai/form"
+              ]
+            },
+            "requestedSchema": true
           }
         },
         {
