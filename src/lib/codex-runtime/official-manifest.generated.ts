@@ -228,7 +228,6 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     ],
     "enumValues": [
       "untrusted",
-      "on-failure",
       "on-request",
       "never"
     ],

@@ -5,11 +5,18 @@
   "required": [
     "model",
     "reasons",
+    "showBufferingUi",
     "threadId",
     "turnId",
     "useCases"
   ],
   "properties": {
+    "fasterModel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "model": {
       "type": "string"
     },
@@ -18,6 +25,9 @@
       "items": {
         "type": "string"
       }
+    },
+    "showBufferingUi": {
+      "type": "boolean"
     },
     "threadId": {
       "type": "string"

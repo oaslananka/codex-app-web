@@ -13,6 +13,16 @@
         "null"
       ]
     },
+    "failureReason": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/McpServerStartupFailureReason"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "name": {
       "type": "string"
     },
@@ -27,6 +37,12 @@
     }
   },
   "definitions": {
+    "McpServerStartupFailureReason": {
+      "type": "string",
+      "enum": [
+        "reauthenticationRequired"
+      ]
+    },
     "McpServerStartupState": {
       "type": "string",
       "enum": [
