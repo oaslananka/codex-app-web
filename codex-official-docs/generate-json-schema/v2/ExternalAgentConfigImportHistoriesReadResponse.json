@@ -3,9 +3,16 @@
   "title": "ExternalAgentConfigImportHistoriesReadResponse",
   "type": "object",
   "required": [
+    "connectors",
     "data"
   ],
   "properties": {
+    "connectors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ExternalAgentImportedConnectorCandidate"
+      }
+    },
     "data": {
       "type": "array",
       "items": {
@@ -78,6 +85,12 @@
             "string",
             "null"
           ]
+        },
+        "subErrorType": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -121,7 +134,35 @@
         "SUBAGENTS",
         "HOOKS",
         "COMMANDS",
+        "MEMORY",
         "SESSIONS"
+      ]
+    },
+    "ExternalAgentImportedConnectorCandidate": {
+      "type": "object",
+      "required": [
+        "name",
+        "sessionCount",
+        "source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "sessionCount": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/definitions/ExternalAgentImportedConnectorSource"
+        }
+      }
+    },
+    "ExternalAgentImportedConnectorSource": {
+      "type": "string",
+      "enum": [
+        "remoteMcpServersConfig"
       ]
     }
   }

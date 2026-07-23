@@ -870,6 +870,30 @@
       }
     },
     {
+      "title": "App/readRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "App/readRequestMethod",
+          "type": "string",
+          "enum": [
+            "app/read"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/AppsReadParams"
+        }
+      }
+    },
+    {
       "title": "App/listRequest",
       "type": "object",
       "required": [
@@ -890,6 +914,30 @@
         },
         "params": {
           "$ref": "#/definitions/AppsListParams"
+        }
+      }
+    },
+    {
+      "title": "App/installedRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "App/installedRequestMethod",
+          "type": "string",
+          "enum": [
+            "app/installed"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/AppsInstalledParams"
         }
       }
     },
@@ -2177,6 +2225,23 @@
         "guardian_subagent"
       ]
     },
+    "AppsInstalledParams": {
+      "description": "Read the committed installed connector runtime snapshot.",
+      "type": "object",
+      "properties": {
+        "forceRefresh": {
+          "description": "When true and Apps are permitted, refresh and publish the hosted connector runtime tool snapshot first.",
+          "type": "boolean"
+        },
+        "threadId": {
+          "description": "Optional loaded thread id used to evaluate effective app configuration.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
     "AppsListParams": {
       "description": "EXPERIMENTAL - list available apps/connectors.",
       "type": "object",
@@ -2207,6 +2272,26 @@
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "AppsReadParams": {
+      "description": "EXPERIMENTAL - read metadata for specific apps/connectors.",
+      "type": "object",
+      "required": [
+        "appIds"
+      ],
+      "properties": {
+        "appIds": {
+          "description": "App ids to read. The server accepts at most 100 ids and deduplicates repeated ids while preserving their first-request order.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includeTools": {
+          "description": "When true, include display-only public tool summaries in the returned metadata.",
+          "type": "boolean"
         }
       }
     },
@@ -2340,6 +2425,14 @@
           "type": "string"
         }
       }
+    },
+    "CodexResponseHandoffMode": {
+      "type": "string",
+      "enum": [
+        "thinking",
+        "commentary",
+        "bemTags"
+      ]
     },
     "CollaborationMode": {
       "description": "Collaboration mode for a Codex session.",
@@ -2716,6 +2809,26 @@
           }
         },
         {
+          "title": "InputAudioContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "OutputTextContentItem",
           "type": "object",
           "required": [
@@ -2901,6 +3014,20 @@
         "includeHome": {
           "description": "If true, include detection under the user's home directory.",
           "type": "boolean"
+        },
+        "migrationSource": {
+          "description": "Optional migration-source selector. Missing or unrecognized values use the default source.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "description": "Deprecated field retained for compatibility. This field is ignored; use `migrationSource` to select the migration source.",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -2916,8 +3043,15 @@
             "$ref": "#/definitions/ExternalAgentConfigMigrationItem"
           }
         },
+        "migrationSource": {
+          "description": "Migration-source selector used to produce the migration items. Pass the same value to detection and import; missing or unrecognized values use the default source.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "source": {
-          "description": "Source product that produced the migration items. Missing means unspecified.",
+          "description": "Optional identifier for the product that initiated the import.",
           "type": [
             "string",
             "null"
@@ -2968,6 +3102,7 @@
         "SUBAGENTS",
         "HOOKS",
         "COMMANDS",
+        "MEMORY",
         "SESSIONS"
       ]
     },
@@ -3275,6 +3410,26 @@
           }
         },
         {
+          "title": "InputAudioFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "EncryptedContentFunctionCallOutputContentItem",
           "type": "object",
           "required": [
@@ -3565,7 +3720,21 @@
                 "chatgpt"
               ]
             },
+            "appBrand": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LoginAppBrand"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "codexStreamlinedLogin": {
+              "type": "boolean"
+            },
+            "useHostedLoginSuccessPage": {
               "type": "boolean"
             }
           }
@@ -3619,7 +3788,39 @@
               ]
             }
           }
+        },
+        {
+          "title": "AmazonBedrockLoginAccountParams",
+          "description": "[UNSTABLE] Managed Amazon Bedrock login is experimental.",
+          "type": "object",
+          "required": [
+            "apiKey",
+            "region",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "AmazonBedrockLoginAccountParamsType",
+              "type": "string",
+              "enum": [
+                "amazonBedrock"
+              ]
+            },
+            "apiKey": {
+              "type": "string"
+            },
+            "region": {
+              "type": "string"
+            }
+          }
         }
+      ]
+    },
+    "LoginAppBrand": {
+      "type": "string",
+      "enum": [
+        "codex",
+        "chatgpt"
       ]
     },
     "MarketplaceAddParams": {
@@ -3811,6 +4012,12 @@
           "default": [],
           "items": {
             "$ref": "#/definitions/McpServerMigration"
+          }
+        },
+        "memory": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         },
         "plugins": {
@@ -4171,7 +4378,8 @@
       "type": "string",
       "enum": [
         "UNLISTED",
-        "PRIVATE"
+        "PRIVATE",
+        "LISTED"
       ]
     },
     "PluginShareUpdateTargetsParams": {
@@ -4270,7 +4478,8 @@
       "type": "string",
       "enum": [
         "v1",
-        "v2"
+        "v2",
+        "v3"
       ]
     },
     "RealtimeOutputModality": {
@@ -6131,6 +6340,22 @@
         }
       }
     },
+    "ThreadRealtimeInitialItem": {
+      "description": "EXPERIMENTAL - role-bearing text item included when a realtime V3 session starts.",
+      "type": "object",
+      "required": [
+        "role",
+        "text"
+      ],
+      "properties": {
+        "role": {
+          "$ref": "#/definitions/ConversationTextRole"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
     "ThreadRealtimeStartTransport": {
       "description": "EXPERIMENTAL - transport used by thread realtime.",
       "oneOf": [
@@ -6545,6 +6770,16 @@
         },
         "environmentId": {
           "type": "string"
+        },
+        "runtimeWorkspaceRoots": {
+          "description": "Environment-native runtime workspace roots. Omitted defaults to `cwd`.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LegacyAppPathString"
+          }
         }
       }
     },
@@ -6816,6 +7051,46 @@
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AudioUserInput",
+          "type": "object",
+          "required": [
+            "type",
+            "url"
+          ],
+          "properties": {
+            "type": {
+              "title": "AudioUserInputType",
+              "type": "string",
+              "enum": [
+                "audio"
+              ]
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "LocalAudioUserInput",
+          "type": "object",
+          "required": [
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "LocalAudioUserInputType",
+              "type": "string",
+              "enum": [
+                "localAudio"
               ]
             },
             "path": {

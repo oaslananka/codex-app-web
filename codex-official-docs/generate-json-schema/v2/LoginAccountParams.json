@@ -36,7 +36,21 @@
             "chatgpt"
           ]
         },
+        "appBrand": {
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/LoginAppBrand"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "codexStreamlinedLogin": {
+          "type": "boolean"
+        },
+        "useHostedLoginSuccessPage": {
           "type": "boolean"
         }
       }
@@ -90,6 +104,40 @@
           ]
         }
       }
+    },
+    {
+      "title": "AmazonBedrockv2::LoginAccountParams",
+      "description": "[UNSTABLE] Managed Amazon Bedrock login is experimental.",
+      "type": "object",
+      "required": [
+        "apiKey",
+        "region",
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "title": "AmazonBedrockv2::LoginAccountParamsType",
+          "type": "string",
+          "enum": [
+            "amazonBedrock"
+          ]
+        },
+        "apiKey": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
     }
-  ]
+  ],
+  "definitions": {
+    "LoginAppBrand": {
+      "type": "string",
+      "enum": [
+        "codex",
+        "chatgpt"
+      ]
+    }
+  }
 }

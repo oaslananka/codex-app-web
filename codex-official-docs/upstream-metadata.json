@@ -1,12 +1,12 @@
 {
   "upstreamRepository": "openai/codex",
-  "upstreamRef": "rust-v0.143.0",
-  "upstreamCommit": "c4d748f586a84a3ed5b6aceb82e9a1db4abb1cda",
+  "upstreamRef": "rust-v0.145.0",
+  "upstreamCommit": "25af12f7e61572b0bc18ddb1008be543b91519b0",
   "upstreamPathsInspected": ["codex-rs/app-server/README.md"],
-  "upstreamReadmeSha256": "8468bfb0a672df490474f1462f159074df81b9e186cc193d226ef8697b518bec",
-  "codexCliVersion": "0.143.0",
-  "codexSourceRef": "rust-v0.143.0",
-  "generatedAt": "2026-07-09T06:56:12.773Z",
+  "upstreamReadmeSha256": "458ca44a747002c8504060d402573af6cc3d0d7844df2b9d6673653701774067",
+  "codexCliVersion": "0.145.0",
+  "codexSourceRef": "rust-v0.145.0",
+  "generatedAt": "2026-07-23T06:11:23.497Z",
   "experimentalApi": false,
   "generationCommands": [
     "codex app-server generate-ts --out codex-official-docs/generate-ts",

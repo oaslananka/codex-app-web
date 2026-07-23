@@ -37,6 +37,13 @@
           "enum": [
             "image"
           ]
+        },
+        {
+          "description": "Audio attachments included in user turns.",
+          "type": "string",
+          "enum": [
+            "audio"
+          ]
         }
       ]
     },

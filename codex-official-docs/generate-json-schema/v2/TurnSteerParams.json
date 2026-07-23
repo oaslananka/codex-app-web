@@ -195,6 +195,46 @@
           }
         },
         {
+          "title": "AudioUserInput",
+          "type": "object",
+          "required": [
+            "type",
+            "url"
+          ],
+          "properties": {
+            "type": {
+              "title": "AudioUserInputType",
+              "type": "string",
+              "enum": [
+                "audio"
+              ]
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "LocalAudioUserInput",
+          "type": "object",
+          "required": [
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "LocalAudioUserInputType",
+              "type": "string",
+              "enum": [
+                "localAudio"
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "SkillUserInput",
           "type": "object",
           "required": [

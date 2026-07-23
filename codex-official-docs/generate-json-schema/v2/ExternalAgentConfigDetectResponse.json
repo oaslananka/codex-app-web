@@ -68,6 +68,7 @@
         "SUBAGENTS",
         "HOOKS",
         "COMMANDS",
+        "MEMORY",
         "SESSIONS"
       ]
     },
@@ -115,6 +116,12 @@
           "default": [],
           "items": {
             "$ref": "#/definitions/McpServerMigration"
+          }
+        },
+        "memory": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         },
         "plugins": {

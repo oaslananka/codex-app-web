@@ -571,6 +571,13 @@
           ],
           "default": null
         },
+        "mustShowInstallationInterstitial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
         "name": {
           "type": "string"
         },

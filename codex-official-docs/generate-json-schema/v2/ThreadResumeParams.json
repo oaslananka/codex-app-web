@@ -256,6 +256,26 @@
           }
         },
         {
+          "title": "InputAudioContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "OutputTextContentItem",
           "type": "object",
           "required": [
@@ -339,6 +359,26 @@
               ]
             },
             "image_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputAudioFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
               "type": "string"
             }
           }

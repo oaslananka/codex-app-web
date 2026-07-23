@@ -2,6 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "ServerNotification",
   "description": "Notification sent from the server to the client.",
+  "properties": {
+    "emittedAtMs": {
+      "description": "Unix timestamp (in milliseconds) when app-server emitted this notification.",
+      "type": "integer",
+      "format": "int64"
+    }
+  },
   "oneOf": [
     {
       "title": "ErrorNotification",
@@ -221,6 +228,46 @@
         },
         "params": {
           "$ref": "#/definitions/ThreadGoalClearedNotification"
+        }
+      }
+    },
+    {
+      "title": "Thread/environment/connectedNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "Thread/environment/connectedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "thread/environment/connected"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/EnvironmentConnectionNotification"
+        }
+      }
+    },
+    {
+      "title": "Thread/environment/disconnectedNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "Thread/environment/disconnectedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "thread/environment/disconnected"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/EnvironmentConnectionNotification"
         }
       }
     },
@@ -1909,6 +1956,13 @@
           ]
         },
         {
+          "description": "Backend auth supplied as request headers.",
+          "type": "string",
+          "enum": [
+            "headers"
+          ]
+        },
+        {
           "description": "Programmatic Codex auth backed by a registered Agent Identity.",
           "type": "string",
           "enum": [
@@ -2494,6 +2548,26 @@
               "type": "string"
             }
           }
+        },
+        {
+          "title": "InputAudioDynamicToolCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audioUrl",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioDynamicToolCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "inputAudio"
+              ]
+            },
+            "audioUrl": {
+              "type": "string"
+            }
+          }
         }
       ]
     },
@@ -2504,6 +2578,21 @@
         "completed",
         "failed"
       ]
+    },
+    "EnvironmentConnectionNotification": {
+      "type": "object",
+      "required": [
+        "environmentId",
+        "threadId"
+      ],
+      "properties": {
+        "environmentId": {
+          "type": "string"
+        },
+        "threadId": {
+          "type": "string"
+        }
+      }
     },
     "ErrorNotification": {
       "type": "object",
@@ -2576,6 +2665,12 @@
           "type": "string"
         },
         "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "subErrorType": {
           "type": [
             "string",
             "null"
@@ -2666,6 +2761,7 @@
         "SUBAGENTS",
         "HOOKS",
         "COMMANDS",
+        "MEMORY",
         "SESSIONS"
       ]
     },
@@ -2852,9 +2948,13 @@
               ]
             },
             "subpath": {
-              "type": [
-                "string",
-                "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LegacyAppPathString"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
@@ -2906,9 +3006,13 @@
               "type": "string"
             },
             "subpath": {
-              "type": [
-                "string",
-                "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LegacyAppPathString"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
@@ -3378,6 +3482,7 @@
         "preCompact",
         "postCompact",
         "sessionStart",
+        "sessionEnd",
         "userPromptSubmit",
         "subagentStart",
         "subagentStop",
@@ -3836,12 +3941,6 @@
           ]
         },
         "resourceUri": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "templateId": {
           "type": [
             "string",
             "null"
@@ -4422,6 +4521,13 @@
               "type": "null"
             }
           ]
+        },
+        "spendControlReached": {
+          "description": "Backend-reported spend-control state. `None` is unavailable, not a sparse-update recovery.",
+          "type": [
+            "boolean",
+            "null"
+          ]
         }
       }
     },
@@ -4455,7 +4561,8 @@
       "type": "string",
       "enum": [
         "v1",
-        "v2"
+        "v2",
+        "v3"
       ]
     },
     "ReasoningEffort": {
@@ -5889,6 +5996,15 @@
             },
             "query": {
               "type": "string"
+            },
+            "results": {
+              "description": "Structured search results returned out-of-band by standalone web search.\n\nThese stay as opaque JSON at the extension/app-server boundary so new result fields and result types can pass through without a Codex release.",
+              "type": [
+                "array",
+                "null"
+              ],
+              "default": null,
+              "items": true
             }
           }
         },
@@ -5918,6 +6034,7 @@
         },
         {
           "title": "SleepThreadItem",
+          "description": "Display item emitted by the interruptible `clock.sleep` tool.",
           "type": "object",
           "required": [
             "durationMs",
@@ -6517,6 +6634,11 @@
         "totalTokens"
       ],
       "properties": {
+        "cacheWriteInputTokens": {
+          "type": "integer",
+          "default": 0,
+          "format": "int64"
+        },
         "cachedInputTokens": {
           "type": "integer",
           "format": "int64"
@@ -6872,6 +6994,46 @@
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AudioUserInput",
+          "type": "object",
+          "required": [
+            "type",
+            "url"
+          ],
+          "properties": {
+            "type": {
+              "title": "AudioUserInputType",
+              "type": "string",
+              "enum": [
+                "audio"
+              ]
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "LocalAudioUserInput",
+          "type": "object",
+          "required": [
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "LocalAudioUserInputType",
+              "type": "string",
+              "enum": [
+                "localAudio"
               ]
             },
             "path": {

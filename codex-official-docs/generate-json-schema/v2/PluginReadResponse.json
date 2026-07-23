@@ -127,6 +127,7 @@
         "preCompact",
         "postCompact",
         "sessionStart",
+        "sessionEnd",
         "userPromptSubmit",
         "subagentStart",
         "subagentStop",
@@ -210,6 +211,15 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "scheduledTasks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ScheduledTaskSummary"
           }
         },
         "shareUrl": {
@@ -694,6 +704,13 @@
           ],
           "default": null
         },
+        "mustShowInstallationInterstitial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
         "name": {
           "type": "string"
         },
@@ -727,6 +744,143 @@
           "default": null
         }
       }
+    },
+    "ScheduledTaskSchedule": {
+      "oneOf": [
+        {
+          "title": "HourlyScheduledTaskSchedule",
+          "type": "object",
+          "required": [
+            "intervalHours",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "HourlyScheduledTaskScheduleType",
+              "type": "string",
+              "enum": [
+                "hourly"
+              ]
+            },
+            "days": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/ScheduledTaskWeekday"
+              }
+            },
+            "intervalHours": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "title": "DailyScheduledTaskSchedule",
+          "type": "object",
+          "required": [
+            "time",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "DailyScheduledTaskScheduleType",
+              "type": "string",
+              "enum": [
+                "daily"
+              ]
+            },
+            "time": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "WeekdaysScheduledTaskSchedule",
+          "type": "object",
+          "required": [
+            "time",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "WeekdaysScheduledTaskScheduleType",
+              "type": "string",
+              "enum": [
+                "weekdays"
+              ]
+            },
+            "time": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "WeeklyScheduledTaskSchedule",
+          "type": "object",
+          "required": [
+            "days",
+            "time",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "WeeklyScheduledTaskScheduleType",
+              "type": "string",
+              "enum": [
+                "weekly"
+              ]
+            },
+            "days": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ScheduledTaskWeekday"
+              }
+            },
+            "time": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "ScheduledTaskSummary": {
+      "type": "object",
+      "required": [
+        "key",
+        "name",
+        "prompt",
+        "schedule"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "schedule": {
+          "$ref": "#/definitions/ScheduledTaskSchedule"
+        }
+      }
+    },
+    "ScheduledTaskWeekday": {
+      "type": "string",
+      "enum": [
+        "MO",
+        "TU",
+        "WE",
+        "TH",
+        "FR",
+        "SA",
+        "SU"
+      ]
     },
     "SkillInterface": {
       "type": "object",

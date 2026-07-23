@@ -66,13 +66,9 @@
                 "amazonBedrock"
               ]
             },
-            "credentialSource": {
-              "default": "awsManaged",
-              "allOf": [
-                {
-                  "$ref": "#/definitions/AmazonBedrockCredentialSource"
-                }
-              ]
+            "usesCodexManagedCredentials": {
+              "type": "boolean",
+              "default": false
             }
           }
         }
@@ -380,13 +376,6 @@
     },
     "AgentPath": {
       "type": "string"
-    },
-    "AmazonBedrockCredentialSource": {
-      "type": "string",
-      "enum": [
-        "codexManaged",
-        "awsManaged"
-      ]
     },
     "AnalyticsConfig": {
       "type": "object",
@@ -857,6 +846,7 @@
       "enum": [
         "auto",
         "prompt",
+        "writes",
         "approve"
       ]
     },
@@ -878,6 +868,28 @@
             "boolean",
             "null"
           ]
+        }
+      }
+    },
+    "AppToolSummary": {
+      "description": "EXPERIMENTAL - metadata returned by app/read.",
+      "type": "object",
+      "required": [
+        "description",
+        "name"
+      ],
+      "properties": {
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -946,6 +958,42 @@
         }
       }
     },
+    "AppsInstalledParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AppsInstalledParams",
+      "description": "Read the committed installed connector runtime snapshot.",
+      "type": "object",
+      "properties": {
+        "forceRefresh": {
+          "description": "When true and Apps are permitted, refresh and publish the hosted connector runtime tool snapshot first.",
+          "type": "boolean"
+        },
+        "threadId": {
+          "description": "Optional loaded thread id used to evaluate effective app configuration.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "AppsInstalledResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AppsInstalledResponse",
+      "description": "The installed connectors in one committed runtime snapshot.",
+      "type": "object",
+      "required": [
+        "apps"
+      ],
+      "properties": {
+        "apps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InstalledApp"
+          }
+        }
+      }
+    },
     "AppsListParams": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "AppsListParams",
@@ -1002,6 +1050,52 @@
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "AppsReadParams": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AppsReadParams",
+      "description": "EXPERIMENTAL - read metadata for specific apps/connectors.",
+      "type": "object",
+      "required": [
+        "appIds"
+      ],
+      "properties": {
+        "appIds": {
+          "description": "App ids to read. The server accepts at most 100 ids and deduplicates repeated ids while preserving their first-request order.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includeTools": {
+          "description": "When true, include display-only public tool summaries in the returned metadata.",
+          "type": "boolean"
+        }
+      }
+    },
+    "AppsReadResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AppsReadResponse",
+      "description": "EXPERIMENTAL - app/read response.",
+      "type": "object",
+      "required": [
+        "apps",
+        "missingAppIds"
+      ],
+      "properties": {
+        "apps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ConnectorMetadata"
+          }
+        },
+        "missingAppIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1076,6 +1170,13 @@
           "type": "string",
           "enum": [
             "chatgptAuthTokens"
+          ]
+        },
+        {
+          "description": "Backend auth supplied as request headers.",
+          "type": "string",
+          "enum": [
+            "headers"
           ]
         },
         {
@@ -2103,6 +2204,30 @@
           }
         },
         {
+          "title": "App/readRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "App/readRequestMethod",
+              "type": "string",
+              "enum": [
+                "app/read"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/AppsReadParams"
+            }
+          }
+        },
+        {
           "title": "App/listRequest",
           "type": "object",
           "required": [
@@ -2123,6 +2248,30 @@
             },
             "params": {
               "$ref": "#/definitions/AppsListParams"
+            }
+          }
+        },
+        {
+          "title": "App/installedRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/RequestId"
+            },
+            "method": {
+              "title": "App/installedRequestMethod",
+              "type": "string",
+              "enum": [
+                "app/installed"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/AppsInstalledParams"
             }
           }
         },
@@ -3460,6 +3609,14 @@
           },
           "additionalProperties": false
         }
+      ]
+    },
+    "CodexResponseHandoffMode": {
+      "type": "string",
+      "enum": [
+        "thinking",
+        "commentary",
+        "bemTags"
       ]
     },
     "CollabAgentState": {
@@ -4813,6 +4970,15 @@
                 "command"
               ]
             },
+            "additionalContextLimit": {
+              "description": "Approximate token threshold for spilling this hook's `additionalContext` to disk. `null` uses 2,500 tokens; `0` disables spilling for this hook. The threshold is evaluated against the original context; a spilled preview also includes recovery metadata.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint",
+              "minimum": 0
+            },
             "async": {
               "type": "boolean"
             },
@@ -4892,6 +5058,68 @@
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "ConnectorMetadata": {
+      "description": "EXPERIMENTAL - metadata returned by app/read.",
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "distributionChannel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "iconUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "iconUrlDark": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "installUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "pluginDisplayNames": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "toolSummaries": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AppToolSummary"
+          }
         }
       }
     },
@@ -5009,6 +5237,26 @@
               ]
             },
             "image_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputAudioContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
               "type": "string"
             }
           }
@@ -5144,6 +5392,26 @@
               "type": "string"
             }
           }
+        },
+        {
+          "title": "InputAudioDynamicToolCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audioUrl",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioDynamicToolCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "inputAudio"
+              ]
+            },
+            "audioUrl": {
+              "type": "string"
+            }
+          }
         }
       ]
     },
@@ -5251,6 +5519,23 @@
           }
         }
       ]
+    },
+    "EnvironmentConnectionNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "EnvironmentConnectionNotification",
+      "type": "object",
+      "required": [
+        "environmentId",
+        "threadId"
+      ],
+      "properties": {
+        "environmentId": {
+          "type": "string"
+        },
+        "threadId": {
+          "type": "string"
+        }
+      }
     },
     "ErrorNotification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5473,6 +5758,20 @@
         "includeHome": {
           "description": "If true, include detection under the user's home directory.",
           "type": "boolean"
+        },
+        "migrationSource": {
+          "description": "Optional migration-source selector. Missing or unrecognized values use the default source.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "description": "Deprecated field retained for compatibility. This field is ignored; use `migrationSource` to select the migration source.",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -5517,9 +5816,16 @@
       "title": "ExternalAgentConfigImportHistoriesReadResponse",
       "type": "object",
       "required": [
+        "connectors",
         "data"
       ],
       "properties": {
+        "connectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentImportedConnectorCandidate"
+          }
+        },
         "data": {
           "type": "array",
           "items": {
@@ -5592,6 +5898,12 @@
             "string",
             "null"
           ]
+        },
+        "subErrorType": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -5638,8 +5950,15 @@
             "$ref": "#/definitions/ExternalAgentConfigMigrationItem"
           }
         },
+        "migrationSource": {
+          "description": "Migration-source selector used to produce the migration items. Pass the same value to detection and import; missing or unrecognized values use the default source.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "source": {
-          "description": "Source product that produced the migration items. Missing means unspecified.",
+          "description": "Optional identifier for the product that initiated the import.",
           "type": [
             "string",
             "null"
@@ -5748,7 +6067,35 @@
         "SUBAGENTS",
         "HOOKS",
         "COMMANDS",
+        "MEMORY",
         "SESSIONS"
+      ]
+    },
+    "ExternalAgentImportedConnectorCandidate": {
+      "type": "object",
+      "required": [
+        "name",
+        "sessionCount",
+        "source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "sessionCount": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/definitions/ExternalAgentImportedConnectorSource"
+        }
+      }
+    },
+    "ExternalAgentImportedConnectorSource": {
+      "type": "string",
+      "enum": [
+        "remoteMcpServersConfig"
       ]
     },
     "FeedbackUploadParams": {
@@ -5997,9 +6344,13 @@
               ]
             },
             "subpath": {
-              "type": [
-                "string",
-                "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LegacyAppPathString"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
@@ -6051,9 +6402,13 @@
               "type": "string"
             },
             "subpath": {
-              "type": [
-                "string",
-                "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LegacyAppPathString"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
@@ -6538,6 +6893,26 @@
               ]
             },
             "image_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputAudioFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
               "type": "string"
             }
           }
@@ -7152,6 +7527,7 @@
         "preCompact",
         "postCompact",
         "sessionStart",
+        "sessionEnd",
         "userPromptSubmit",
         "subagentStart",
         "subagentStop",
@@ -7189,6 +7565,15 @@
         "trustStatus"
       ],
       "properties": {
+        "additionalContextLimit": {
+          "description": "Configured `additionalContext` spill threshold. `null` uses 2,500 tokens; `0` disables spilling.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0
+        },
         "command": {
           "type": [
             "string",
@@ -7587,8 +7972,44 @@
           "enum": [
             "image"
           ]
+        },
+        {
+          "description": "Audio attachments included in user turns.",
+          "type": "string",
+          "enum": [
+            "audio"
+          ]
         }
       ]
+    },
+    "InstalledApp": {
+      "description": "Installed connector runtime state.",
+      "type": "object",
+      "required": [
+        "callable",
+        "enabled",
+        "id"
+      ],
+      "properties": {
+        "callable": {
+          "description": "Whether the connector is enabled and has a non-synthetic, model-visible tool allowed by effective MCP and app/tool policy in the committed runtime snapshot.",
+          "type": "boolean"
+        },
+        "enabled": {
+          "description": "Effective enabled state after applying global, workspace, local, and managed configuration at read time.",
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "runtimeName": {
+          "description": "Best-effort name carried by the runtime tool catalog. Canonical app metadata remains owned by `app/read`.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     },
     "InternalChatMessageMetadataPassthrough": {
       "description": "Internal Responses API passthrough metadata copied into underlying chat messages.\n\nResponses API strongly types this payload. Do not modify it without first getting API approval and making the corresponding Responses API change.",
@@ -7922,7 +8343,21 @@
                 "chatgpt"
               ]
             },
+            "appBrand": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LoginAppBrand"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "codexStreamlinedLogin": {
+              "type": "boolean"
+            },
+            "useHostedLoginSuccessPage": {
               "type": "boolean"
             }
           }
@@ -7974,6 +8409,31 @@
                 "string",
                 "null"
               ]
+            }
+          }
+        },
+        {
+          "title": "AmazonBedrockv2::LoginAccountParams",
+          "description": "[UNSTABLE] Managed Amazon Bedrock login is experimental.",
+          "type": "object",
+          "required": [
+            "apiKey",
+            "region",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "AmazonBedrockv2::LoginAccountParamsType",
+              "type": "string",
+              "enum": [
+                "amazonBedrock"
+              ]
+            },
+            "apiKey": {
+              "type": "string"
+            },
+            "region": {
+              "type": "string"
             }
           }
         }
@@ -8069,7 +8529,30 @@
               ]
             }
           }
+        },
+        {
+          "title": "AmazonBedrockv2::LoginAccountResponse",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "AmazonBedrockv2::LoginAccountResponseType",
+              "type": "string",
+              "enum": [
+                "amazonBedrock"
+              ]
+            }
+          }
         }
+      ]
+    },
+    "LoginAppBrand": {
+      "type": "string",
+      "enum": [
+        "codex",
+        "chatgpt"
       ]
     },
     "LogoutAccountResponse": {
@@ -8118,6 +8601,13 @@
         },
         "PreToolUse": {
           "type": "array",
+          "items": {
+            "$ref": "#/definitions/ConfiguredHookMatcherGroup"
+          }
+        },
+        "SessionEnd": {
+          "type": "array",
+          "default": [],
           "items": {
             "$ref": "#/definitions/ConfiguredHookMatcherGroup"
           }
@@ -8701,12 +9191,6 @@
             "string",
             "null"
           ]
-        },
-        "templateId": {
-          "type": [
-            "string",
-            "null"
-          ]
         }
       }
     },
@@ -8864,6 +9348,12 @@
           "default": [],
           "items": {
             "$ref": "#/definitions/McpServerMigration"
+          }
+        },
+        "memory": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         },
         "plugins": {
@@ -9760,6 +10250,15 @@
             "type": "string"
           }
         },
+        "scheduledTasks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ScheduledTaskSummary"
+          }
+        },
         "shareUrl": {
           "type": [
             "string",
@@ -10502,7 +11001,8 @@
       "type": "string",
       "enum": [
         "UNLISTED",
-        "PRIVATE"
+        "PRIVATE",
+        "LISTED"
       ]
     },
     "PluginShareUpdateTargetsParams": {
@@ -10763,6 +11263,13 @@
           "description": "Version of the locally materialized plugin package when available.",
           "type": [
             "string",
+            "null"
+          ],
+          "default": null
+        },
+        "mustShowInstallationInterstitial": {
+          "type": [
+            "boolean",
             "null"
           ],
           "default": null
@@ -11123,6 +11630,13 @@
               "type": "null"
             }
           ]
+        },
+        "spendControlReached": {
+          "description": "Backend-reported spend-control state. `None` is unavailable, not a sparse-update recovery.",
+          "type": [
+            "boolean",
+            "null"
+          ]
         }
       }
     },
@@ -11152,6 +11666,38 @@
         }
       }
     },
+    "RawResponseCompletedNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "RawResponseCompletedNotification",
+      "description": "Internal-only notification containing the exact usage from one upstream Responses API completion.",
+      "type": "object",
+      "required": [
+        "responseId",
+        "threadId",
+        "turnId"
+      ],
+      "properties": {
+        "responseId": {
+          "type": "string"
+        },
+        "threadId": {
+          "type": "string"
+        },
+        "turnId": {
+          "type": "string"
+        },
+        "usage": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TokenUsageBreakdown"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     "RawResponseItemCompletedNotification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "RawResponseItemCompletedNotification",
@@ -11177,7 +11723,8 @@
       "type": "string",
       "enum": [
         "v1",
-        "v2"
+        "v2",
+        "v3"
       ]
     },
     "RealtimeOutputModality": {
@@ -12743,6 +13290,143 @@
         }
       }
     },
+    "ScheduledTaskSchedule": {
+      "oneOf": [
+        {
+          "title": "HourlyScheduledTaskSchedule",
+          "type": "object",
+          "required": [
+            "intervalHours",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "HourlyScheduledTaskScheduleType",
+              "type": "string",
+              "enum": [
+                "hourly"
+              ]
+            },
+            "days": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/definitions/ScheduledTaskWeekday"
+              }
+            },
+            "intervalHours": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "title": "DailyScheduledTaskSchedule",
+          "type": "object",
+          "required": [
+            "time",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "DailyScheduledTaskScheduleType",
+              "type": "string",
+              "enum": [
+                "daily"
+              ]
+            },
+            "time": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "WeekdaysScheduledTaskSchedule",
+          "type": "object",
+          "required": [
+            "time",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "WeekdaysScheduledTaskScheduleType",
+              "type": "string",
+              "enum": [
+                "weekdays"
+              ]
+            },
+            "time": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "WeeklyScheduledTaskSchedule",
+          "type": "object",
+          "required": [
+            "days",
+            "time",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "WeeklyScheduledTaskScheduleType",
+              "type": "string",
+              "enum": [
+                "weekly"
+              ]
+            },
+            "days": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ScheduledTaskWeekday"
+              }
+            },
+            "time": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "ScheduledTaskSummary": {
+      "type": "object",
+      "required": [
+        "key",
+        "name",
+        "prompt",
+        "schedule"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "schedule": {
+          "$ref": "#/definitions/ScheduledTaskSchedule"
+        }
+      }
+    },
+    "ScheduledTaskWeekday": {
+      "type": "string",
+      "enum": [
+        "MO",
+        "TU",
+        "WE",
+        "TH",
+        "FR",
+        "SA",
+        "SU"
+      ]
+    },
     "SelectedCapabilityRoot": {
       "description": "A user-selected root that can expose one or more runtime capabilities.",
       "type": "object",
@@ -12795,6 +13479,13 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ServerNotification",
       "description": "Notification sent from the server to the client.",
+      "properties": {
+        "emittedAtMs": {
+          "description": "Unix timestamp (in milliseconds) when app-server emitted this notification.",
+          "type": "integer",
+          "format": "int64"
+        }
+      },
       "oneOf": [
         {
           "title": "ErrorNotification",
@@ -13014,6 +13705,46 @@
             },
             "params": {
               "$ref": "#/definitions/ThreadGoalClearedNotification"
+            }
+          }
+        },
+        {
+          "title": "Thread/environment/connectedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Thread/environment/connectedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "thread/environment/connected"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/EnvironmentConnectionNotification"
+            }
+          }
+        },
+        {
+          "title": "Thread/environment/disconnectedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Thread/environment/disconnectedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "thread/environment/disconnected"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/EnvironmentConnectionNotification"
             }
           }
         },
@@ -16122,6 +16853,15 @@
             },
             "query": {
               "type": "string"
+            },
+            "results": {
+              "description": "Structured search results returned out-of-band by standalone web search.\n\nThese stay as opaque JSON at the extension/app-server boundary so new result fields and result types can pass through without a Codex release.",
+              "type": [
+                "array",
+                "null"
+              ],
+              "default": null,
+              "items": true
             }
           }
         },
@@ -16151,6 +16891,7 @@
         },
         {
           "title": "SleepThreadItem",
+          "description": "Display item emitted by the interruptible `clock.sleep` tool.",
           "type": "object",
           "required": [
             "durationMs",
@@ -16288,6 +17029,22 @@
           }
         }
       ]
+    },
+    "ThreadItemEntry": {
+      "type": "object",
+      "required": [
+        "item",
+        "turnId"
+      ],
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/ThreadItem"
+        },
+        "turnId": {
+          "description": "Turn containing this item.",
+          "type": "string"
+        }
+      }
     },
     "ThreadListCwdFilter": {
       "anyOf": [
@@ -16664,6 +17421,22 @@
           "type": "string"
         },
         "threadId": {
+          "type": "string"
+        }
+      }
+    },
+    "ThreadRealtimeInitialItem": {
+      "description": "EXPERIMENTAL - role-bearing text item included when a realtime V3 session starts.",
+      "type": "object",
+      "required": [
+        "role",
+        "text"
+      ],
+      "properties": {
+        "role": {
+          "$ref": "#/definitions/ConversationTextRole"
+        },
+        "text": {
           "type": "string"
         }
       }
@@ -17694,6 +18467,11 @@
         "totalTokens"
       ],
       "properties": {
+        "cacheWriteInputTokens": {
+          "type": "integer",
+          "default": 0,
+          "format": "int64"
+        },
         "cachedInputTokens": {
           "type": "integer",
           "format": "int64"
@@ -17886,6 +18664,16 @@
         },
         "environmentId": {
           "type": "string"
+        },
+        "runtimeWorkspaceRoots": {
+          "description": "Environment-native runtime workspace roots. Omitted defaults to `cwd`.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LegacyAppPathString"
+          }
         }
       }
     },
@@ -18346,6 +19134,46 @@
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AudioUserInput",
+          "type": "object",
+          "required": [
+            "type",
+            "url"
+          ],
+          "properties": {
+            "type": {
+              "title": "AudioUserInputType",
+              "type": "string",
+              "enum": [
+                "audio"
+              ]
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "LocalAudioUserInput",
+          "type": "object",
+          "required": [
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "LocalAudioUserInputType",
+              "type": "string",
+              "enum": [
+                "localAudio"
               ]
             },
             "path": {

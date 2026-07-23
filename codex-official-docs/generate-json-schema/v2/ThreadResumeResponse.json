@@ -527,6 +527,26 @@
               "type": "string"
             }
           }
+        },
+        {
+          "title": "InputAudioDynamicToolCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audioUrl",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioDynamicToolCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "inputAudio"
+              ]
+            },
+            "audioUrl": {
+              "type": "string"
+            }
+          }
         }
       ]
     },
@@ -635,12 +655,6 @@
           ]
         },
         "resourceUri": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "templateId": {
           "type": [
             "string",
             "null"
@@ -1856,6 +1870,15 @@
             },
             "query": {
               "type": "string"
+            },
+            "results": {
+              "description": "Structured search results returned out-of-band by standalone web search.\n\nThese stay as opaque JSON at the extension/app-server boundary so new result fields and result types can pass through without a Codex release.",
+              "type": [
+                "array",
+                "null"
+              ],
+              "default": null,
+              "items": true
             }
           }
         },
@@ -1885,6 +1908,7 @@
         },
         {
           "title": "SleepThreadItem",
+          "description": "Display item emitted by the interruptible `clock.sleep` tool.",
           "type": "object",
           "required": [
             "durationMs",
@@ -2342,6 +2366,46 @@
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AudioUserInput",
+          "type": "object",
+          "required": [
+            "type",
+            "url"
+          ],
+          "properties": {
+            "type": {
+              "title": "AudioUserInputType",
+              "type": "string",
+              "enum": [
+                "audio"
+              ]
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "LocalAudioUserInput",
+          "type": "object",
+          "required": [
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "LocalAudioUserInputType",
+              "type": "string",
+              "enum": [
+                "localAudio"
               ]
             },
             "path": {

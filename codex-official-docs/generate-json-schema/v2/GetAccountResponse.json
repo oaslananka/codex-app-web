@@ -80,23 +80,12 @@
                 "amazonBedrock"
               ]
             },
-            "credentialSource": {
-              "default": "awsManaged",
-              "allOf": [
-                {
-                  "$ref": "#/definitions/AmazonBedrockCredentialSource"
-                }
-              ]
+            "usesCodexManagedCredentials": {
+              "type": "boolean",
+              "default": false
             }
           }
         }
-      ]
-    },
-    "AmazonBedrockCredentialSource": {
-      "type": "string",
-      "enum": [
-        "codexManaged",
-        "awsManaged"
       ]
     },
     "PlanType": {
