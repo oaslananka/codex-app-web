@@ -290,6 +290,13 @@
         "remotePluginId"
       ],
       "properties": {
+        "canPublishToWorkspace": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
         "creatorAccountUserId": {
           "type": [
             "string",

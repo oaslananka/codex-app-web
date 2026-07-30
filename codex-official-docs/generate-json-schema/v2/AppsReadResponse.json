@@ -39,6 +39,20 @@
         "description": {
           "type": "string"
         },
+        "disabledReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "isEnabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "isReadOnly": {
+          "type": "boolean",
+          "default": false
+        },
         "name": {
           "type": "string"
         }

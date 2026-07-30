@@ -941,12 +941,28 @@
             "id": {
               "type": "string"
             },
+            "pluginId": {
+              "description": "Trusted first-party plugin id when this command resolves to one plugin script.",
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
+            },
             "processId": {
               "description": "Identifier for the underlying PTY process (when available).",
               "type": [
                 "string",
                 "null"
               ]
+            },
+            "scriptPath": {
+              "description": "Safe plugin-relative path when this command resolves to one plugin script.",
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
             },
             "source": {
               "default": "agent",

@@ -1996,6 +1996,30 @@
       }
     },
     {
+      "title": "ExternalAgentConfig/import/recordHistoryRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "ExternalAgentConfig/import/recordHistoryRequestMethod",
+          "type": "string",
+          "enum": [
+            "externalAgentConfig/import/recordHistory"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ExternalAgentConfigImportHistoryRecordParams"
+        }
+      }
+    },
+    {
       "title": "ExternalAgentConfig/import/readHistoriesRequest",
       "type": "object",
       "required": [
@@ -2670,7 +2694,7 @@
           ]
         },
         "reloadUserConfig": {
-          "description": "When true, hot-reload the updated user config into all loaded threads after writing.",
+          "description": "When true, hot-reload updated runtime settings into loaded threads after writing. Session-static model, reasoning-effort, Plan-mode reasoning-effort, service-tier, and personality defaults are not reloaded.",
           "type": "boolean"
         }
       }
@@ -3015,6 +3039,24 @@
           "description": "If true, include detection under the user's home directory.",
           "type": "boolean"
         },
+        "maxSessionAgeDays": {
+          "description": "Maximum age in days for detected sessions. Missing values use the default limit.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maxSessions": {
+          "description": "Maximum number of sessions to detect. Missing values use the default limit.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
         "migrationSource": {
           "description": "Optional migration-source selector. Missing or unrecognized values use the default source.",
           "type": [
@@ -3024,6 +3066,98 @@
         },
         "source": {
           "description": "Deprecated field retained for compatibility. This field is ignored; use `migrationSource` to select the migration source.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "ExternalAgentConfigImportHistoryRecordParams": {
+      "type": "object",
+      "required": [
+        "itemTypeResults",
+        "providerId"
+      ],
+      "properties": {
+        "itemTypeResults": {
+          "description": "Completed results grouped by imported item type.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportTypeResult"
+          }
+        },
+        "providerId": {
+          "description": "Opaque provider identifier for the externally completed import.",
+          "type": "string"
+        }
+      }
+    },
+    "ExternalAgentConfigImportItemTypeFailure": {
+      "type": "object",
+      "required": [
+        "failureStage",
+        "itemType",
+        "message"
+      ],
+      "properties": {
+        "cwd": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "failureStage": {
+          "type": "string"
+        },
+        "itemType": {
+          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
+        },
+        "message": {
+          "type": "string"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "subErrorType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "ExternalAgentConfigImportItemTypeSuccess": {
+      "type": "object",
+      "required": [
+        "itemType"
+      ],
+      "properties": {
+        "cwd": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "itemType": {
+          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target": {
           "type": [
             "string",
             "null"
@@ -3050,12 +3184,44 @@
             "null"
           ]
         },
+        "providerId": {
+          "description": "Opaque provider identifier supplied by the caller for analytics attribution and import history display. This does not select the migration source.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "source": {
           "description": "Optional identifier for the product that initiated the import.",
           "type": [
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "ExternalAgentConfigImportTypeResult": {
+      "type": "object",
+      "required": [
+        "failures",
+        "itemType",
+        "successes"
+      ],
+      "properties": {
+        "failures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeFailure"
+          }
+        },
+        "itemType": {
+          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
+        },
+        "successes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeSuccess"
+          }
         }
       }
     },
@@ -4231,6 +4397,10 @@
           "items": {
             "$ref": "#/definitions/AbsolutePathBuf"
           }
+        },
+        "forceRefetch": {
+          "description": "Whether the client requests a fresh remote plugin catalog fetch.",
+          "type": "boolean"
         },
         "marketplaceKinds": {
           "description": "Optional marketplace kind filter. When omitted, only local marketplaces are queried, plus the default remote catalog when enabled by feature flag.",
@@ -6147,6 +6317,13 @@
             }
           ]
         },
+        "isPinned": {
+          "description": "Optional pinned filter; when set, only threads matching this value are returned.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "limit": {
           "description": "Optional page size; defaults to a reasonable server-side value.",
           "type": [
@@ -6280,6 +6457,13 @@
             {
               "type": "null"
             }
+          ]
+        },
+        "isPinned": {
+          "description": "Patch whether this thread is pinned. Omit to leave the stored value unchanged.",
+          "type": [
+            "boolean",
+            "null"
           ]
         },
         "threadId": {

@@ -13,6 +13,10 @@
         "$ref": "#/definitions/AbsolutePathBuf"
       }
     },
+    "forceRefetch": {
+      "description": "Whether the client requests a fresh remote plugin catalog fetch.",
+      "type": "boolean"
+    },
     "marketplaceKinds": {
       "description": "Optional marketplace kind filter. When omitted, only local marketplaces are queried, plus the default remote catalog when enabled by feature flag.",
       "type": [

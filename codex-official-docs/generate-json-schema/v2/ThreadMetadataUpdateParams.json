@@ -17,6 +17,13 @@
         }
       ]
     },
+    "isPinned": {
+      "description": "Patch whether this thread is pinned. Omit to leave the stored value unchanged.",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "threadId": {
       "type": "string"
     }

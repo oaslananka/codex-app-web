@@ -28,6 +28,13 @@
         }
       ]
     },
+    "isPinned": {
+      "description": "Optional pinned filter; when set, only threads matching this value are returned.",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "limit": {
       "description": "Optional page size; defaults to a reasonable server-side value.",
       "type": [

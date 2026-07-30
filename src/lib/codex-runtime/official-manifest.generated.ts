@@ -99,6 +99,7 @@ export const OFFICIAL_REQUEST_METHODS = [
   "config/read",
   "externalAgentConfig/detect",
   "externalAgentConfig/import",
+  "externalAgentConfig/import/recordHistory",
   "externalAgentConfig/import/readHistories",
   "config/value/write",
   "config/batchWrite",
