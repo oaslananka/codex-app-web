@@ -293,6 +293,30 @@
       }
     },
     {
+      "title": "Thread/section/moveRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Thread/section/moveRequestMethod",
+          "type": "string",
+          "enum": [
+            "thread/section/move"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadSectionMoveParams"
+        }
+      }
+    },
+    {
       "title": "Thread/unarchiveRequest",
       "type": "object",
       "required": [
@@ -433,6 +457,102 @@
         },
         "params": {
           "$ref": "#/definitions/ThreadListParams"
+        }
+      }
+    },
+    {
+      "title": "ThreadSection/listRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "ThreadSection/listRequestMethod",
+          "type": "string",
+          "enum": [
+            "threadSection/list"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadSectionListParams"
+        }
+      }
+    },
+    {
+      "title": "ThreadSection/createRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "ThreadSection/createRequestMethod",
+          "type": "string",
+          "enum": [
+            "threadSection/create"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadSectionCreateParams"
+        }
+      }
+    },
+    {
+      "title": "ThreadSection/updateRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "ThreadSection/updateRequestMethod",
+          "type": "string",
+          "enum": [
+            "threadSection/update"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadSectionUpdateParams"
+        }
+      }
+    },
+    {
+      "title": "ThreadSection/deleteRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "ThreadSection/deleteRequestMethod",
+          "type": "string",
+          "enum": [
+            "threadSection/delete"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadSectionDeleteParams"
         }
       }
     },
@@ -3084,12 +3204,74 @@
           "description": "Completed results grouped by imported item type.",
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ExternalAgentConfigImportTypeResult"
+            "$ref": "#/definitions/ExternalAgentConfigImportHistoryRecordTypeResultParams"
           }
         },
         "providerId": {
           "description": "Opaque provider identifier for the externally completed import.",
           "type": "string"
+        }
+      }
+    },
+    "ExternalAgentConfigImportHistoryRecordSuccessParams": {
+      "type": "object",
+      "required": [
+        "itemType"
+      ],
+      "properties": {
+        "title": {
+          "description": "Original title for an imported session, when available.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "cwd": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "itemType": {
+          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "ExternalAgentConfigImportHistoryRecordTypeResultParams": {
+      "type": "object",
+      "required": [
+        "failures",
+        "itemType",
+        "successes"
+      ],
+      "properties": {
+        "failures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeFailure"
+          }
+        },
+        "itemType": {
+          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
+        },
+        "successes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportHistoryRecordSuccessParams"
+          }
         }
       }
     },
@@ -3136,35 +3318,6 @@
         }
       }
     },
-    "ExternalAgentConfigImportItemTypeSuccess": {
-      "type": "object",
-      "required": [
-        "itemType"
-      ],
-      "properties": {
-        "cwd": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "itemType": {
-          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
-        },
-        "source": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "target": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      }
-    },
     "ExternalAgentConfigImportParams": {
       "type": "object",
       "required": [
@@ -3197,31 +3350,6 @@
             "string",
             "null"
           ]
-        }
-      }
-    },
-    "ExternalAgentConfigImportTypeResult": {
-      "type": "object",
-      "required": [
-        "failures",
-        "itemType",
-        "successes"
-      ],
-      "properties": {
-        "failures": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeFailure"
-          }
-        },
-        "itemType": {
-          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
-        },
-        "successes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeSuccess"
-          }
         }
       }
     },
@@ -3691,8 +3819,16 @@
           "type": "boolean",
           "default": false
         },
+        "extensions": {
+          "description": "MCP extension settings declared by the app-server client.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
         "mcpServerOpenaiFormElicitation": {
-          "description": "Allow downstream MCP servers to request OpenAI extended form elicitations.",
+          "description": "Legacy opt-in for the `openai/form` MCP extension.\n\nNew clients should declare `openai/form` in [`Self::extensions`].",
           "type": "boolean"
         },
         "optOutNotificationMethods": {
@@ -4441,6 +4577,14 @@
         }
       }
     },
+    "PluginSearchScope": {
+      "type": "string",
+      "enum": [
+        "global",
+        "workspace",
+        "personal"
+      ]
+    },
     "PluginShareCheckoutParams": {
       "type": "object",
       "required": [
@@ -5030,6 +5174,15 @@
             },
             "call_id": {
               "type": "string"
+            },
+            "encrypted_function_args": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
             },
             "id": {
               "type": [
@@ -6317,13 +6470,6 @@
             }
           ]
         },
-        "isPinned": {
-          "description": "Optional pinned filter; when set, only threads matching this value are returned.",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
         "limit": {
           "description": "Optional page size; defaults to a reasonable server-side value.",
           "type": [
@@ -6345,6 +6491,13 @@
         },
         "searchTerm": {
           "description": "Optional substring filter for the extracted thread title.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sectionId": {
+          "description": "Omit to include every section, set to `null` for unsectioned threads, or provide a section ID to return only threads in that section.",
           "type": [
             "string",
             "null"
@@ -6457,13 +6610,6 @@
             {
               "type": "null"
             }
-          ]
-        },
-        "isPinned": {
-          "description": "Patch whether this thread is pinned. Omit to leave the stored value unchanged.",
-          "type": [
-            "boolean",
-            "null"
           ]
         },
         "threadId": {
@@ -6734,6 +6880,108 @@
         }
       }
     },
+    "ThreadSearchSortKey": {
+      "type": "string",
+      "enum": [
+        "created_at",
+        "updated_at",
+        "recency_at"
+      ]
+    },
+    "ThreadSectionCreateParams": {
+      "description": "Parameters for creating an independently persisted thread section.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "description": "The user-visible name of the section.",
+          "type": "string"
+        }
+      }
+    },
+    "ThreadSectionDeleteParams": {
+      "description": "Parameters for deleting an independently persisted thread section.",
+      "type": "object",
+      "required": [
+        "sectionId"
+      ],
+      "properties": {
+        "sectionId": {
+          "description": "The stable, server-generated identity of the section to delete.",
+          "type": "string"
+        }
+      }
+    },
+    "ThreadSectionListParams": {
+      "description": "Parameters for listing independently persisted thread sections.",
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "description": "Opaque pagination cursor returned by a previous call.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limit": {
+          "description": "Maximum number of sections to return.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      }
+    },
+    "ThreadSectionMoveParams": {
+      "description": "Parameters for moving a thread within a server-owned section ordering.",
+      "type": "object",
+      "required": [
+        "sectionId",
+        "threadId"
+      ],
+      "properties": {
+        "beforeThreadId": {
+          "description": "Existing thread to insert before; omission or null appends to the section.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sectionId": {
+          "description": "Destination section, or `null` to remove the thread from its section.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "threadId": {
+          "description": "Thread to move into, within, or out of a section.",
+          "type": "string"
+        }
+      }
+    },
+    "ThreadSectionUpdateParams": {
+      "description": "Parameters for updating an independently persisted thread section.",
+      "type": "object",
+      "required": [
+        "name",
+        "sectionId"
+      ],
+      "properties": {
+        "name": {
+          "description": "The updated user-visible name of the section.",
+          "type": "string"
+        },
+        "sectionId": {
+          "description": "The stable, server-generated identity of the section to update.",
+          "type": "string"
+        }
+      }
+    },
     "ThreadSetNameParams": {
       "type": "object",
       "required": [
@@ -6770,7 +7018,8 @@
       "enum": [
         "created_at",
         "updated_at",
-        "recency_at"
+        "recency_at",
+        "section_position"
       ]
     },
     "ThreadSource": {

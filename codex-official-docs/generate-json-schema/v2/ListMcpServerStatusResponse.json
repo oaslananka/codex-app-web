@@ -24,6 +24,7 @@
     "McpAuthStatus": {
       "type": "string",
       "enum": [
+        "unknown",
         "unsupported",
         "notLoggedIn",
         "bearerToken",

@@ -11,6 +11,13 @@
       "items": {
         "$ref": "#/definitions/ExternalAgentConfigMigrationItem"
       }
+    },
+    "connectors": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/ExternalAgentDetectedConnectorCandidate"
+      }
     }
   },
   "definitions": {
@@ -70,6 +77,34 @@
         "COMMANDS",
         "MEMORY",
         "SESSIONS"
+      ]
+    },
+    "ExternalAgentDetectedConnectorCandidate": {
+      "type": "object",
+      "required": [
+        "name",
+        "sessionCount",
+        "source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "sessionCount": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/definitions/ExternalAgentDetectedConnectorSource"
+        }
+      }
+    },
+    "ExternalAgentDetectedConnectorSource": {
+      "type": "string",
+      "enum": [
+        "remoteMcpServersConfig",
+        "sessionToolUse"
       ]
     },
     "HookMigration": {

@@ -42,6 +42,15 @@
         }
       ]
     },
+    "PluginDisabledReason": {
+      "type": "string",
+      "enum": [
+        "disabled_by_admin",
+        "plan_not_eligible",
+        "required_app_unavailable",
+        "unknown"
+      ]
+    },
     "PluginInstallPolicy": {
       "type": "string",
       "enum": [
@@ -473,6 +482,29 @@
             }
           ]
         },
+        "disabledReason": {
+          "description": "Why the remote plugin is unavailable, when provided by plugin-service.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/PluginDisabledReason"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eligiblePlanTypes": {
+          "description": "Raw plugin-service plan identifiers eligible to install the plugin.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "default": null,
+          "items": {
+            "type": "string"
+          }
+        },
         "enabled": {
           "type": "boolean"
         },
@@ -494,6 +526,15 @@
         },
         "installed": {
           "type": "boolean"
+        },
+        "installedAt": {
+          "description": "Unix timestamp in seconds when the remote plugin was installed, when available.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null,
+          "format": "int64"
         },
         "interface": {
           "anyOf": [

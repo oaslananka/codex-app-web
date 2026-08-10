@@ -265,7 +265,7 @@
               "type": "string"
             },
             "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -943,11 +943,6 @@
           "description": "Identifier for this thread. Codex-generated thread IDs are UUIDv7.",
           "type": "string"
         },
-        "isPinned": {
-          "description": "Whether the thread has been pinned by the user.",
-          "type": "boolean",
-          "default": false
-        },
         "modelProvider": {
           "description": "Model provider used for this thread (for example, 'openai').",
           "type": "string"
@@ -983,6 +978,27 @@
             "integer",
             "null"
           ],
+          "format": "int64"
+        },
+        "section": {
+          "description": "The independently persisted section selected for this thread, if any.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ThreadSection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sectionEnteredAt": {
+          "description": "Unix timestamp in seconds when the thread entered its current section.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null,
           "format": "int64"
         },
         "sessionId": {
@@ -1413,6 +1429,12 @@
                 "null"
               ]
             },
+            "readOnlyHint": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
             "result": {
               "anyOf": [
                 {
@@ -1745,6 +1767,13 @@
             },
             "status": {
               "type": "string"
+            },
+            "transparentBackground": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "default": null
             }
           }
         },
@@ -1817,6 +1846,24 @@
           }
         }
       ]
+    },
+    "ThreadSection": {
+      "description": "An independently persisted, user-visible thread section.",
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "description": "Opaque UUIDv7 identity that remains stable when the section is renamed.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The current user-visible section name.",
+          "type": "string"
+        }
+      }
     },
     "ThreadSource": {
       "type": "string"

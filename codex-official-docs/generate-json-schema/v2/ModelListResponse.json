@@ -117,6 +117,13 @@
         "model": {
           "type": "string"
         },
+        "modelSpecialty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
         "serviceTiers": {
           "type": "array",
           "default": [],

@@ -250,7 +250,7 @@
               "type": "string"
             },
             "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -1077,6 +1077,12 @@
                 "null"
               ]
             },
+            "readOnlyHint": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
             "result": {
               "anyOf": [
                 {
@@ -1409,6 +1415,13 @@
             },
             "status": {
               "type": "string"
+            },
+            "transparentBackground": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "default": null
             }
           }
         },

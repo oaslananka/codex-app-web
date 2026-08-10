@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadSectionCreateParams",
+  "description": "Parameters for creating an independently persisted thread section.",
+  "type": "object",
+  "required": [
+    "name"
+  ],
+  "properties": {
+    "name": {
+      "description": "The user-visible name of the section.",
+      "type": "string"
+    }
+  }
+}

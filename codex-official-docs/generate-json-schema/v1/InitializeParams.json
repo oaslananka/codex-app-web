@@ -51,8 +51,16 @@
           "type": "boolean",
           "default": false
         },
+        "extensions": {
+          "description": "MCP extension settings declared by the app-server client.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
         "mcpServerOpenaiFormElicitation": {
-          "description": "Allow downstream MCP servers to request OpenAI extended form elicitations.",
+          "description": "Legacy opt-in for the `openai/form` MCP extension.\n\nNew clients should declare `openai/form` in [`Self::extensions`].",
           "type": "boolean"
         },
         "optOutNotificationMethods": {

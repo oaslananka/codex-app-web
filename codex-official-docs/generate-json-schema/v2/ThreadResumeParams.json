@@ -813,6 +813,15 @@
             "call_id": {
               "type": "string"
             },
+            "encrypted_function_args": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
             "id": {
               "type": [
                 "string",

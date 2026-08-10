@@ -11,7 +11,7 @@
       "description": "Completed results grouped by imported item type.",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/ExternalAgentConfigImportTypeResult"
+        "$ref": "#/definitions/ExternalAgentConfigImportHistoryRecordTypeResultParams"
       }
     },
     "providerId": {
@@ -20,6 +20,68 @@
     }
   },
   "definitions": {
+    "ExternalAgentConfigImportHistoryRecordSuccessParams": {
+      "type": "object",
+      "required": [
+        "itemType"
+      ],
+      "properties": {
+        "title": {
+          "description": "Original title for an imported session, when available.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "cwd": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "itemType": {
+          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "ExternalAgentConfigImportHistoryRecordTypeResultParams": {
+      "type": "object",
+      "required": [
+        "failures",
+        "itemType",
+        "successes"
+      ],
+      "properties": {
+        "failures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeFailure"
+          }
+        },
+        "itemType": {
+          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
+        },
+        "successes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalAgentConfigImportHistoryRecordSuccessParams"
+          }
+        }
+      }
+    },
     "ExternalAgentConfigImportItemTypeFailure": {
       "type": "object",
       "required": [
@@ -60,60 +122,6 @@
             "string",
             "null"
           ]
-        }
-      }
-    },
-    "ExternalAgentConfigImportItemTypeSuccess": {
-      "type": "object",
-      "required": [
-        "itemType"
-      ],
-      "properties": {
-        "cwd": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "itemType": {
-          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
-        },
-        "source": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "target": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      }
-    },
-    "ExternalAgentConfigImportTypeResult": {
-      "type": "object",
-      "required": [
-        "failures",
-        "itemType",
-        "successes"
-      ],
-      "properties": {
-        "failures": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeFailure"
-          }
-        },
-        "itemType": {
-          "$ref": "#/definitions/ExternalAgentConfigMigrationItemType"
-        },
-        "successes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ExternalAgentConfigImportItemTypeSuccess"
-          }
         }
       }
     },
