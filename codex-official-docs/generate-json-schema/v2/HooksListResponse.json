@@ -49,14 +49,6 @@
         "stop"
       ]
     },
-    "HookHandlerType": {
-      "type": "string",
-      "enum": [
-        "command",
-        "prompt",
-        "agent"
-      ]
-    },
     "HookMetadata": {
       "type": "object",
       "required": [
@@ -64,7 +56,6 @@
         "displayOrder",
         "enabled",
         "eventName",
-        "handlerType",
         "isManaged",
         "key",
         "source",
@@ -82,12 +73,6 @@
           "format": "uint",
           "minimum": 0
         },
-        "command": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "currentHash": {
           "type": "string"
         },
@@ -100,9 +85,6 @@
         },
         "eventName": {
           "$ref": "#/definitions/HookEventName"
-        },
-        "handlerType": {
-          "$ref": "#/definitions/HookHandlerType"
         },
         "isManaged": {
           "type": "boolean"
@@ -142,7 +124,83 @@
         "trustStatus": {
           "$ref": "#/definitions/HookTrustStatus"
         }
-      }
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "command",
+            "handlerType"
+          ],
+          "properties": {
+            "async": {
+              "type": "boolean",
+              "default": false
+            },
+            "command": {
+              "type": "string"
+            },
+            "handlerType": {
+              "type": "string",
+              "enum": [
+                "command"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "handlerType",
+            "server",
+            "tool"
+          ],
+          "properties": {
+            "handlerType": {
+              "type": "string",
+              "enum": [
+                "mcpTool"
+              ]
+            },
+            "server": {
+              "type": "string"
+            },
+            "tool": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "PromptHookMetadata",
+          "type": "object",
+          "required": [
+            "handlerType"
+          ],
+          "properties": {
+            "handlerType": {
+              "type": "string",
+              "enum": [
+                "prompt"
+              ]
+            }
+          }
+        },
+        {
+          "title": "AgentHookMetadata",
+          "type": "object",
+          "required": [
+            "handlerType"
+          ],
+          "properties": {
+            "handlerType": {
+              "type": "string",
+              "enum": [
+                "agent"
+              ]
+            }
+          }
+        }
+      ]
     },
     "HookSource": {
       "type": "string",

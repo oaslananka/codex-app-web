@@ -88,6 +88,12 @@
         "name": {
           "type": "string"
         },
+        "pluginId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "resourceTemplates": {
           "type": "array",
           "items": {

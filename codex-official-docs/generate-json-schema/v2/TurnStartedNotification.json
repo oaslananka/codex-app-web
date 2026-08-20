@@ -49,6 +49,7 @@
             "usageLimitExceeded",
             "serverOverloaded",
             "cyberPolicy",
+            "misalignmentPolicyViolation",
             "internalServerError",
             "unauthorized",
             "badRequest",
@@ -464,6 +465,37 @@
         "low",
         "high",
         "original"
+      ]
+    },
+    "ImageGenerationFailure": {
+      "oneOf": [
+        {
+          "title": "UsageLimitExceededImageGenerationFailure",
+          "type": "object",
+          "required": [
+            "limitId",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "UsageLimitExceededImageGenerationFailureType",
+              "type": "string",
+              "enum": [
+                "usageLimitExceeded"
+              ]
+            },
+            "limitId": {
+              "type": "string"
+            },
+            "resetsAt": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64"
+            }
+          }
+        }
       ]
     },
     "LegacyAppPathString": {
@@ -1388,6 +1420,17 @@
               "type": "string",
               "enum": [
                 "imageGeneration"
+              ]
+            },
+            "failure": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageGenerationFailure"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "id": {

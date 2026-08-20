@@ -76,6 +76,13 @@
           ]
         },
         {
+          "description": "User has approved this MCP tool call and wants to amend its policy so matching future calls are automatically approved across sessions.",
+          "type": "string",
+          "enum": [
+            "approved_mcp_policy_amendment"
+          ]
+        },
+        {
           "title": "NetworkPolicyAmendmentReviewDecision",
           "description": "User chose to persist a network policy rule (allow/deny) for future requests to the same host.",
           "type": "object",

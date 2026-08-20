@@ -56,6 +56,32 @@
     "ConfigLayerSource": {
       "oneOf": [
         {
+          "title": "PackagedDefaultsConfigLayerSource",
+          "description": "Default configuration supplied with the installed Codex package.",
+          "type": "object",
+          "required": [
+            "file",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "PackagedDefaultsConfigLayerSourceType",
+              "type": "string",
+              "enum": [
+                "packagedDefaults"
+              ]
+            },
+            "file": {
+              "description": "Path to the packaged default configuration file.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/AbsolutePathBuf"
+                }
+              ]
+            }
+          }
+        },
+        {
           "title": "MdmConfigLayerSource",
           "description": "Managed preferences layer delivered by MDM (macOS only).",
           "type": "object",

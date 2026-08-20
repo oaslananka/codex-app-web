@@ -124,6 +124,17 @@
           ],
           "default": null
         },
+        "multiAgentVersion": {
+          "description": "Multi-agent runtime declared by this model, when available.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MultiAgentVersion"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "serviceTiers": {
           "type": "array",
           "default": [],
@@ -210,6 +221,14 @@
             "null"
           ]
         },
+        "retirementAt": {
+          "description": "Informational Unix timestamp for this upgrade's scheduled retirement, if known.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
         "upgradeCopy": {
           "type": [
             "string",
@@ -217,6 +236,15 @@
           ]
         }
       }
+    },
+    "MultiAgentVersion": {
+      "description": "Multi-agent runtime supported by a model.",
+      "type": "string",
+      "enum": [
+        "disabled",
+        "v1",
+        "v2"
+      ]
     },
     "ReasoningEffort": {
       "description": "A non-empty reasoning effort value advertised by the model.",

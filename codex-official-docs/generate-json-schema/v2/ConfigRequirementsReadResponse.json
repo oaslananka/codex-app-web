@@ -74,6 +74,29 @@
         }
       ]
     },
+    "AutoReviewRequirements": {
+      "type": "object",
+      "properties": {
+        "ignoreRules": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "requiredOnModels": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "BrowserUseRequirements": {
       "type": "object",
       "properties": {
@@ -167,6 +190,16 @@
           "items": {
             "$ref": "#/definitions/WindowsSandboxSetupMode"
           }
+        },
+        "autoReview": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AutoReviewRequirements"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "browserUse": {
           "anyOf": [
@@ -317,6 +350,49 @@
               ],
               "format": "uint64",
               "minimum": 0
+            }
+          }
+        },
+        {
+          "title": "McpToolConfiguredHookHandler",
+          "type": "object",
+          "required": [
+            "input",
+            "server",
+            "tool",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "McpToolConfiguredHookHandlerType",
+              "type": "string",
+              "enum": [
+                "mcp_tool"
+              ]
+            },
+            "input": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "server": {
+              "type": "string"
+            },
+            "statusMessage": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "timeoutSec": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
+            },
+            "tool": {
+              "type": "string"
             }
           }
         },

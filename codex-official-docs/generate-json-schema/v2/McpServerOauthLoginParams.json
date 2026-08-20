@@ -6,6 +6,17 @@
     "name"
   ],
   "properties": {
+    "clientRegistration": {
+      "description": "Registration strategy for this login only; omission selects automatic discovery.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/McpServerOauthClientRegistration"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "name": {
       "type": "string"
     },
@@ -30,6 +41,16 @@
         "null"
       ],
       "format": "int64"
+    }
+  },
+  "definitions": {
+    "McpServerOauthClientRegistration": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "cimd",
+        "dcr"
+      ]
     }
   }
 }
