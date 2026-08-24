@@ -315,6 +315,12 @@
         }
       }
     },
+    "AgentMessageDelivery": {
+      "type": "string",
+      "enum": [
+        "async"
+      ]
+    },
     "AgentMessageDeltaNotification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "AgentMessageDeltaNotification",
@@ -1368,6 +1374,15 @@
             }
           }
         }
+      ]
+    },
+    "CliAuthCredentialsStoreMode": {
+      "type": "string",
+      "enum": [
+        "file",
+        "keyring",
+        "auto",
+        "ephemeral"
       ]
     },
     "ClientInfo": {
@@ -5043,10 +5058,26 @@
             }
           ]
         },
+        "chatgptBaseUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "checkForUpdateOnStartup": {
           "type": [
             "boolean",
             "null"
+          ]
+        },
+        "cliAuthCredentialsStore": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CliAuthCredentialsStoreMode"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "computerUse": {
@@ -9508,6 +9539,19 @@
         "uri"
       ],
       "properties": {
+        "connectorId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originCallId": {
+          "description": "Originating MCP tool call used to select the resource's app.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "server": {
           "type": "string"
         },
@@ -9535,6 +9579,13 @@
           "items": {
             "$ref": "#/definitions/ResourceContent"
           }
+        },
+        "originCallId": {
+          "description": "Originating call when the server applied app-specific resource scoping.",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -10911,6 +10962,8 @@
         "enterprise_cbp_usage_based",
         "enterprise",
         "edu",
+        "edu_plus",
+        "edu_pro",
         "unknown"
       ]
     },
@@ -12299,6 +12352,86 @@
           "type": "integer",
           "format": "uint16",
           "minimum": 0
+        }
+      }
+    },
+    "Project": {
+      "type": "object",
+      "required": [
+        "createdAt",
+        "id",
+        "metadata",
+        "name",
+        "position",
+        "roots",
+        "updatedAt"
+      ],
+      "properties": {
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "roots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProjectRoot"
+          }
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "ProjectChangeType": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated",
+        "deleted"
+      ]
+    },
+    "ProjectChangedNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ProjectChangedNotification",
+      "type": "object",
+      "required": [
+        "changeType",
+        "projectId"
+      ],
+      "properties": {
+        "changeType": {
+          "$ref": "#/definitions/ProjectChangeType"
+        },
+        "projectId": {
+          "type": "string"
+        }
+      }
+    },
+    "ProjectRoot": {
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/definitions/AbsolutePathBuf"
         }
       }
     },
@@ -14668,6 +14801,46 @@
           }
         },
         {
+          "title": "Project/changedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Project/changedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "project/changed"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ProjectChangedNotification"
+            }
+          }
+        },
+        {
+          "title": "Thread/project/updatedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Thread/project/updatedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "thread/project/updated"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/ThreadProjectUpdatedNotification"
+            }
+          }
+        },
+        {
           "title": "Thread/environment/connectedNotification",
           "type": "object",
           "required": [
@@ -14924,6 +15097,26 @@
             },
             "params": {
               "$ref": "#/definitions/ItemGuardianApprovalReviewCompletedNotification"
+            }
+          }
+        },
+        {
+          "title": "AutoApprovalReview/strictReviewRequiredNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "AutoApprovalReview/strictReviewRequiredNotificationMethod",
+              "type": "string",
+              "enum": [
+                "autoApprovalReview/strictReviewRequired"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/StrictReviewRequiredNotification"
             }
           }
         },
@@ -16374,6 +16567,29 @@
         }
       }
     },
+    "StrictReviewRequiredNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StrictReviewRequiredNotification",
+      "type": "object",
+      "required": [
+        "startedAtMs",
+        "threadId",
+        "turnId"
+      ],
+      "properties": {
+        "startedAtMs": {
+          "description": "Unix timestamp (in milliseconds) when this review started.",
+          "type": "integer",
+          "format": "int64"
+        },
+        "threadId": {
+          "type": "string"
+        },
+        "turnId": {
+          "type": "string"
+        }
+      }
+    },
     "SubAgentActivityKind": {
       "type": "string",
       "enum": [
@@ -16567,6 +16783,7 @@
         "id",
         "modelProvider",
         "preview",
+        "projectId",
         "sessionId",
         "source",
         "status",
@@ -16659,6 +16876,13 @@
         "preview": {
           "description": "Usually the first user message in the thread, if available.",
           "type": "string"
+        },
+        "projectId": {
+          "description": "Canonical project assignment owned by app-server, if any.",
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "recencyAt": {
           "description": "Unix timestamp (in seconds) used for thread recency ordering.",
@@ -17349,6 +17573,17 @@
               "type": "string",
               "enum": [
                 "agentMessage"
+              ]
+            },
+            "delivery": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/AgentMessageDelivery"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "id": {
@@ -18357,6 +18592,26 @@
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "ThreadProjectUpdatedNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ThreadProjectUpdatedNotification",
+      "type": "object",
+      "required": [
+        "projectId",
+        "threadId"
+      ],
+      "properties": {
+        "projectId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "threadId": {
+          "type": "string"
         }
       }
     },

@@ -93,6 +93,12 @@
         }
       }
     },
+    "AgentMessageDelivery": {
+      "type": "string",
+      "enum": [
+        "async"
+      ]
+    },
     "AgentPath": {
       "type": "string"
     },
@@ -1161,6 +1167,7 @@
         "id",
         "modelProvider",
         "preview",
+        "projectId",
         "sessionId",
         "source",
         "status",
@@ -1253,6 +1260,13 @@
         "preview": {
           "description": "Usually the first user message in the thread, if available.",
           "type": "string"
+        },
+        "projectId": {
+          "description": "Canonical project assignment owned by app-server, if any.",
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "recencyAt": {
           "description": "Unix timestamp (in seconds) used for thread recency ordering.",
@@ -1425,6 +1439,17 @@
               "type": "string",
               "enum": [
                 "agentMessage"
+              ]
+            },
+            "delivery": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/AgentMessageDelivery"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "id": {

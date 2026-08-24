@@ -4206,6 +4206,19 @@
         "uri"
       ],
       "properties": {
+        "connectorId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originCallId": {
+          "description": "Originating MCP tool call used to select the resource's app.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "server": {
           "type": "string"
         },
@@ -4837,6 +4850,17 @@
           "type": "integer",
           "format": "uint16",
           "minimum": 0
+        }
+      }
+    },
+    "ProjectRoot": {
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/definitions/AbsolutePathBuf"
         }
       }
     },

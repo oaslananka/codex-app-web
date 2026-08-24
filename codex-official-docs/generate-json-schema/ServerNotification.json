@@ -272,6 +272,46 @@
       }
     },
     {
+      "title": "Project/changedNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "Project/changedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "project/changed"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ProjectChangedNotification"
+        }
+      }
+    },
+    {
+      "title": "Thread/project/updatedNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "Thread/project/updatedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "thread/project/updated"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadProjectUpdatedNotification"
+        }
+      }
+    },
+    {
       "title": "Thread/environment/connectedNotification",
       "type": "object",
       "required": [
@@ -528,6 +568,26 @@
         },
         "params": {
           "$ref": "#/definitions/ItemGuardianApprovalReviewCompletedNotification"
+        }
+      }
+    },
+    {
+      "title": "AutoApprovalReview/strictReviewRequiredNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "AutoApprovalReview/strictReviewRequiredNotificationMethod",
+          "type": "string",
+          "enum": [
+            "autoApprovalReview/strictReviewRequired"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/StrictReviewRequiredNotification"
         }
       }
     },
@@ -1606,6 +1666,12 @@
           ]
         }
       }
+    },
+    "AgentMessageDelivery": {
+      "type": "string",
+      "enum": [
+        "async"
+      ]
     },
     "AgentMessageDeltaNotification": {
       "type": "object",
@@ -4438,6 +4504,8 @@
         "enterprise_cbp_usage_based",
         "enterprise",
         "edu",
+        "edu_plus",
+        "edu_pro",
         "unknown"
       ]
     },
@@ -4530,6 +4598,29 @@
           ]
         }
       ]
+    },
+    "ProjectChangeType": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated",
+        "deleted"
+      ]
+    },
+    "ProjectChangedNotification": {
+      "type": "object",
+      "required": [
+        "changeType",
+        "projectId"
+      ],
+      "properties": {
+        "changeType": {
+          "$ref": "#/definitions/ProjectChangeType"
+        },
+        "projectId": {
+          "type": "string"
+        }
+      }
     },
     "RateLimitReachedType": {
       "type": "string",
@@ -5047,6 +5138,27 @@
         }
       }
     },
+    "StrictReviewRequiredNotification": {
+      "type": "object",
+      "required": [
+        "startedAtMs",
+        "threadId",
+        "turnId"
+      ],
+      "properties": {
+        "startedAtMs": {
+          "description": "Unix timestamp (in milliseconds) when this review started.",
+          "type": "integer",
+          "format": "int64"
+        },
+        "threadId": {
+          "type": "string"
+        },
+        "turnId": {
+          "type": "string"
+        }
+      }
+    },
     "SubAgentActivityKind": {
       "type": "string",
       "enum": [
@@ -5227,6 +5339,7 @@
         "id",
         "modelProvider",
         "preview",
+        "projectId",
         "sessionId",
         "source",
         "status",
@@ -5319,6 +5432,13 @@
         "preview": {
           "description": "Usually the first user message in the thread, if available.",
           "type": "string"
+        },
+        "projectId": {
+          "description": "Canonical project assignment owned by app-server, if any.",
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "recencyAt": {
           "description": "Unix timestamp (in seconds) used for thread recency ordering.",
@@ -5613,6 +5733,17 @@
               "type": "string",
               "enum": [
                 "agentMessage"
+              ]
+            },
+            "delivery": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/AgentMessageDelivery"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "id": {
@@ -6342,6 +6473,24 @@
             "string",
             "null"
           ]
+        }
+      }
+    },
+    "ThreadProjectUpdatedNotification": {
+      "type": "object",
+      "required": [
+        "projectId",
+        "threadId"
+      ],
+      "properties": {
+        "projectId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "threadId": {
+          "type": "string"
         }
       }
     },
