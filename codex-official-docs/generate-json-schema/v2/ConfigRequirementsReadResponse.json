@@ -16,6 +16,13 @@
     }
   },
   "definitions": {
+    "AllowDenyRequirement": {
+      "type": "string",
+      "enum": [
+        "allow",
+        "deny"
+      ]
+    },
     "ApprovalsReviewer": {
       "description": "Configures who approval requests are routed to for review. Examples include sandbox escapes, blocked network access, MCP approval prompts, and ARC escalations. Defaults to `user`. `auto_review` uses a carefully prompted subagent to gather relevant context and apply a risk-based decision framework before approving or denying the request. The legacy value `guardian_subagent` is accepted for compatibility.",
       "type": "string",
@@ -97,14 +104,123 @@
         }
       }
     },
+    "BrowserUseAccessApprovalLifetime": {
+      "type": "string",
+      "enum": [
+        "turn",
+        "thread"
+      ]
+    },
+    "BrowserUseOriginPolicy": {
+      "type": "object",
+      "properties": {
+        "access": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AllowDenyRequirement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accessApprovalLifetime": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BrowserUseAccessApprovalLifetime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "autoReview": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AllowDenyRequirement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "downloads": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AllowDenyRequirement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fullCdpAccess": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AllowDenyRequirement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "persistentApproval": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "uploads": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AllowDenyRequirement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     "BrowserUseRequirements": {
       "type": "object",
       "properties": {
+        "allowGlobalPersistentApproval": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "allowHistoryAccess": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "defaultOriginPolicy": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BrowserUseOriginPolicy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "disableAutoReview": {
           "type": [
             "boolean",
             "null"
           ]
+        },
+        "origins": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/BrowserUseOriginPolicy"
+          }
         }
       }
     },
@@ -117,6 +233,20 @@
         "ephemeral"
       ]
     },
+    "ComputerUseMacosRequirements": {
+      "type": "object",
+      "properties": {
+        "bundleIds": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/AllowDenyRequirement"
+          }
+        }
+      }
+    },
     "ComputerUseRequirements": {
       "type": "object",
       "properties": {
@@ -125,13 +255,109 @@
             "boolean",
             "null"
           ]
+        },
+        "allowPersistentApproval": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "defaultAppAccess": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AllowDenyRequirement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "macos": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ComputerUseMacosRequirements"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "windows": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ComputerUseWindowsRequirements"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ComputerUseWindowsExeRequirement": {
+      "type": "object",
+      "required": [
+        "access",
+        "productName",
+        "publisherName"
+      ],
+      "properties": {
+        "access": {
+          "$ref": "#/definitions/AllowDenyRequirement"
+        },
+        "binaryName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "productName": {
+          "type": "string"
+        },
+        "publisherName": {
+          "type": "string"
+        }
+      }
+    },
+    "ComputerUseWindowsRequirements": {
+      "type": "object",
+      "properties": {
+        "aumids": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/AllowDenyRequirement"
+          }
+        },
+        "exes": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ComputerUseWindowsExeRequirement"
+          }
         }
       }
     },
     "ConfigRequirements": {
       "type": "object",
       "properties": {
+        "additionalDeveloperInstructions": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "allowAppshots": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "allowBrowserAndComputerUse": {
           "type": [
             "boolean",
             "null"
@@ -281,6 +507,16 @@
           "anyOf": [
             {
               "$ref": "#/definitions/FeedbackRequirements"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inAppBrowser": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/InAppBrowserRequirements"
             },
             {
               "type": "null"
@@ -486,6 +722,17 @@
         }
       }
     },
+    "InAppBrowserRequirements": {
+      "type": "object",
+      "properties": {
+        "allowExternalBrowserSettingsImport": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
     "ManagedHooksRequirements": {
       "type": "object",
       "required": [
@@ -501,6 +748,13 @@
         "UserPromptSubmit"
       ],
       "properties": {
+        "Interrupt": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/ConfiguredHookMatcherGroup"
+          }
+        },
         "PermissionRequest": {
           "type": "array",
           "items": {

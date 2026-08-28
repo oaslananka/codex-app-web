@@ -76,6 +76,13 @@
           "enum": [
             "bedrockApiKey"
           ]
+        },
+        {
+          "description": "Amazon Bedrock AWS access keys managed by Codex.",
+          "type": "string",
+          "enum": [
+            "bedrockAccessKeys"
+          ]
         }
       ]
     },

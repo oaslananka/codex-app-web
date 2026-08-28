@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadRealtimeItemTranscriptDeltaNotification",
+  "description": "EXPERIMENTAL - text appended to an active realtime transcript item.",
+  "type": "object",
+  "required": [
+    "delta",
+    "itemId",
+    "threadId"
+  ],
+  "properties": {
+    "delta": {
+      "type": "string"
+    },
+    "itemId": {
+      "type": "string"
+    },
+    "threadId": {
+      "type": "string"
+    }
+  }
+}

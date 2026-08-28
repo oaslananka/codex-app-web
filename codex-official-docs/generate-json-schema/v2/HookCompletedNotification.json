@@ -38,7 +38,8 @@
         "userPromptSubmit",
         "subagentStart",
         "subagentStop",
-        "stop"
+        "stop",
+        "interrupt"
       ]
     },
     "HookExecutionMode": {

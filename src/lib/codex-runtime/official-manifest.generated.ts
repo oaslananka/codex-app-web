@@ -163,6 +163,7 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "item/mcpToolCall/progress",
   "mcpServer/oauthLogin/completed",
   "mcpServer/startupStatus/updated",
+  "mcpServer/event/stream/notification",
   "account/updated",
   "account/rateLimits/updated",
   "app/list/updated",
@@ -186,6 +187,9 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "fuzzyFileSearch/sessionCompleted",
   "thread/realtime/started",
   "thread/realtime/itemAdded",
+  "thread/realtime/item/started",
+  "thread/realtime/item/transcript/delta",
+  "thread/realtime/item/completed",
   "thread/realtime/transcript/delta",
   "thread/realtime/transcript/done",
   "thread/realtime/outputAudio/delta",
@@ -268,6 +272,114 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "unstable": true,
     "deprecated": false
   },
+  "browser_use": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.allow_history_access": {
+    "description": null,
+    "types": [
+      "boolean",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy.access": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy.downloads": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy.full_cdp_access": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy.uploads": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.origins": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
   "compact_prompt": {
     "description": null,
     "types": [
@@ -277,6 +389,93 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "enumValues": [],
     "hasObjectShape": false,
     "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.default_app_access": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.macos": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.macos.bundle_ids": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.windows": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.windows.aumids": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.windows.exes": {
+    "description": null,
+    "types": [
+      "array",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": false,
+    "hasArrayShape": true,
     "unstable": false,
     "deprecated": false
   },

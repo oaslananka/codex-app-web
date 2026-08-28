@@ -903,7 +903,6 @@
           "title": "FunctionCallOutputResponseItem",
           "type": "object",
           "required": [
-            "call_id",
             "output",
             "type"
           ],
@@ -916,7 +915,10 @@
               ]
             },
             "call_id": {
-              "type": "string"
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "id": {
               "type": [
@@ -932,6 +934,18 @@
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "namespace": {
+              "type": [
+                "string",
+                "null"
               ]
             },
             "output": {

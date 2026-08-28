@@ -129,6 +129,41 @@
           "type": "string"
         }
       }
+    },
+    {
+      "title": "AmazonBedrockAccessKeysv2::LoginAccountParams",
+      "description": "[UNSTABLE] Managed Amazon Bedrock AWS access key login is experimental.",
+      "type": "object",
+      "required": [
+        "accessKeyId",
+        "region",
+        "secretAccessKey",
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "title": "AmazonBedrockAccessKeysv2::LoginAccountParamsType",
+          "type": "string",
+          "enum": [
+            "amazonBedrockAccessKeys"
+          ]
+        },
+        "accessKeyId": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "secretAccessKey": {
+          "type": "string"
+        },
+        "sessionToken": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     }
   ],
   "definitions": {
