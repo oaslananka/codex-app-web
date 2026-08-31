@@ -2217,6 +2217,7 @@
             "contextWindowExceeded",
             "sessionBudgetExceeded",
             "usageLimitExceeded",
+            "rateLimitExceeded",
             "serverOverloaded",
             "cyberPolicy",
             "misalignmentPolicyViolation",
@@ -3275,6 +3276,114 @@
           "type": "string"
         }
       }
+    },
+    "FunctionCallOutputBody": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FunctionCallOutputContentItem"
+          }
+        }
+      ]
+    },
+    "FunctionCallOutputContentItem": {
+      "description": "Responses API compatible content items that can be returned by a tool call. This is a subset of ContentItem with the types we support as function call outputs.",
+      "oneOf": [
+        {
+          "title": "InputTextFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "text",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputTextFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputImageFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "image_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputImageFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_image"
+              ]
+            },
+            "detail": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "image_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputAudioFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "EncryptedContentFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "encrypted_content",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EncryptedContentFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "encrypted_content"
+              ]
+            },
+            "encrypted_content": {
+              "type": "string"
+            }
+          }
+        }
+      ]
     },
     "FuzzyFileSearchMatchType": {
       "type": "string",
@@ -4381,6 +4490,47 @@
           ]
         }
       ]
+    },
+    "MisalignmentErrorDetails": {
+      "type": "object",
+      "properties": {
+        "detailedExplanation": {
+          "description": "A substantive localized explanation is required before offering continuation.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorType": {
+          "description": "Open-ended classification; clients must accept categories added by Responses.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "steer": {
+          "description": "Instruction to submit as the next turn's user input if continuation is confirmed.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MisalignmentSteer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "MisalignmentSteer": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
     },
     "ModeKind": {
       "description": "Initial collaboration mode to use when the TUI starts.",
@@ -5555,6 +5705,15 @@
             }
           ]
         },
+        "historyMode": {
+          "description": "Persisted thread history contract selected when this thread was created.",
+          "default": "legacy",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ThreadHistoryMode"
+            }
+          ]
+        },
         "id": {
           "description": "Identifier for this thread. Codex-generated thread IDs are UUIDv7.",
           "type": "string"
@@ -5928,6 +6087,40 @@
             },
             "text": {
               "type": "string"
+            }
+          }
+        },
+        {
+          "title": "FunctionCallOutputThreadItem",
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "output",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "FunctionCallOutputThreadItemType",
+              "type": "string",
+              "enum": [
+                "functionCallOutput"
+              ]
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "namespace": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "output": {
+              "$ref": "#/definitions/FunctionCallOutputBody"
             }
           }
         },
@@ -7549,6 +7742,18 @@
         },
         "message": {
           "type": "string"
+        },
+        "misalignment": {
+          "description": "Optional public explanation and continuation instruction for a misalignment block.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MisalignmentErrorDetails"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },

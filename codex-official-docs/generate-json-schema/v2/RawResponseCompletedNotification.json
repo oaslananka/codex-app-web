@@ -27,9 +27,31 @@
           "type": "null"
         }
       ]
+    },
+    "usageMetadata": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ResponseUsageMetadata"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "definitions": {
+    "ResponseUsageMetadata": {
+      "description": "Usage metadata reported for one upstream response.",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
     "TokenUsageBreakdown": {
       "type": "object",
       "required": [
