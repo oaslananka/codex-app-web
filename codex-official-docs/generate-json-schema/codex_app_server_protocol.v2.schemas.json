@@ -1247,6 +1247,31 @@
         }
       ]
     },
+    "AuthRecoveryNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AuthRecoveryNotification",
+      "type": "object",
+      "required": [
+        "message",
+        "provider",
+        "threadId",
+        "turnId"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "threadId": {
+          "type": "string"
+        },
+        "turnId": {
+          "type": "string"
+        }
+      }
+    },
     "AutoCompactTokenLimitScope": {
       "description": "Selects which part of the active context is charged against `model_auto_compact_token_limit`.",
       "oneOf": [
@@ -8156,6 +8181,13 @@
         "rateLimits"
       ],
       "properties": {
+        "accountId": {
+          "description": "Account associated with this usage snapshot, when supplied by the backend.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "rateLimitResetCredits": {
           "anyOf": [
             {
@@ -8165,6 +8197,9 @@
               "type": "null"
             }
           ]
+        },
+        "rateLimitUpsell": {
+          "description": "Optional backend-owned banner from the same usage read. Its nested keys retain the backend's snake_case contract; an absent banner leaves the client's existing UI unchanged."
         },
         "rateLimits": {
           "description": "Backward-compatible single-bucket view; mirrors the historical payload.",
@@ -13090,6 +13125,14 @@
           "type": "integer",
           "format": "int64"
         },
+        "recencyAt": {
+          "description": "Newest non-archived member thread's recency, in Unix seconds; null when none exist.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
         "roots": {
           "type": "array",
           "items": {
@@ -13137,6 +13180,13 @@
           "$ref": "#/definitions/AbsolutePathBuf"
         }
       }
+    },
+    "ProjectSortKey": {
+      "type": "string",
+      "enum": [
+        "position",
+        "recencyAt"
+      ]
     },
     "QueuedSubmission": {
       "type": "object",
@@ -16422,6 +16472,46 @@
             },
             "params": {
               "$ref": "#/definitions/ModelVerificationNotification"
+            }
+          }
+        },
+        {
+          "title": "ModelProvider/authRecoveryStartedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "ModelProvider/authRecoveryStartedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "modelProvider/authRecoveryStarted"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/AuthRecoveryNotification"
+            }
+          }
+        },
+        {
+          "title": "ModelProvider/authRecoveryCompletedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "ModelProvider/authRecoveryCompletedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "modelProvider/authRecoveryCompleted"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/AuthRecoveryNotification"
             }
           }
         },
@@ -20847,6 +20937,14 @@
         },
         "threadId": {
           "type": "string"
+        },
+        "timeoutMs": {
+          "description": "Maximum execution time in milliseconds. Defaults to one hour when omitted or null. Must be non-negative; zero requests an immediate timeout, not unlimited execution. Does not affect the immediate RPC acknowledgement.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
         }
       }
     },

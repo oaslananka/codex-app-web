@@ -4980,6 +4980,13 @@
         }
       }
     },
+    "ProjectSortKey": {
+      "type": "string",
+      "enum": [
+        "position",
+        "recencyAt"
+      ]
+    },
     "RealtimeConversationVersion": {
       "type": "string",
       "enum": [
@@ -7347,6 +7354,14 @@
         },
         "threadId": {
           "type": "string"
+        },
+        "timeoutMs": {
+          "description": "Maximum execution time in milliseconds. Defaults to one hour when omitted or null. Must be non-negative; zero requests an immediate timeout, not unlimited execution. Does not affect the immediate RPC acknowledgement.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
         }
       }
     },

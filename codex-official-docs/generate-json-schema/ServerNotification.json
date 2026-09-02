@@ -1158,6 +1158,46 @@
       }
     },
     {
+      "title": "ModelProvider/authRecoveryStartedNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "ModelProvider/authRecoveryStartedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "modelProvider/authRecoveryStarted"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/AuthRecoveryNotification"
+        }
+      }
+    },
+    {
+      "title": "ModelProvider/authRecoveryCompletedNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "ModelProvider/authRecoveryCompletedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "modelProvider/authRecoveryCompleted"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/AuthRecoveryNotification"
+        }
+      }
+    },
+    {
       "title": "Turn/moderationMetadataNotification",
       "type": "object",
       "required": [
@@ -2181,6 +2221,29 @@
           ]
         }
       ]
+    },
+    "AuthRecoveryNotification": {
+      "type": "object",
+      "required": [
+        "message",
+        "provider",
+        "threadId",
+        "turnId"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "threadId": {
+          "type": "string"
+        },
+        "turnId": {
+          "type": "string"
+        }
+      }
     },
     "AutoReviewDecisionSource": {
       "description": "[UNSTABLE] Source that produced a terminal approval auto-review decision.",

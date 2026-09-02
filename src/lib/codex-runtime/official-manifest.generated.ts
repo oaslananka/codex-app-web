@@ -180,6 +180,8 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "thread/compacted",
   "model/rerouted",
   "model/verification",
+  "modelProvider/authRecoveryStarted",
+  "modelProvider/authRecoveryCompleted",
   "turn/moderationMetadata",
   "model/safetyBuffering/updated",
   "warning",
