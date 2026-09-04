@@ -53,6 +53,10 @@
         "null"
       ]
     },
+    "excludeTurns": {
+      "description": "When true, return only thread metadata and live-resume state without populating `thread.turns`. This is useful when the client plans to call `thread/turns/list` immediately after resuming. Full-history hydration is deprecated for paginated threads; use this with `thread/turns/list` and `thread/items/list` instead.",
+      "type": "boolean"
+    },
     "model": {
       "description": "Configuration overrides for the resumed thread, if any.",
       "type": [
@@ -97,6 +101,54 @@
     }
   },
   "definitions": {
+    "AbsolutePathBuf": {
+      "description": "A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem).\n\nIMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.",
+      "type": "string"
+    },
+    "AgentMessageInputContent": {
+      "oneOf": [
+        {
+          "title": "InputTextAgentMessageInputContent",
+          "type": "object",
+          "required": [
+            "text",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputTextAgentMessageInputContentType",
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "EncryptedContentAgentMessageInputContent",
+          "type": "object",
+          "required": [
+            "encrypted_content",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EncryptedContentAgentMessageInputContentType",
+              "type": "string",
+              "enum": [
+                "encrypted_content"
+              ]
+            },
+            "encrypted_content": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
     "ApprovalsReviewer": {
       "description": "Configures who approval requests are routed to for review. Examples include sandbox escapes, blocked network access, MCP approval prompts, and ARC escalations. Defaults to `user`. `auto_review` uses a carefully prompted subagent to gather relevant context and apply a risk-based decision framework before approving or denying the request. The legacy value `guardian_subagent` is accepted for compatibility.",
       "type": "string",
@@ -112,7 +164,6 @@
           "type": "string",
           "enum": [
             "untrusted",
-            "on-failure",
             "on-request",
             "never"
           ]
@@ -209,6 +260,26 @@
           }
         },
         {
+          "title": "InputAudioContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "OutputTextContentItem",
           "type": "object",
           "required": [
@@ -297,6 +368,26 @@
           }
         },
         {
+          "title": "InputAudioFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
           "title": "EncryptedContentFunctionCallOutputContentItem",
           "type": "object",
           "required": [
@@ -321,9 +412,23 @@
     "ImageDetail": {
       "type": "string",
       "enum": [
+        "auto",
+        "low",
         "high",
         "original"
       ]
+    },
+    "InternalChatMessageMetadataPassthrough": {
+      "description": "Internal Responses API passthrough metadata copied into underlying chat messages.\n\nResponses API strongly types this payload. Do not modify it without first getting API approval and making the corresponding Responses API change.",
+      "type": "object",
+      "properties": {
+        "turn_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     },
     "LocalShellAction": {
       "oneOf": [
@@ -512,8 +617,17 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "phase": {
               "anyOf": [
@@ -526,6 +640,53 @@
               ]
             },
             "role": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AgentMessageResponseItem",
+          "type": "object",
+          "required": [
+            "author",
+            "content",
+            "recipient",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "AgentMessageResponseItemType",
+              "type": "string",
+              "enum": [
+                "agent_message"
+              ]
+            },
+            "author": {
+              "type": "string"
+            },
+            "content": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AgentMessageInputContent"
+              }
+            },
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "recipient": {
               "type": "string"
             }
           }
@@ -559,6 +720,22 @@
               "type": [
                 "string",
                 "null"
+              ]
+            },
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "summary": {
@@ -600,8 +777,17 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "status": {
               "$ref": "#/definitions/LocalShellStatus"
@@ -631,12 +817,30 @@
             "call_id": {
               "type": "string"
             },
+            "encrypted_function_args": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
             "id": {
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "name": {
               "type": "string"
@@ -679,8 +883,17 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "status": {
               "type": [
@@ -694,7 +907,6 @@
           "title": "FunctionCallOutputResponseItem",
           "type": "object",
           "required": [
-            "call_id",
             "output",
             "type"
           ],
@@ -707,7 +919,38 @@
               ]
             },
             "call_id": {
-              "type": "string"
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "namespace": {
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "output": {
               "$ref": "#/definitions/FunctionCallOutputBody"
@@ -738,14 +981,29 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
             },
             "input": {
               "type": "string"
             },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "name": {
               "type": "string"
+            },
+            "namespace": {
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "status": {
               "type": [
@@ -773,6 +1031,22 @@
             },
             "call_id": {
               "type": "string"
+            },
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "name": {
               "type": [
@@ -811,6 +1085,22 @@
             "execution": {
               "type": "string"
             },
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "status": {
               "type": "string"
             },
@@ -848,8 +1138,17 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "writeOnly": true
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "status": {
               "type": [
@@ -863,7 +1162,6 @@
           "title": "ImageGenerationCallResponseItem",
           "type": "object",
           "required": [
-            "id",
             "result",
             "status",
             "type"
@@ -877,7 +1175,20 @@
               ]
             },
             "id": {
-              "type": "string"
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "result": {
               "type": "string"
@@ -910,6 +1221,22 @@
             },
             "encrypted_content": {
               "type": "string"
+            },
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -947,6 +1274,22 @@
               "type": [
                 "string",
                 "null"
+              ]
+            },
+            "id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "internal_chat_message_metadata_passthrough": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/InternalChatMessageMetadataPassthrough"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
@@ -1076,6 +1419,74 @@
         "read-only",
         "workspace-write",
         "danger-full-access"
+      ]
+    },
+    "SortDirection": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "ThreadResumeInitialTurnsPageParams": {
+      "type": "object",
+      "properties": {
+        "itemsView": {
+          "description": "How much item detail to include for each returned turn; defaults to summary.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TurnItemsView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "description": "Optional turn page size.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sortDirection": {
+          "description": "Optional turn pagination direction; defaults to descending.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SortDirection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "TurnItemsView": {
+      "oneOf": [
+        {
+          "description": "`items` was not loaded for this turn. The field is intentionally empty.",
+          "type": "string",
+          "enum": [
+            "notLoaded"
+          ]
+        },
+        {
+          "description": "`items` contains only a display summary for this turn.",
+          "type": "string",
+          "enum": [
+            "summary"
+          ]
+        },
+        {
+          "description": "`items` contains every ThreadItem available from persisted app-server history for this turn.",
+          "type": "string",
+          "enum": [
+            "full"
+          ]
+        }
       ]
     }
   }

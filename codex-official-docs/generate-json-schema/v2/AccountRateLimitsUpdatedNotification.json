@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AccountRateLimitsUpdatedNotification",
+  "description": "Sparse rolling rate-limit update.\n\nClients should merge available values into the most recent `account/rateLimits/read` response or refetch that snapshot. Nullable account metadata may be unavailable in a rolling update and does not clear a previously observed value.",
   "type": "object",
   "required": [
     "rateLimits"
@@ -41,11 +42,16 @@
         "pro",
         "prolite",
         "team",
+        "self_serve_business_prolite",
         "self_serve_business_usage_based",
         "business",
+        "ent26",
+        "enterprise_cbp_automation",
         "enterprise_cbp_usage_based",
         "enterprise",
         "edu",
+        "edu_plus",
+        "edu_pro",
         "unknown"
       ]
     },
@@ -66,6 +72,16 @@
           "anyOf": [
             {
               "$ref": "#/definitions/CreditsSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "individualLimit": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SpendControlLimitSnapshot"
             },
             {
               "type": "null"
@@ -123,6 +139,13 @@
               "type": "null"
             }
           ]
+        },
+        "spendControlReached": {
+          "description": "Backend-reported spend-control state. `None` is unavailable, not a sparse-update recovery.",
+          "type": [
+            "boolean",
+            "null"
+          ]
         }
       }
     },
@@ -149,6 +172,31 @@
             "null"
           ],
           "format": "int64"
+        }
+      }
+    },
+    "SpendControlLimitSnapshot": {
+      "type": "object",
+      "required": [
+        "limit",
+        "remainingPercent",
+        "resetsAt",
+        "used"
+      ],
+      "properties": {
+        "limit": {
+          "type": "string"
+        },
+        "remainingPercent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "resetsAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "used": {
+          "type": "string"
         }
       }
     }

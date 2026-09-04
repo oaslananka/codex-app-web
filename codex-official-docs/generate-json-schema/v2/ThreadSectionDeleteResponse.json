@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadSectionDeleteResponse",
+  "description": "Successful deletion does not return additional section data.",
+  "type": "object"
+}

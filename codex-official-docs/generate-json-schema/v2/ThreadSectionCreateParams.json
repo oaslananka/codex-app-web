@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadSectionCreateParams",
+  "description": "Parameters for creating an independently persisted thread section.",
+  "type": "object",
+  "required": [
+    "name"
+  ],
+  "properties": {
+    "appearance": {
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ThreadSectionAppearance"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "name": {
+      "description": "The user-visible name of the section.",
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "ThreadSectionAppearance": {
+      "description": "Extensible visual presentation for a custom thread section.",
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

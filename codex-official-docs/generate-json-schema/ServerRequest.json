@@ -285,7 +285,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "write": {
@@ -295,7 +295,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         }
       }
@@ -432,7 +432,7 @@
               "type": "string"
             },
             "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -595,6 +595,14 @@
         }
       ]
     },
+    "CommandExecutionApprovalKind": {
+      "description": "Distinguishes a command approval from input sent to an existing terminal.",
+      "type": "string",
+      "enum": [
+        "command",
+        "writeStdin"
+      ]
+    },
     "CommandExecutionRequestApprovalParams": {
       "type": "object",
       "required": [
@@ -605,7 +613,7 @@
       ],
       "properties": {
         "approvalId": {
-          "description": "Unique identifier for this specific approval callback.\n\nFor regular shell/unified_exec approvals, this is null.\n\nFor zsh-exec-bridge subcommand approvals, multiple callbacks can belong to one parent `itemId`, so `approvalId` is a distinct opaque callback id (a UUID) used to disambiguate routing.",
+          "description": "Unique identifier for this specific approval callback.\n\nFor regular shell/unified_exec approvals, this is null.\n\nFor zsh-exec-bridge subcommand approvals, multiple callbacks can belong to one parent `itemId`, so `approvalId` is a distinct opaque callback id (a UUID) used to disambiguate routing. Stdin approvals also use a distinct callback id; inspect `kind` to distinguish them.",
           "type": [
             "string",
             "null"
@@ -632,15 +640,32 @@
           "description": "The command's working directory.",
           "anyOf": [
             {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             },
             {
               "type": "null"
             }
           ]
         },
+        "environmentId": {
+          "description": "Environment in which the command will run.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
         "itemId": {
           "type": "string"
+        },
+        "kind": {
+          "description": "Kind of action under review. Defaults to `command` for older servers.",
+          "default": "command",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CommandExecutionApprovalKind"
+            }
+          ]
         },
         "networkApprovalContext": {
           "description": "Optional context for a managed-network approval prompt.",
@@ -906,7 +931,7 @@
               ]
             },
             "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -1013,9 +1038,13 @@
               ]
             },
             "subpath": {
-              "type": [
-                "string",
-                "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LegacyAppPathString"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
@@ -1067,14 +1096,21 @@
               "type": "string"
             },
             "subpath": {
-              "type": [
-                "string",
-                "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LegacyAppPathString"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
         }
       ]
+    },
+    "LegacyAppPathString": {
+      "type": "string"
     },
     "McpElicitationArrayType": {
       "type": "string",
@@ -1655,6 +1691,48 @@
         {
           "type": "object",
           "required": [
+            "message",
+            "mode",
+            "requestedSchema"
+          ],
+          "properties": {
+            "_meta": true,
+            "message": {
+              "type": "string"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "openai/form"
+              ]
+            },
+            "requestedSchema": true
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "message",
+            "mode",
+            "requestedSchema"
+          ],
+          "properties": {
+            "_meta": true,
+            "message": {
+              "type": "string"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "openaiForm"
+              ]
+            },
+            "requestedSchema": true
+          }
+        },
+        {
+          "type": "object",
+          "required": [
             "elicitationId",
             "message",
             "mode",
@@ -1852,6 +1930,13 @@
         "cwd": {
           "$ref": "#/definitions/AbsolutePathBuf"
         },
+        "environmentId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
         "itemId": {
           "type": "string"
         },
@@ -1937,12 +2022,26 @@
       "description": "EXPERIMENTAL. Params sent with a request_user_input event.",
       "type": "object",
       "required": [
+        "isBlocking",
         "itemId",
         "questions",
         "threadId",
         "turnId"
       ],
       "properties": {
+        "autoResolutionMs": {
+          "description": "@deprecated Use `isBlocking` to decide whether the request should block.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null,
+          "format": "uint64",
+          "minimum": 0
+        },
+        "isBlocking": {
+          "type": "boolean"
+        },
         "itemId": {
           "type": "string"
         },

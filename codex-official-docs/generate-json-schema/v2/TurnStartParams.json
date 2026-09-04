@@ -29,6 +29,12 @@
         }
       ]
     },
+    "clientUserMessageId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "cwd": {
       "description": "Override the working directory for this turn and subsequent turns.",
       "type": [
@@ -92,6 +98,13 @@
         "null"
       ]
     },
+    "serviceTierForTurn": {
+      "description": "Override the service tier only when this request starts a new turn. Use \"default\" for standard speed. Omitted or null inherits the thread's tier. Does not change the thread's tier or a turn being steered.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "summary": {
       "description": "Override the reasoning summary for this turn and subsequent turns.",
       "anyOf": [
@@ -105,12 +118,51 @@
     },
     "threadId": {
       "type": "string"
+    },
+    "toolOutput": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/TurnToolOutput"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "turnTrigger": {
+      "description": "Optional source classification for the caller that starts this turn. Ignored when this request steers an already-active turn.",
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "definitions": {
     "AbsolutePathBuf": {
       "description": "A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem).\n\nIMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.",
       "type": "string"
+    },
+    "AdditionalContextEntry": {
+      "type": "object",
+      "required": [
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/AdditionalContextKind"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "AdditionalContextKind": {
+      "type": "string",
+      "enum": [
+        "untrusted",
+        "application"
+      ]
     },
     "ApprovalsReviewer": {
       "description": "Configures who approval requests are routed to for review. Examples include sandbox escapes, blocked network access, MCP approval prompts, and ARC escalations. Defaults to `user`. `auto_review` uses a carefully prompted subagent to gather relevant context and apply a risk-based decision framework before approving or denying the request. The legacy value `guardian_subagent` is accepted for compatibility.",
@@ -127,7 +179,6 @@
           "type": "string",
           "enum": [
             "untrusted",
-            "on-failure",
             "on-request",
             "never"
           ]
@@ -206,12 +257,134 @@
         }
       }
     },
+    "CyberAccessProgram": {
+      "description": "Requested cyber treatment for a ChatGPT-authenticated Codex turn. Authorization and model-tier restrictions remain server-owned.",
+      "type": "string",
+      "enum": [
+        "standard",
+        "daybreakBlue",
+        "daybreakRed"
+      ]
+    },
+    "FunctionCallOutputBody": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FunctionCallOutputContentItem"
+          }
+        }
+      ]
+    },
+    "FunctionCallOutputContentItem": {
+      "description": "Responses API compatible content items that can be returned by a tool call. This is a subset of ContentItem with the types we support as function call outputs.",
+      "oneOf": [
+        {
+          "title": "InputTextFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "text",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputTextFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputImageFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "image_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputImageFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_image"
+              ]
+            },
+            "detail": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "image_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputAudioFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "EncryptedContentFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "encrypted_content",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EncryptedContentFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "encrypted_content"
+              ]
+            },
+            "encrypted_content": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
     "ImageDetail": {
       "type": "string",
       "enum": [
+        "auto",
+        "low",
         "high",
         "original"
       ]
+    },
+    "LegacyAppPathString": {
+      "type": "string"
     },
     "ModeKind": {
       "description": "Initial collaboration mode to use when the TUI starts.",
@@ -219,6 +392,31 @@
       "enum": [
         "plan",
         "default"
+      ]
+    },
+    "MultiAgentMode": {
+      "description": "Controls the effective multi-agent delegation instructions for a turn. `custom` means the configured mode hint defines the policy instead of a built-in policy.",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "explicitRequestOnly",
+            "proactive"
+          ]
+        },
+        {
+          "title": "CustomMultiAgentMode",
+          "type": "object",
+          "required": [
+            "custom"
+          ],
+          "properties": {
+            "custom": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
       ]
     },
     "NetworkAccess": {
@@ -237,16 +435,9 @@
       ]
     },
     "ReasoningEffort": {
-      "description": "See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning",
+      "description": "A non-empty reasoning effort value advertised by the model.",
       "type": "string",
-      "enum": [
-        "none",
-        "minimal",
-        "low",
-        "medium",
-        "high",
-        "xhigh"
-      ]
+      "minLength": 1
     },
     "ReasoningSummary": {
       "description": "A summary of the reasoning performed by the model. This can be useful for debugging and understanding the model's reasoning process. See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#reasoning-summaries",
@@ -426,10 +617,41 @@
       ],
       "properties": {
         "cwd": {
-          "$ref": "#/definitions/AbsolutePathBuf"
+          "$ref": "#/definitions/LegacyAppPathString"
         },
         "environmentId": {
           "type": "string"
+        },
+        "runtimeWorkspaceRoots": {
+          "description": "Environment-native runtime workspace roots. Omitted defaults to `cwd`.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LegacyAppPathString"
+          }
+        }
+      }
+    },
+    "TurnToolOutput": {
+      "type": "object",
+      "required": [
+        "name",
+        "output"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "output": {
+          "$ref": "#/definitions/FunctionCallOutputBody"
         }
       }
     },
@@ -518,6 +740,46 @@
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AudioUserInput",
+          "type": "object",
+          "required": [
+            "type",
+            "url"
+          ],
+          "properties": {
+            "type": {
+              "title": "AudioUserInputType",
+              "type": "string",
+              "enum": [
+                "audio"
+              ]
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "LocalAudioUserInput",
+          "type": "object",
+          "required": [
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "LocalAudioUserInputType",
+              "type": "string",
+              "enum": [
+                "localAudio"
               ]
             },
             "path": {

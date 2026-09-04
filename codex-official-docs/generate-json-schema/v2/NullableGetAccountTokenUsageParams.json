@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Nullable_GetAccountTokenUsageParams",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/GetAccountTokenUsageParams"
+    },
+    {
+      "type": "null"
+    }
+  ],
+  "definitions": {
+    "GetAccountTokenUsageParams": {
+      "type": "object",
+      "properties": {
+        "threadId": {
+          "description": "When present, read estimated usage for this thread instead of account-wide token activity.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

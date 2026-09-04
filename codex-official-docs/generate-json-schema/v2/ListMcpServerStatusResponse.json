@@ -24,11 +24,65 @@
     "McpAuthStatus": {
       "type": "string",
       "enum": [
+        "unknown",
         "unsupported",
         "notLoggedIn",
         "bearerToken",
         "oAuth"
       ]
+    },
+    "McpServerConnectionStatus": {
+      "type": "string",
+      "enum": [
+        "notStarted",
+        "starting",
+        "connected",
+        "authenticationRequired",
+        "failed",
+        "cancelled",
+        "disabled"
+      ]
+    },
+    "McpServerInfo": {
+      "description": "Presentation metadata advertised by an initialized MCP server.",
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "icons": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": true
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "websiteUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     },
     "McpServerStatus": {
       "type": "object",
@@ -46,6 +100,12 @@
         "name": {
           "type": "string"
         },
+        "pluginId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "resourceTemplates": {
           "type": "array",
           "items": {
@@ -57,6 +117,27 @@
           "items": {
             "$ref": "#/definitions/Resource"
           }
+        },
+        "runtimeStatus": {
+          "description": "Current thread-runtime connection state; null when unavailable or the configuration changed.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/McpServerConnectionStatus"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "serverInfo": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/McpServerInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "tools": {
           "type": "object",

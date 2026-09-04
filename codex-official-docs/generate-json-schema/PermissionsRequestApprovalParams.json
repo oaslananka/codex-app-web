@@ -14,6 +14,13 @@
     "cwd": {
       "$ref": "#/definitions/AbsolutePathBuf"
     },
+    "environmentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null
+    },
     "itemId": {
       "type": "string"
     },
@@ -70,7 +77,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         },
         "write": {
@@ -80,7 +87,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/AbsolutePathBuf"
+            "$ref": "#/definitions/LegacyAppPathString"
           }
         }
       }
@@ -122,7 +129,7 @@
               ]
             },
             "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -229,9 +236,13 @@
               ]
             },
             "subpath": {
-              "type": [
-                "string",
-                "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LegacyAppPathString"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
@@ -283,14 +294,21 @@
               "type": "string"
             },
             "subpath": {
-              "type": [
-                "string",
-                "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/LegacyAppPathString"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
         }
       ]
+    },
+    "LegacyAppPathString": {
+      "type": "string"
     },
     "RequestPermissionProfile": {
       "type": "object",

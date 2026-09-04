@@ -30,9 +30,12 @@
           "type": "string",
           "enum": [
             "contextWindowExceeded",
+            "sessionBudgetExceeded",
             "usageLimitExceeded",
+            "rateLimitExceeded",
             "serverOverloaded",
             "cyberPolicy",
+            "misalignmentPolicyViolation",
             "internalServerError",
             "unauthorized",
             "badRequest",
@@ -160,6 +163,47 @@
         }
       ]
     },
+    "MisalignmentErrorDetails": {
+      "type": "object",
+      "properties": {
+        "detailedExplanation": {
+          "description": "A substantive localized explanation is required before offering continuation.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorType": {
+          "description": "Open-ended classification; clients must accept categories added by Responses.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "steer": {
+          "description": "Instruction to submit as the next turn's user input if continuation is confirmed.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MisalignmentSteer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "MisalignmentSteer": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "NonSteerableTurnKind": {
       "type": "string",
       "enum": [
@@ -192,6 +236,18 @@
         },
         "message": {
           "type": "string"
+        },
+        "misalignment": {
+          "description": "Optional public explanation and continuation instruction for a misalignment block.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MisalignmentErrorDetails"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     }

@@ -34,10 +34,12 @@
         "preCompact",
         "postCompact",
         "sessionStart",
+        "sessionEnd",
         "userPromptSubmit",
         "subagentStart",
         "subagentStop",
-        "stop"
+        "stop",
+        "interrupt"
       ]
     },
     "HookExecutionMode": {
@@ -51,6 +53,7 @@
       "type": "string",
       "enum": [
         "command",
+        "mcpTool",
         "prompt",
         "agent"
       ]
@@ -187,6 +190,7 @@
         "sessionFlags",
         "plugin",
         "cloudRequirements",
+        "cloudManagedConfig",
         "legacyManagedConfigFile",
         "legacyManagedConfigMdm",
         "unknown"

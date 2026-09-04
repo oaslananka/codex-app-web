@@ -21,28 +21,39 @@ export const OFFICIAL_REQUEST_METHODS = [
   "thread/resume",
   "thread/fork",
   "thread/archive",
+  "thread/delete",
   "thread/unsubscribe",
   "thread/name/set",
   "thread/goal/set",
   "thread/goal/get",
   "thread/goal/clear",
   "thread/metadata/update",
+  "thread/section/move",
   "thread/unarchive",
   "thread/compact/start",
   "thread/shellCommand",
   "thread/approveGuardianDeniedAction",
   "thread/rollback",
+  "thread/revert",
   "thread/list",
+  "threadSection/list",
+  "threadSection/create",
+  "threadSection/update",
+  "threadSection/delete",
   "thread/loaded/list",
   "thread/read",
+  "thread/turns/list",
+  "thread/items/list",
   "thread/inject_items",
   "skills/list",
+  "skills/extraRoots/set",
   "hooks/list",
   "marketplace/add",
   "marketplace/remove",
   "marketplace/upgrade",
   "plugin/list",
   "plugin/installed",
+  "plugin/reconcile",
   "plugin/read",
   "plugin/skill/read",
   "plugin/share/save",
@@ -50,7 +61,9 @@ export const OFFICIAL_REQUEST_METHODS = [
   "plugin/share/list",
   "plugin/share/checkout",
   "plugin/share/delete",
+  "app/read",
   "app/list",
+  "app/installed",
   "fs/readFile",
   "fs/writeFile",
   "fs/createDirectory",
@@ -83,6 +96,9 @@ export const OFFICIAL_REQUEST_METHODS = [
   "account/login/cancel",
   "account/logout",
   "account/rateLimits/read",
+  "account/rateLimitResetCredit/consume",
+  "account/usage/read",
+  "account/workspaceMessages/read",
   "account/sendAddCreditsNudgeEmail",
   "feedback/upload",
   "command/exec",
@@ -92,6 +108,8 @@ export const OFFICIAL_REQUEST_METHODS = [
   "config/read",
   "externalAgentConfig/detect",
   "externalAgentConfig/import",
+  "externalAgentConfig/import/recordHistory",
+  "externalAgentConfig/import/readHistories",
   "config/value/write",
   "config/batchWrite",
   "configRequirements/read",
@@ -108,12 +126,19 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "thread/started",
   "thread/status/changed",
   "thread/archived",
+  "thread/deleted",
   "thread/unarchived",
   "thread/closed",
+  "thread/reverted",
   "skills/changed",
   "thread/name/updated",
   "thread/goal/updated",
   "thread/goal/cleared",
+  "thread/queue/changed",
+  "project/changed",
+  "thread/project/updated",
+  "thread/environment/connected",
+  "thread/environment/disconnected",
   "thread/settings/updated",
   "thread/tokenUsage/updated",
   "turn/started",
@@ -125,8 +150,10 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "item/started",
   "item/autoApprovalReview/started",
   "item/autoApprovalReview/completed",
+  "autoApprovalReview/strictReviewRequired",
   "item/completed",
   "rawResponseItem/completed",
+  "rawResponse/completed",
   "item/agentMessage/delta",
   "item/plan/delta",
   "command/exec/outputDelta",
@@ -140,10 +167,12 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "item/mcpToolCall/progress",
   "mcpServer/oauthLogin/completed",
   "mcpServer/startupStatus/updated",
+  "mcpServer/event/stream/notification",
   "account/updated",
   "account/rateLimits/updated",
   "app/list/updated",
   "remoteControl/status/changed",
+  "externalAgentConfig/import/progress",
   "externalAgentConfig/import/completed",
   "fs/changed",
   "item/reasoning/summaryTextDelta",
@@ -152,6 +181,10 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "thread/compacted",
   "model/rerouted",
   "model/verification",
+  "modelProvider/authRecoveryStarted",
+  "modelProvider/authRecoveryCompleted",
+  "turn/moderationMetadata",
+  "model/safetyBuffering/updated",
   "warning",
   "guardianWarning",
   "deprecationNotice",
@@ -160,6 +193,9 @@ export const OFFICIAL_NOTIFICATION_METHODS = [
   "fuzzyFileSearch/sessionCompleted",
   "thread/realtime/started",
   "thread/realtime/itemAdded",
+  "thread/realtime/item/started",
+  "thread/realtime/item/transcript/delta",
+  "thread/realtime/item/completed",
   "thread/realtime/transcript/delta",
   "thread/realtime/transcript/done",
   "thread/realtime/outputAudio/delta",
@@ -218,7 +254,6 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     ],
     "enumValues": [
       "untrusted",
-      "on-failure",
       "on-request",
       "never"
     ],
@@ -243,6 +278,114 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "unstable": true,
     "deprecated": false
   },
+  "browser_use": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.allow_history_access": {
+    "description": null,
+    "types": [
+      "boolean",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy.access": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy.downloads": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy.full_cdp_access": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.default_origin_policy.uploads": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "browser_use.origins": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
   "compact_prompt": {
     "description": null,
     "types": [
@@ -252,6 +395,93 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "enumValues": [],
     "hasObjectShape": false,
     "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.default_app_access": {
+    "description": null,
+    "types": [
+      "string",
+      "null"
+    ],
+    "enumValues": [
+      "allow",
+      "deny"
+    ],
+    "hasObjectShape": false,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.macos": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.macos.bundle_ids": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.windows": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.windows.aumids": {
+    "description": null,
+    "types": [
+      "object",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": true,
+    "hasArrayShape": false,
+    "unstable": false,
+    "deprecated": false
+  },
+  "computer_use.windows.exes": {
+    "description": null,
+    "types": [
+      "array",
+      "null"
+    ],
+    "enumValues": [],
+    "hasObjectShape": false,
+    "hasArrayShape": true,
     "unstable": false,
     "deprecated": false
   },
@@ -383,19 +613,12 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "deprecated": false
   },
   "model_reasoning_effort": {
-    "description": "See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning",
+    "description": "A non-empty reasoning effort value advertised by the model.",
     "types": [
       "string",
       "null"
     ],
-    "enumValues": [
-      "none",
-      "minimal",
-      "low",
-      "medium",
-      "high",
-      "xhigh"
-    ],
+    "enumValues": [],
     "hasObjectShape": false,
     "hasArrayShape": false,
     "unstable": false,
@@ -430,29 +653,6 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
       "high"
     ],
     "hasObjectShape": false,
-    "hasArrayShape": false,
-    "unstable": false,
-    "deprecated": false
-  },
-  "profile": {
-    "description": null,
-    "types": [
-      "string",
-      "null"
-    ],
-    "enumValues": [],
-    "hasObjectShape": false,
-    "hasArrayShape": false,
-    "unstable": false,
-    "deprecated": false
-  },
-  "profiles": {
-    "description": null,
-    "types": [
-      "object"
-    ],
-    "enumValues": [],
-    "hasObjectShape": true,
     "hasArrayShape": false,
     "unstable": false,
     "deprecated": false
@@ -674,6 +874,7 @@ export const OFFICIAL_CONFIG_FIELD_SCHEMAS = {
     "enumValues": [
       "disabled",
       "cached",
+      "indexed",
       "live"
     ],
     "hasObjectShape": false,

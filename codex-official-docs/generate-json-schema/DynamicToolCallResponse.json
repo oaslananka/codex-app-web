@@ -59,6 +59,26 @@
               "type": "string"
             }
           }
+        },
+        {
+          "title": "InputAudioDynamicToolCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audioUrl",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioDynamicToolCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "inputAudio"
+              ]
+            },
+            "audioUrl": {
+              "type": "string"
+            }
+          }
         }
       ]
     }

@@ -54,6 +54,13 @@
         "null"
       ]
     },
+    "sectionId": {
+      "description": "Omit to include every section, set to `null` for unsectioned threads, or provide a section ID to return only threads in that section.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "sortDirection": {
       "description": "Optional sort direction; defaults to descending (newest first).",
       "anyOf": [
@@ -116,7 +123,9 @@
       "type": "string",
       "enum": [
         "created_at",
-        "updated_at"
+        "updated_at",
+        "recency_at",
+        "section_position"
       ]
     },
     "ThreadSourceKind": {

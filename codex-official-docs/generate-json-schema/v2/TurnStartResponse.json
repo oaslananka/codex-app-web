@@ -15,6 +15,33 @@
       "description": "A path that is guaranteed to be absolute and normalized (though it is not guaranteed to be canonicalized or exist on the filesystem).\n\nIMPORTANT: When deserializing an `AbsolutePathBuf`, a base path must be set using [AbsolutePathBufGuard::new]. If no base path is set, the deserialization will fail unless the path being deserialized is already absolute.",
       "type": "string"
     },
+    "AgentMessageDelivery": {
+      "type": "string",
+      "enum": [
+        "async"
+      ]
+    },
+    "AsyncUserInputQuestion": {
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "options": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "ByteRange": {
       "type": "object",
       "required": [
@@ -41,9 +68,12 @@
           "type": "string",
           "enum": [
             "contextWindowExceeded",
+            "sessionBudgetExceeded",
             "usageLimitExceeded",
+            "rateLimitExceeded",
             "serverOverloaded",
             "cyberPolicy",
+            "misalignmentPolicyViolation",
             "internalServerError",
             "unauthorized",
             "badRequest",
@@ -207,7 +237,11 @@
         "sendInput",
         "resumeAgent",
         "wait",
-        "closeAgent"
+        "closeAgent",
+        "sendMessage",
+        "followupTask",
+        "interruptAgent",
+        "listAgents"
       ]
     },
     "CollabAgentToolCallStatus": {
@@ -215,7 +249,8 @@
       "enum": [
         "inProgress",
         "completed",
-        "failed"
+        "failed",
+        "interrupted"
       ]
     },
     "CommandAction": {
@@ -244,7 +279,7 @@
               "type": "string"
             },
             "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             }
           }
         },
@@ -387,6 +422,26 @@
               "type": "string"
             }
           }
+        },
+        {
+          "title": "InputAudioDynamicToolCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audioUrl",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioDynamicToolCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "inputAudio"
+              ]
+            },
+            "audioUrl": {
+              "type": "string"
+            }
+          }
         }
       ]
     },
@@ -417,6 +472,114 @@
         }
       }
     },
+    "FunctionCallOutputBody": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FunctionCallOutputContentItem"
+          }
+        }
+      ]
+    },
+    "FunctionCallOutputContentItem": {
+      "description": "Responses API compatible content items that can be returned by a tool call. This is a subset of ContentItem with the types we support as function call outputs.",
+      "oneOf": [
+        {
+          "title": "InputTextFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "text",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputTextFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_text"
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputImageFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "image_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputImageFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_image"
+              ]
+            },
+            "detail": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageDetail"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "image_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "InputAudioFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "audio_url",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InputAudioFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "input_audio"
+              ]
+            },
+            "audio_url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "EncryptedContentFunctionCallOutputContentItem",
+          "type": "object",
+          "required": [
+            "encrypted_content",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EncryptedContentFunctionCallOutputContentItemType",
+              "type": "string",
+              "enum": [
+                "encrypted_content"
+              ]
+            },
+            "encrypted_content": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
     "HookPromptFragment": {
       "type": "object",
       "required": [
@@ -435,9 +598,80 @@
     "ImageDetail": {
       "type": "string",
       "enum": [
+        "auto",
+        "low",
         "high",
         "original"
       ]
+    },
+    "ImageGenerationFailure": {
+      "oneOf": [
+        {
+          "title": "UsageLimitExceededImageGenerationFailure",
+          "type": "object",
+          "required": [
+            "limitId",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "UsageLimitExceededImageGenerationFailureType",
+              "type": "string",
+              "enum": [
+                "usageLimitExceeded"
+              ]
+            },
+            "limitId": {
+              "type": "string"
+            },
+            "resetsAt": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64"
+            }
+          }
+        }
+      ]
+    },
+    "LegacyAppPathString": {
+      "type": "string"
+    },
+    "McpToolCallAppContext": {
+      "type": "object",
+      "required": [
+        "connectorId"
+      ],
+      "properties": {
+        "actionName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "appName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "connectorId": {
+          "type": "string"
+        },
+        "linkId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resourceUri": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     },
     "McpToolCallError": {
       "type": "object",
@@ -539,6 +773,47 @@
         }
       ]
     },
+    "MisalignmentErrorDetails": {
+      "type": "object",
+      "properties": {
+        "detailedExplanation": {
+          "description": "A substantive localized explanation is required before offering continuation.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorType": {
+          "description": "Open-ended classification; clients must accept categories added by Responses.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "steer": {
+          "description": "Instruction to submit as the next turn's user input if continuation is confirmed.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MisalignmentSteer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "MisalignmentSteer": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "NonSteerableTurnKind": {
       "type": "string",
       "enum": [
@@ -614,15 +889,17 @@
       ]
     },
     "ReasoningEffort": {
-      "description": "See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning",
+      "description": "A non-empty reasoning effort value advertised by the model.",
+      "type": "string",
+      "minLength": 1
+    },
+    "SubAgentActivityKind": {
       "type": "string",
       "enum": [
-        "none",
-        "minimal",
-        "low",
-        "medium",
-        "high",
-        "xhigh"
+        "started",
+        "interacted",
+        "interrupted",
+        "completed"
       ]
     },
     "TextElement": {
@@ -664,6 +941,12 @@
               "type": "string",
               "enum": [
                 "userMessage"
+              ]
+            },
+            "clientId": {
+              "type": [
+                "string",
+                "null"
               ]
             },
             "content": {
@@ -720,6 +1003,17 @@
                 "agentMessage"
               ]
             },
+            "delivery": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/AgentMessageDelivery"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "id": {
               "type": "string"
             },
@@ -745,8 +1039,52 @@
                 }
               ]
             },
+            "questions": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "default": null,
+              "items": {
+                "$ref": "#/definitions/AsyncUserInputQuestion"
+              }
+            },
             "text": {
               "type": "string"
+            }
+          }
+        },
+        {
+          "title": "FunctionCallOutputThreadItem",
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "output",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "FunctionCallOutputThreadItemType",
+              "type": "string",
+              "enum": [
+                "functionCallOutput"
+              ]
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "namespace": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "output": {
+              "$ref": "#/definitions/FunctionCallOutputBody"
             }
           }
         },
@@ -850,7 +1188,7 @@
               "description": "The command's working directory.",
               "allOf": [
                 {
-                  "$ref": "#/definitions/AbsolutePathBuf"
+                  "$ref": "#/definitions/LegacyAppPathString"
                 }
               ]
             },
@@ -873,12 +1211,28 @@
             "id": {
               "type": "string"
             },
+            "pluginId": {
+              "description": "Trusted first-party plugin id when this command resolves to one plugin script.",
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
+            },
             "processId": {
               "description": "Identifier for the underlying PTY process (when available).",
               "type": [
                 "string",
                 "null"
               ]
+            },
+            "scriptPath": {
+              "description": "Safe plugin-relative path when this command resolves to one plugin script.",
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
             },
             "source": {
               "default": "agent",
@@ -943,6 +1297,16 @@
                 "mcpToolCall"
               ]
             },
+            "appContext": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/McpToolCallAppContext"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "arguments": true,
             "durationMs": {
               "description": "The duration of the MCP tool call in milliseconds.",
@@ -966,6 +1330,7 @@
               "type": "string"
             },
             "mcpAppResourceUri": {
+              "description": "Deprecated: use `appContext.resourceUri` instead.",
               "type": [
                 "string",
                 "null"
@@ -974,6 +1339,12 @@
             "pluginId": {
               "type": [
                 "string",
+                "null"
+              ]
+            },
+            "readOnlyHint": {
+              "type": [
+                "boolean",
                 "null"
               ]
             },
@@ -1143,6 +1514,38 @@
           }
         },
         {
+          "title": "SubAgentActivityThreadItem",
+          "type": "object",
+          "required": [
+            "agentPath",
+            "agentThreadId",
+            "id",
+            "kind",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "SubAgentActivityThreadItemType",
+              "type": "string",
+              "enum": [
+                "subAgentActivity"
+              ]
+            },
+            "agentPath": {
+              "type": "string"
+            },
+            "agentThreadId": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "kind": {
+              "$ref": "#/definitions/SubAgentActivityKind"
+            }
+          }
+        },
+        {
           "title": "WebSearchThreadItem",
           "type": "object",
           "required": [
@@ -1173,6 +1576,15 @@
             },
             "query": {
               "type": "string"
+            },
+            "results": {
+              "description": "Structured search results returned out-of-band by standalone web search.\n\nThese stay as opaque JSON at the extension/app-server boundary so new result fields and result types can pass through without a Codex release.",
+              "type": [
+                "array",
+                "null"
+              ],
+              "default": null,
+              "items": true
             }
           }
         },
@@ -1196,7 +1608,34 @@
               "type": "string"
             },
             "path": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
+            }
+          }
+        },
+        {
+          "title": "SleepThreadItem",
+          "description": "Display item emitted by the interruptible `clock.sleep` tool.",
+          "type": "object",
+          "required": [
+            "durationMs",
+            "id",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "SleepThreadItemType",
+              "type": "string",
+              "enum": [
+                "sleep"
+              ]
+            },
+            "durationMs": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "id": {
+              "type": "string"
             }
           }
         },
@@ -1215,6 +1654,17 @@
               "type": "string",
               "enum": [
                 "imageGeneration"
+              ]
+            },
+            "failure": {
+              "default": null,
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImageGenerationFailure"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "id": {
@@ -1241,6 +1691,13 @@
             },
             "status": {
               "type": "string"
+            },
+            "transparentBackground": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "default": null
             }
           }
         },
@@ -1357,6 +1814,7 @@
           ]
         },
         "id": {
+          "description": "Identifier for this turn. Codex-generated turn IDs are UUIDv7.",
           "type": "string"
         },
         "itemsView": {
@@ -1406,6 +1864,18 @@
         },
         "message": {
           "type": "string"
+        },
+        "misalignment": {
+          "description": "Optional public explanation and continuation instruction for a misalignment block.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MisalignmentErrorDetails"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -1528,6 +1998,46 @@
                 {
                   "type": "null"
                 }
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "AudioUserInput",
+          "type": "object",
+          "required": [
+            "type",
+            "url"
+          ],
+          "properties": {
+            "type": {
+              "title": "AudioUserInputType",
+              "type": "string",
+              "enum": [
+                "audio"
+              ]
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "LocalAudioUserInput",
+          "type": "object",
+          "required": [
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "LocalAudioUserInputType",
+              "type": "string",
+              "enum": [
+                "localAudio"
               ]
             },
             "path": {

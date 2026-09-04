@@ -11,6 +11,13 @@
       "items": {
         "$ref": "#/definitions/ResourceContent"
       }
+    },
+    "originCallId": {
+      "description": "Originating call when the server applied app-specific resource scoping.",
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "definitions": {

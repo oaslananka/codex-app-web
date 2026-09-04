@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadRealtimeItemCompletedNotification",
+  "description": "EXPERIMENTAL - a realtime timeline item published after canonical commit.",
+  "type": "object",
+  "required": [
+    "item",
+    "threadId"
+  ],
+  "properties": {
+    "item": {
+      "$ref": "#/definitions/ThreadRealtimeItem"
+    },
+    "threadId": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "ThreadRealtimeBemItemPresentation": {
+      "description": "EXPERIMENTAL - how an existing agent item appears in a realtime conversation.",
+      "oneOf": [
+        {
+          "title": "WholeItemThreadRealtimeBemItemPresentation",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "WholeItemThreadRealtimeBemItemPresentationType",
+              "type": "string",
+              "enum": [
+                "wholeItem"
+              ]
+            }
+          }
+        },
+        {
+          "title": "InlineMarkdownThreadRealtimeBemItemPresentation",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InlineMarkdownThreadRealtimeBemItemPresentationType",
+              "type": "string",
+              "enum": [
+                "inlineMarkdown"
+              ]
+            }
+          }
+        },
+        {
+          "title": "InlineVisualizationThreadRealtimeBemItemPresentation",
+          "type": "object",
+          "required": [
+            "index",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "InlineVisualizationThreadRealtimeBemItemPresentationType",
+              "type": "string",
+              "enum": [
+                "inlineVisualization"
+              ]
+            },
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "ThreadRealtimeItem": {
+      "description": "EXPERIMENTAL - a thread-scoped realtime item in the canonical timeline.",
+      "type": "object",
+      "required": [
+        "id",
+        "realtimeSessionId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "realtimeSessionId": {
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        {
+          "title": "RealtimeSessionStartedThreadRealtimeItem",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "RealtimeSessionStartedThreadRealtimeItemType",
+              "type": "string",
+              "enum": [
+                "realtimeSessionStarted"
+              ]
+            }
+          }
+        },
+        {
+          "title": "TranscriptSegmentThreadRealtimeItem",
+          "type": "object",
+          "required": [
+            "role",
+            "text",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "TranscriptSegmentThreadRealtimeItemType",
+              "type": "string",
+              "enum": [
+                "transcriptSegment"
+              ]
+            },
+            "role": {
+              "$ref": "#/definitions/ThreadRealtimeTranscriptRole"
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "BemItemPromotedThreadRealtimeItem",
+          "type": "object",
+          "required": [
+            "item_id",
+            "presentation",
+            "turn_id",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "BemItemPromotedThreadRealtimeItemType",
+              "type": "string",
+              "enum": [
+                "bemItemPromoted"
+              ]
+            },
+            "item_id": {
+              "type": "string"
+            },
+            "presentation": {
+              "$ref": "#/definitions/ThreadRealtimeBemItemPresentation"
+            },
+            "turn_id": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "RealtimeSessionClosedThreadRealtimeItem",
+          "type": "object",
+          "required": [
+            "outcome",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "RealtimeSessionClosedThreadRealtimeItemType",
+              "type": "string",
+              "enum": [
+                "realtimeSessionClosed"
+              ]
+            },
+            "outcome": {
+              "$ref": "#/definitions/ThreadRealtimeSessionOutcome"
+            }
+          }
+        }
+      ]
+    },
+    "ThreadRealtimeSessionOutcome": {
+      "type": "string",
+      "enum": [
+        "ended",
+        "failed"
+      ]
+    },
+    "ThreadRealtimeTranscriptRole": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant"
+      ]
+    }
+  }
+}

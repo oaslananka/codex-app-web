@@ -7,6 +7,19 @@
     "uri"
   ],
   "properties": {
+    "connectorId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "originCallId": {
+      "description": "Originating MCP tool call used to select the resource's app.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "server": {
       "type": "string"
     },

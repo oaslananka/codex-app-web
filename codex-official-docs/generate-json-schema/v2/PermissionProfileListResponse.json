@@ -24,6 +24,7 @@
     "PermissionProfileSummary": {
       "type": "object",
       "required": [
+        "allowed",
         "id"
       ],
       "properties": {
@@ -33,6 +34,10 @@
             "string",
             "null"
           ]
+        },
+        "allowed": {
+          "description": "Whether the effective requirements allow selecting this profile.",
+          "type": "boolean"
         },
         "id": {
           "description": "Available permission profile identifier.",

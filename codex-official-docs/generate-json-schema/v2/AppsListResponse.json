@@ -104,6 +104,24 @@
             "null"
           ]
         },
+        "iconAssets": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "iconDarkAssets": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "id": {
           "type": "string"
         },
@@ -176,12 +194,6 @@
         "firstPartyRequiresInstall": {
           "type": [
             "boolean",
-            "null"
-          ]
-        },
-        "firstPartyType": {
-          "type": [
-            "string",
             "null"
           ]
         },

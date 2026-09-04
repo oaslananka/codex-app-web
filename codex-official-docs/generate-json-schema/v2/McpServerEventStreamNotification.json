@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "McpServerEventStreamNotification",
+  "type": "object",
+  "required": [
+    "notification",
+    "subscriptionId"
+  ],
+  "properties": {
+    "notification": {
+      "$ref": "#/definitions/McpServerEventNotification"
+    },
+    "subscriptionId": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "McpServerEventNotification": {
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "params": true
+      }
+    }
+  }
+}

@@ -37,6 +37,13 @@
           "enum": [
             "image"
           ]
+        },
+        {
+          "description": "Audio attachments included in user turns.",
+          "type": "string",
+          "enum": [
+            "audio"
+          ]
         }
       ]
     },
@@ -109,6 +116,24 @@
         },
         "model": {
           "type": "string"
+        },
+        "modelSpecialty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "multiAgentVersion": {
+          "description": "Multi-agent runtime declared by this model, when available.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MultiAgentVersion"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "serviceTiers": {
           "type": "array",
@@ -196,6 +221,14 @@
             "null"
           ]
         },
+        "retirementAt": {
+          "description": "Informational Unix timestamp for this upgrade's scheduled retirement, if known.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
         "upgradeCopy": {
           "type": [
             "string",
@@ -204,17 +237,19 @@
         }
       }
     },
-    "ReasoningEffort": {
-      "description": "See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning",
+    "MultiAgentVersion": {
+      "description": "Multi-agent runtime supported by a model.",
       "type": "string",
       "enum": [
-        "none",
-        "minimal",
-        "low",
-        "medium",
-        "high",
-        "xhigh"
+        "disabled",
+        "v1",
+        "v2"
       ]
+    },
+    "ReasoningEffort": {
+      "description": "A non-empty reasoning effort value advertised by the model.",
+      "type": "string",
+      "minLength": 1
     },
     "ReasoningEffortOption": {
       "type": "object",

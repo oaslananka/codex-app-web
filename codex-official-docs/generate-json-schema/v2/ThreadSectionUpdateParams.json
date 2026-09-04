@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadSectionUpdateParams",
+  "description": "Parameters for updating an independently persisted thread section.",
+  "type": "object",
+  "required": [
+    "name",
+    "sectionId"
+  ],
+  "properties": {
+    "appearance": {
+      "description": "Omit to preserve appearance, use `null` to clear it, or provide a replacement.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ThreadSectionAppearance"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "name": {
+      "description": "The updated user-visible name of the section.",
+      "type": "string"
+    },
+    "sectionId": {
+      "description": "The stable, server-generated identity of the section to update.",
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "ThreadSectionAppearance": {
+      "description": "Extensible visual presentation for a custom thread section.",
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

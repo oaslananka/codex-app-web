@@ -11,6 +11,13 @@
       "items": {
         "$ref": "#/definitions/ExternalAgentConfigMigrationItem"
       }
+    },
+    "connectors": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/ExternalAgentDetectedConnectorCandidate"
+      }
     }
   },
   "definitions": {
@@ -68,7 +75,36 @@
         "SUBAGENTS",
         "HOOKS",
         "COMMANDS",
+        "MEMORY",
         "SESSIONS"
+      ]
+    },
+    "ExternalAgentDetectedConnectorCandidate": {
+      "type": "object",
+      "required": [
+        "name",
+        "sessionCount",
+        "source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "sessionCount": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/definitions/ExternalAgentDetectedConnectorSource"
+        }
+      }
+    },
+    "ExternalAgentDetectedConnectorSource": {
+      "type": "string",
+      "enum": [
+        "remoteMcpServersConfig",
+        "sessionToolUse"
       ]
     },
     "HookMigration": {
@@ -117,6 +153,12 @@
             "$ref": "#/definitions/McpServerMigration"
           }
         },
+        "memory": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "plugins": {
           "type": "array",
           "default": [],
@@ -129,6 +171,13 @@
           "default": [],
           "items": {
             "$ref": "#/definitions/SessionMigration"
+          }
+        },
+        "skills": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/SkillMigration"
           }
         },
         "subagents": {
@@ -175,6 +224,17 @@
           "type": "string"
         },
         "path": {
+          "type": "string"
+        }
+      }
+    },
+    "SkillMigration": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
           "type": "string"
         }
       }

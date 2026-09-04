@@ -11,6 +11,27 @@
       "items": {
         "$ref": "#/definitions/ExternalAgentConfigMigrationItem"
       }
+    },
+    "migrationSource": {
+      "description": "Migration-source selector used to produce the migration items. Pass the same value to detection and import; missing or unrecognized values use the default source.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "providerId": {
+      "description": "Opaque provider identifier supplied by the caller for analytics attribution and import history display. This does not select the migration source.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "description": "Optional identifier for the product that initiated the import.",
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "definitions": {
@@ -68,6 +89,7 @@
         "SUBAGENTS",
         "HOOKS",
         "COMMANDS",
+        "MEMORY",
         "SESSIONS"
       ]
     },
@@ -117,6 +139,12 @@
             "$ref": "#/definitions/McpServerMigration"
           }
         },
+        "memory": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "plugins": {
           "type": "array",
           "default": [],
@@ -129,6 +157,13 @@
           "default": [],
           "items": {
             "$ref": "#/definitions/SessionMigration"
+          }
+        },
+        "skills": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/SkillMigration"
           }
         },
         "subagents": {
@@ -175,6 +210,17 @@
           "type": "string"
         },
         "path": {
+          "type": "string"
+        }
+      }
+    },
+    "SkillMigration": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
           "type": "string"
         }
       }

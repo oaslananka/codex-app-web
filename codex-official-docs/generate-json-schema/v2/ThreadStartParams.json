@@ -141,7 +141,6 @@
           "type": "string",
           "enum": [
             "untrusted",
-            "on-failure",
             "on-request",
             "never"
           ]
@@ -185,31 +184,161 @@
         }
       ]
     },
-    "DynamicToolSpec": {
-      "type": "object",
-      "required": [
-        "description",
-        "inputSchema",
-        "name"
-      ],
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "deferLoading": {
-          "type": "boolean"
-        },
-        "inputSchema": true,
-        "name": {
-          "type": "string"
-        },
-        "namespace": {
-          "type": [
-            "string",
-            "null"
-          ]
+    "CapabilityRootLocation": {
+      "description": "Location used to resolve a selected capability root.",
+      "oneOf": [
+        {
+          "title": "EnvironmentCapabilityRootLocation",
+          "description": "A path owned by an execution environment.",
+          "type": "object",
+          "required": [
+            "environmentId",
+            "path",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "EnvironmentCapabilityRootLocationType",
+              "type": "string",
+              "enum": [
+                "environment"
+              ]
+            },
+            "environmentId": {
+              "type": "string"
+            },
+            "path": {
+              "description": "Absolute path for the root in the selected environment.",
+              "type": "string"
+            }
+          }
         }
-      }
+      ]
+    },
+    "DynamicToolNamespaceTool": {
+      "oneOf": [
+        {
+          "title": "FunctionDynamicToolNamespaceTool",
+          "type": "object",
+          "required": [
+            "description",
+            "inputSchema",
+            "name",
+            "type"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "type": {
+              "title": "FunctionDynamicToolNamespaceToolType",
+              "type": "string",
+              "enum": [
+                "function"
+              ]
+            },
+            "deferLoading": {
+              "type": "boolean"
+            },
+            "inputSchema": true,
+            "name": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "DynamicToolSpec": {
+      "oneOf": [
+        {
+          "title": "FunctionDynamicToolSpec",
+          "type": "object",
+          "required": [
+            "description",
+            "inputSchema",
+            "name",
+            "type"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "type": {
+              "title": "FunctionDynamicToolSpecType",
+              "type": "string",
+              "enum": [
+                "function"
+              ]
+            },
+            "deferLoading": {
+              "type": "boolean"
+            },
+            "inputSchema": true,
+            "name": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "NamespaceDynamicToolSpec",
+          "type": "object",
+          "required": [
+            "description",
+            "name",
+            "tools",
+            "type"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "type": {
+              "title": "NamespaceDynamicToolSpecType",
+              "type": "string",
+              "enum": [
+                "namespace"
+              ]
+            },
+            "name": {
+              "type": "string"
+            },
+            "tools": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DynamicToolNamespaceTool"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "LegacyAppPathString": {
+      "type": "string"
+    },
+    "MultiAgentMode": {
+      "description": "Controls the effective multi-agent delegation instructions for a turn. `custom` means the configured mode hint defines the policy instead of a built-in policy.",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "explicitRequestOnly",
+            "proactive"
+          ]
+        },
+        {
+          "title": "CustomMultiAgentMode",
+          "type": "object",
+          "required": [
+            "custom"
+          ],
+          "properties": {
+            "custom": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
     },
     "Personality": {
       "type": "string",
@@ -227,13 +356,37 @@
         "danger-full-access"
       ]
     },
-    "ThreadSource": {
+    "SelectedCapabilityRoot": {
+      "description": "A user-selected root that can expose one or more runtime capabilities.",
+      "type": "object",
+      "required": [
+        "id",
+        "location"
+      ],
+      "properties": {
+        "id": {
+          "description": "Stable identifier supplied by the capability selection platform.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Where the selected root can be resolved.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CapabilityRootLocation"
+            }
+          ]
+        }
+      }
+    },
+    "ThreadHistoryMode": {
       "type": "string",
       "enum": [
-        "user",
-        "subagent",
-        "memory_consolidation"
+        "legacy",
+        "paginated"
       ]
+    },
+    "ThreadSource": {
+      "type": "string"
     },
     "ThreadStartSource": {
       "type": "string",
@@ -250,10 +403,20 @@
       ],
       "properties": {
         "cwd": {
-          "$ref": "#/definitions/AbsolutePathBuf"
+          "$ref": "#/definitions/LegacyAppPathString"
         },
         "environmentId": {
           "type": "string"
+        },
+        "runtimeWorkspaceRoots": {
+          "description": "Environment-native runtime workspace roots. Omitted defaults to `cwd`.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LegacyAppPathString"
+          }
         }
       }
     }

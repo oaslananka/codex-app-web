@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProjectChangedNotification",
+  "type": "object",
+  "required": [
+    "changeType",
+    "projectId"
+  ],
+  "properties": {
+    "changeType": {
+      "$ref": "#/definitions/ProjectChangeType"
+    },
+    "projectId": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "ProjectChangeType": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated",
+        "deleted"
+      ]
+    }
+  }
+}

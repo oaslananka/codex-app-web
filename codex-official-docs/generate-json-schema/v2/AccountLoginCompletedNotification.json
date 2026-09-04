@@ -18,8 +18,26 @@
         "null"
       ]
     },
+    "onboardingEntrypoint": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/DesktopOnboardingEntrypoint"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "success": {
       "type": "boolean"
+    }
+  },
+  "definitions": {
+    "DesktopOnboardingEntrypoint": {
+      "type": "string",
+      "enum": [
+        "life_sciences"
+      ]
     }
   }
 }

@@ -4,12 +4,26 @@
   "description": "EXPERIMENTAL. Params sent with a request_user_input event.",
   "type": "object",
   "required": [
+    "isBlocking",
     "itemId",
     "questions",
     "threadId",
     "turnId"
   ],
   "properties": {
+    "autoResolutionMs": {
+      "description": "@deprecated Use `isBlocking` to decide whether the request should block.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "default": null,
+      "format": "uint64",
+      "minimum": 0
+    },
+    "isBlocking": {
+      "type": "boolean"
+    },
     "itemId": {
       "type": "string"
     },

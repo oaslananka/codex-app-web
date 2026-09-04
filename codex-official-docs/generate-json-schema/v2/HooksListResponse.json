@@ -42,18 +42,12 @@
         "preCompact",
         "postCompact",
         "sessionStart",
+        "sessionEnd",
         "userPromptSubmit",
         "subagentStart",
         "subagentStop",
-        "stop"
-      ]
-    },
-    "HookHandlerType": {
-      "type": "string",
-      "enum": [
-        "command",
-        "prompt",
-        "agent"
+        "stop",
+        "interrupt"
       ]
     },
     "HookMetadata": {
@@ -63,7 +57,6 @@
         "displayOrder",
         "enabled",
         "eventName",
-        "handlerType",
         "isManaged",
         "key",
         "source",
@@ -72,11 +65,14 @@
         "trustStatus"
       ],
       "properties": {
-        "command": {
+        "additionalContextLimit": {
+          "description": "Configured `additionalContext` spill threshold. `null` uses 2,500 tokens; `0` disables spilling.",
           "type": [
-            "string",
+            "integer",
             "null"
-          ]
+          ],
+          "format": "uint",
+          "minimum": 0
         },
         "currentHash": {
           "type": "string"
@@ -90,9 +86,6 @@
         },
         "eventName": {
           "$ref": "#/definitions/HookEventName"
-        },
-        "handlerType": {
-          "$ref": "#/definitions/HookHandlerType"
         },
         "isManaged": {
           "type": "boolean"
@@ -132,7 +125,83 @@
         "trustStatus": {
           "$ref": "#/definitions/HookTrustStatus"
         }
-      }
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "command",
+            "handlerType"
+          ],
+          "properties": {
+            "async": {
+              "type": "boolean",
+              "default": false
+            },
+            "command": {
+              "type": "string"
+            },
+            "handlerType": {
+              "type": "string",
+              "enum": [
+                "command"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "handlerType",
+            "server",
+            "tool"
+          ],
+          "properties": {
+            "handlerType": {
+              "type": "string",
+              "enum": [
+                "mcpTool"
+              ]
+            },
+            "server": {
+              "type": "string"
+            },
+            "tool": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "PromptHookMetadata",
+          "type": "object",
+          "required": [
+            "handlerType"
+          ],
+          "properties": {
+            "handlerType": {
+              "type": "string",
+              "enum": [
+                "prompt"
+              ]
+            }
+          }
+        },
+        {
+          "title": "AgentHookMetadata",
+          "type": "object",
+          "required": [
+            "handlerType"
+          ],
+          "properties": {
+            "handlerType": {
+              "type": "string",
+              "enum": [
+                "agent"
+              ]
+            }
+          }
+        }
+      ]
     },
     "HookSource": {
       "type": "string",
@@ -144,6 +213,7 @@
         "sessionFlags",
         "plugin",
         "cloudRequirements",
+        "cloudManagedConfig",
         "legacyManagedConfigFile",
         "legacyManagedConfigMdm",
         "unknown"
