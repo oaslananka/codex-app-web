@@ -35,6 +35,27 @@
         "async"
       ]
     },
+    "AsyncUserInputQuestion": {
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "options": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "ByteRange": {
       "type": "object",
       "required": [
@@ -843,6 +864,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "questions": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "default": null,
+              "items": {
+                "$ref": "#/definitions/AsyncUserInputQuestion"
+              }
             },
             "text": {
               "type": "string"

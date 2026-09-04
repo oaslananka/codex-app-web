@@ -53,6 +53,7 @@ export const OFFICIAL_REQUEST_METHODS = [
   "marketplace/upgrade",
   "plugin/list",
   "plugin/installed",
+  "plugin/reconcile",
   "plugin/read",
   "plugin/skill/read",
   "plugin/share/save",

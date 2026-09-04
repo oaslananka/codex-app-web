@@ -894,6 +894,30 @@
       }
     },
     {
+      "title": "Plugin/reconcileRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Plugin/reconcileRequestMethod",
+          "type": "string",
+          "enum": [
+            "plugin/reconcile"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/PluginReconcileParams"
+        }
+      }
+    },
+    {
       "title": "Plugin/readRequest",
       "type": "object",
       "required": [
@@ -4751,6 +4775,18 @@
           "type": "string"
         },
         "remoteMarketplaceName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "PluginReconcileParams": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "description": "Optional client-provided reason recorded with the reconciliation attempt.",
           "type": [
             "string",
             "null"

@@ -2161,6 +2161,27 @@
         }
       ]
     },
+    "AsyncUserInputQuestion": {
+      "type": "object",
+      "required": [
+        "title"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "options": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "AuthMode": {
       "description": "Authentication mode for OpenAI-backed providers.",
       "oneOf": [
@@ -5781,6 +5802,13 @@
           "description": "Identifier for this thread. Codex-generated thread IDs are UUIDv7.",
           "type": "string"
         },
+        "model": {
+          "description": "Current configured model when loaded, otherwise the latest persisted model. Null when unavailable. This is not per-turn execution telemetry.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "modelProvider": {
           "description": "Model provider used for this thread (for example, 'openai').",
           "type": "string"
@@ -5815,6 +5843,17 @@
           "type": [
             "string",
             "null"
+          ]
+        },
+        "reasoningEffort": {
+          "description": "Current configured reasoning effort when loaded, otherwise the latest persisted effort. Null when unset or unavailable. This is not per-turn execution telemetry.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ReasoningEffort"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "recencyAt": {
@@ -6147,6 +6186,16 @@
                   "type": "null"
                 }
               ]
+            },
+            "questions": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "default": null,
+              "items": {
+                "$ref": "#/definitions/AsyncUserInputQuestion"
+              }
             },
             "text": {
               "type": "string"
