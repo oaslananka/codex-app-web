@@ -1,7 +1,7 @@
 {
   "name": "codex-app-web",
   "version": "1.1.7",
-  "description": "Independent, open-source web control center compatible with Codex app-server workflows",
+  "description": "Independent, source-available web control center compatible with Codex app-server workflows",
   "type": "module",
   "packageManager": "pnpm@11.3.0",
   "main": "server.cjs",
@@ -93,5 +93,6 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "8.60.0",
     "vitest": "^4.1.7"
-  }
+  },
+  "license": "PolyForm-Noncommercial-1.0.0"
 }

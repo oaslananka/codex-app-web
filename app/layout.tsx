@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: '%s | codex-app-web',
   },
   description:
-    'Independent, open-source browser control center compatible with Codex app-server workflows, including chat, files, terminal, approvals, config, MCP visibility, and runtime diagnostics.',
+    'Independent, source-available browser control center compatible with Codex app-server workflows, including chat, files, terminal, approvals, config, MCP visibility, and runtime diagnostics.',
   applicationName: 'codex-app-web',
   keywords: [
     'Codex',

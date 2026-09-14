@@ -1,6 +1,6 @@
 # codex-app-web
 
-`codex-app-web` is an independent, open-source web interface for Codex app-server workflows. It provides a browser-based control center for working with threads, chat, terminal sessions, files, configuration, approvals, MCP visibility, and runtime diagnostics while staying compatible with existing app-server backends.
+`codex-app-web` is an independent, source-available web interface for Codex app-server workflows. It provides a browser-based control center for working with threads, chat, terminal sessions, files, configuration, approvals, MCP visibility, and runtime diagnostics while staying compatible with existing app-server backends.
 
 This project is independent and community-maintained. It is not affiliated with, endorsed by, or maintained by OpenAI.
 
@@ -212,4 +212,4 @@ pnpm smoke
 
 **License**
 
-This project is available under the MIT License. See [`LICENSE`](./LICENSE).
+Current project-authored source is licensed under the PolyForm Noncommercial License 1.0.0. Commercial use requires a separate written license. Earlier MIT-licensed revisions retain the MIT terms that applied when they were published. See [`LICENSING.md`](./LICENSING.md).
