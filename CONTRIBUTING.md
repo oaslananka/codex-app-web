@@ -46,6 +46,10 @@ the generated `docs/api/` changes in the PR.
 - Do not weaken approval, file, terminal, auth, CSP, rate-limit, or WebSocket safety defaults.
 - Do not disable tests to make CI pass.
 
+## Contributor Licensing
+
+Non-trivial external code contributions require DCO sign-off and a reviewed CLA before merge. DCO records provenance but does not replace the CLA requirement. See [CONTRIBUTOR-LICENSING.md](./CONTRIBUTOR-LICENSING.md) and the review-required template in [CLA.md](./CLA.md).
+
 ## Governance And Support
 
 - Follow the project [Code of Conduct](./CODE_OF_CONDUCT.md).

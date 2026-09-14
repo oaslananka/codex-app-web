@@ -8,7 +8,7 @@
 
 > `const` **OFFICIAL\_CONFIG\_FIELD\_SCHEMAS**: `object`
 
-Defined in: [official-manifest.generated.ts:187](https://github.com/oaslananka/codex-app-web/blob/main/src/lib/codex-runtime/official-manifest.generated.ts#L187)
+Defined in: [official-manifest.generated.ts:223](https://github.com/oaslananka/codex-app-web/blob/main/src/lib/codex-runtime/official-manifest.generated.ts#L223)
 
 ## Type Declaration
 
@@ -90,7 +90,7 @@ Defined in: [official-manifest.generated.ts:187](https://github.com/oaslananka/c
 
 #### approval\_policy.enumValues
 
-> `readonly` **enumValues**: \[`"untrusted"`, `"on-failure"`, `"on-request"`, `"never"`\]
+> `readonly` **enumValues**: \[`"untrusted"`, `"on-request"`, `"never"`\]
 
 #### approval\_policy.hasArrayShape
 
@@ -140,6 +140,262 @@ Defined in: [official-manifest.generated.ts:187](https://github.com/oaslananka/c
 
 > `readonly` **unstable**: `true` = `true`
 
+### browser\_use
+
+> `readonly` **browser\_use**: `object`
+
+#### browser\_use.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### browser\_use.description
+
+> `readonly` **description**: `null` = `null`
+
+#### browser\_use.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### browser\_use.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### browser\_use.hasObjectShape
+
+> `readonly` **hasObjectShape**: `true` = `true`
+
+#### browser\_use.types
+
+> `readonly` **types**: \[`"object"`, `"null"`\]
+
+#### browser\_use.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### browser\_use.allow\_history\_access
+
+> `readonly` **browser\_use.allow\_history\_access**: `object`
+
+#### browser\_use.allow\_history\_access.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### browser\_use.allow\_history\_access.description
+
+> `readonly` **description**: `null` = `null`
+
+#### browser\_use.allow\_history\_access.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### browser\_use.allow\_history\_access.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### browser\_use.allow\_history\_access.hasObjectShape
+
+> `readonly` **hasObjectShape**: `false` = `false`
+
+#### browser\_use.allow\_history\_access.types
+
+> `readonly` **types**: \[`"boolean"`, `"null"`\]
+
+#### browser\_use.allow\_history\_access.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy
+
+> `readonly` **browser\_use.default\_origin\_policy**: `object`
+
+#### browser\_use.default\_origin\_policy.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.description
+
+> `readonly` **description**: `null` = `null`
+
+#### browser\_use.default\_origin\_policy.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### browser\_use.default\_origin\_policy.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.hasObjectShape
+
+> `readonly` **hasObjectShape**: `true` = `true`
+
+#### browser\_use.default\_origin\_policy.types
+
+> `readonly` **types**: \[`"object"`, `"null"`\]
+
+#### browser\_use.default\_origin\_policy.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.access
+
+> `readonly` **browser\_use.default\_origin\_policy.access**: `object`
+
+#### browser\_use.default\_origin\_policy.access.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.access.description
+
+> `readonly` **description**: `null` = `null`
+
+#### browser\_use.default\_origin\_policy.access.enumValues
+
+> `readonly` **enumValues**: \[`"allow"`, `"deny"`\]
+
+#### browser\_use.default\_origin\_policy.access.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.access.hasObjectShape
+
+> `readonly` **hasObjectShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.access.types
+
+> `readonly` **types**: \[`"string"`, `"null"`\]
+
+#### browser\_use.default\_origin\_policy.access.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.downloads
+
+> `readonly` **browser\_use.default\_origin\_policy.downloads**: `object`
+
+#### browser\_use.default\_origin\_policy.downloads.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.downloads.description
+
+> `readonly` **description**: `null` = `null`
+
+#### browser\_use.default\_origin\_policy.downloads.enumValues
+
+> `readonly` **enumValues**: \[`"allow"`, `"deny"`\]
+
+#### browser\_use.default\_origin\_policy.downloads.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.downloads.hasObjectShape
+
+> `readonly` **hasObjectShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.downloads.types
+
+> `readonly` **types**: \[`"string"`, `"null"`\]
+
+#### browser\_use.default\_origin\_policy.downloads.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.full\_cdp\_access
+
+> `readonly` **browser\_use.default\_origin\_policy.full\_cdp\_access**: `object`
+
+#### browser\_use.default\_origin\_policy.full\_cdp\_access.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.full\_cdp\_access.description
+
+> `readonly` **description**: `null` = `null`
+
+#### browser\_use.default\_origin\_policy.full\_cdp\_access.enumValues
+
+> `readonly` **enumValues**: \[`"allow"`, `"deny"`\]
+
+#### browser\_use.default\_origin\_policy.full\_cdp\_access.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.full\_cdp\_access.hasObjectShape
+
+> `readonly` **hasObjectShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.full\_cdp\_access.types
+
+> `readonly` **types**: \[`"string"`, `"null"`\]
+
+#### browser\_use.default\_origin\_policy.full\_cdp\_access.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.uploads
+
+> `readonly` **browser\_use.default\_origin\_policy.uploads**: `object`
+
+#### browser\_use.default\_origin\_policy.uploads.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.uploads.description
+
+> `readonly` **description**: `null` = `null`
+
+#### browser\_use.default\_origin\_policy.uploads.enumValues
+
+> `readonly` **enumValues**: \[`"allow"`, `"deny"`\]
+
+#### browser\_use.default\_origin\_policy.uploads.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.uploads.hasObjectShape
+
+> `readonly` **hasObjectShape**: `false` = `false`
+
+#### browser\_use.default\_origin\_policy.uploads.types
+
+> `readonly` **types**: \[`"string"`, `"null"`\]
+
+#### browser\_use.default\_origin\_policy.uploads.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### browser\_use.origins
+
+> `readonly` **browser\_use.origins**: `object`
+
+#### browser\_use.origins.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### browser\_use.origins.description
+
+> `readonly` **description**: `null` = `null`
+
+#### browser\_use.origins.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### browser\_use.origins.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### browser\_use.origins.hasObjectShape
+
+> `readonly` **hasObjectShape**: `true` = `true`
+
+#### browser\_use.origins.types
+
+> `readonly` **types**: \[`"object"`, `"null"`\]
+
+#### browser\_use.origins.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
 ### compact\_prompt
 
 > `readonly` **compact\_prompt**: `object`
@@ -169,6 +425,230 @@ Defined in: [official-manifest.generated.ts:187](https://github.com/oaslananka/c
 > `readonly` **types**: \[`"string"`, `"null"`\]
 
 #### compact\_prompt.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+### computer\_use
+
+> `readonly` **computer\_use**: `object`
+
+#### computer\_use.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### computer\_use.description
+
+> `readonly` **description**: `null` = `null`
+
+#### computer\_use.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### computer\_use.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### computer\_use.hasObjectShape
+
+> `readonly` **hasObjectShape**: `true` = `true`
+
+#### computer\_use.types
+
+> `readonly` **types**: \[`"object"`, `"null"`\]
+
+#### computer\_use.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### computer\_use.default\_app\_access
+
+> `readonly` **computer\_use.default\_app\_access**: `object`
+
+#### computer\_use.default\_app\_access.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### computer\_use.default\_app\_access.description
+
+> `readonly` **description**: `null` = `null`
+
+#### computer\_use.default\_app\_access.enumValues
+
+> `readonly` **enumValues**: \[`"allow"`, `"deny"`\]
+
+#### computer\_use.default\_app\_access.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### computer\_use.default\_app\_access.hasObjectShape
+
+> `readonly` **hasObjectShape**: `false` = `false`
+
+#### computer\_use.default\_app\_access.types
+
+> `readonly` **types**: \[`"string"`, `"null"`\]
+
+#### computer\_use.default\_app\_access.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### computer\_use.macos
+
+> `readonly` **computer\_use.macos**: `object`
+
+#### computer\_use.macos.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### computer\_use.macos.description
+
+> `readonly` **description**: `null` = `null`
+
+#### computer\_use.macos.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### computer\_use.macos.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### computer\_use.macos.hasObjectShape
+
+> `readonly` **hasObjectShape**: `true` = `true`
+
+#### computer\_use.macos.types
+
+> `readonly` **types**: \[`"object"`, `"null"`\]
+
+#### computer\_use.macos.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### computer\_use.macos.bundle\_ids
+
+> `readonly` **computer\_use.macos.bundle\_ids**: `object`
+
+#### computer\_use.macos.bundle\_ids.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### computer\_use.macos.bundle\_ids.description
+
+> `readonly` **description**: `null` = `null`
+
+#### computer\_use.macos.bundle\_ids.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### computer\_use.macos.bundle\_ids.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### computer\_use.macos.bundle\_ids.hasObjectShape
+
+> `readonly` **hasObjectShape**: `true` = `true`
+
+#### computer\_use.macos.bundle\_ids.types
+
+> `readonly` **types**: \[`"object"`, `"null"`\]
+
+#### computer\_use.macos.bundle\_ids.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### computer\_use.windows
+
+> `readonly` **computer\_use.windows**: `object`
+
+#### computer\_use.windows.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### computer\_use.windows.description
+
+> `readonly` **description**: `null` = `null`
+
+#### computer\_use.windows.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### computer\_use.windows.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### computer\_use.windows.hasObjectShape
+
+> `readonly` **hasObjectShape**: `true` = `true`
+
+#### computer\_use.windows.types
+
+> `readonly` **types**: \[`"object"`, `"null"`\]
+
+#### computer\_use.windows.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### computer\_use.windows.aumids
+
+> `readonly` **computer\_use.windows.aumids**: `object`
+
+#### computer\_use.windows.aumids.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### computer\_use.windows.aumids.description
+
+> `readonly` **description**: `null` = `null`
+
+#### computer\_use.windows.aumids.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### computer\_use.windows.aumids.hasArrayShape
+
+> `readonly` **hasArrayShape**: `false` = `false`
+
+#### computer\_use.windows.aumids.hasObjectShape
+
+> `readonly` **hasObjectShape**: `true` = `true`
+
+#### computer\_use.windows.aumids.types
+
+> `readonly` **types**: \[`"object"`, `"null"`\]
+
+#### computer\_use.windows.aumids.unstable
+
+> `readonly` **unstable**: `false` = `false`
+
+#### computer\_use.windows.exes
+
+> `readonly` **computer\_use.windows.exes**: `object`
+
+#### computer\_use.windows.exes.deprecated
+
+> `readonly` **deprecated**: `false` = `false`
+
+#### computer\_use.windows.exes.description
+
+> `readonly` **description**: `null` = `null`
+
+#### computer\_use.windows.exes.enumValues
+
+> `readonly` **enumValues**: \[\] = `[]`
+
+#### computer\_use.windows.exes.hasArrayShape
+
+> `readonly` **hasArrayShape**: `true` = `true`
+
+#### computer\_use.windows.exes.hasObjectShape
+
+> `readonly` **hasObjectShape**: `false` = `false`
+
+#### computer\_use.windows.exes.types
+
+> `readonly` **types**: \[`"array"`, `"null"`\]
+
+#### computer\_use.windows.exes.unstable
 
 > `readonly` **unstable**: `false` = `false`
 
@@ -502,11 +982,11 @@ Defined in: [official-manifest.generated.ts:187](https://github.com/oaslananka/c
 
 #### model\_reasoning\_effort.description
 
-> `readonly` **description**: `"See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning"` = `"See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning"`
+> `readonly` **description**: `"A non-empty reasoning effort value advertised by the model."` = `"A non-empty reasoning effort value advertised by the model."`
 
 #### model\_reasoning\_effort.enumValues
 
-> `readonly` **enumValues**: \[`"none"`, `"minimal"`, `"low"`, `"medium"`, `"high"`, `"xhigh"`\]
+> `readonly` **enumValues**: \[\] = `[]`
 
 #### model\_reasoning\_effort.hasArrayShape
 
@@ -585,70 +1065,6 @@ Defined in: [official-manifest.generated.ts:187](https://github.com/oaslananka/c
 > `readonly` **types**: \[`"string"`, `"null"`\]
 
 #### model\_verbosity.unstable
-
-> `readonly` **unstable**: `false` = `false`
-
-### profile
-
-> `readonly` **profile**: `object`
-
-#### profile.deprecated
-
-> `readonly` **deprecated**: `false` = `false`
-
-#### profile.description
-
-> `readonly` **description**: `null` = `null`
-
-#### profile.enumValues
-
-> `readonly` **enumValues**: \[\] = `[]`
-
-#### profile.hasArrayShape
-
-> `readonly` **hasArrayShape**: `false` = `false`
-
-#### profile.hasObjectShape
-
-> `readonly` **hasObjectShape**: `false` = `false`
-
-#### profile.types
-
-> `readonly` **types**: \[`"string"`, `"null"`\]
-
-#### profile.unstable
-
-> `readonly` **unstable**: `false` = `false`
-
-### profiles
-
-> `readonly` **profiles**: `object`
-
-#### profiles.deprecated
-
-> `readonly` **deprecated**: `false` = `false`
-
-#### profiles.description
-
-> `readonly` **description**: `null` = `null`
-
-#### profiles.enumValues
-
-> `readonly` **enumValues**: \[\] = `[]`
-
-#### profiles.hasArrayShape
-
-> `readonly` **hasArrayShape**: `false` = `false`
-
-#### profiles.hasObjectShape
-
-> `readonly` **hasObjectShape**: `true` = `true`
-
-#### profiles.types
-
-> `readonly` **types**: \[`"object"`\]
-
-#### profiles.unstable
 
 > `readonly` **unstable**: `false` = `false`
 
@@ -1210,7 +1626,7 @@ Defined in: [official-manifest.generated.ts:187](https://github.com/oaslananka/c
 
 #### web\_search.enumValues
 
-> `readonly` **enumValues**: \[`"disabled"`, `"cached"`, `"live"`\]
+> `readonly` **enumValues**: \[`"disabled"`, `"cached"`, `"indexed"`, `"live"`\]
 
 #### web\_search.hasArrayShape
 
