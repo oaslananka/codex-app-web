@@ -496,6 +496,78 @@
           }
         },
         {
+          "title": "Thread/attachment/addRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "title": "Thread/attachment/addRequestMethod",
+              "type": "string",
+              "enum": [
+                "thread/attachment/add"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/v2/ThreadAttachmentAddParams"
+            }
+          }
+        },
+        {
+          "title": "Thread/attachment/listRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "title": "Thread/attachment/listRequestMethod",
+              "type": "string",
+              "enum": [
+                "thread/attachment/list"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/v2/ThreadAttachmentListParams"
+            }
+          }
+        },
+        {
+          "title": "Thread/attachment/removeRequest",
+          "type": "object",
+          "required": [
+            "id",
+            "method",
+            "params"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/v2/RequestId"
+            },
+            "method": {
+              "title": "Thread/attachment/removeRequestMethod",
+              "type": "string",
+              "enum": [
+                "thread/attachment/remove"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/v2/ThreadAttachmentRemoveParams"
+            }
+          }
+        },
+        {
           "title": "Thread/section/moveRequest",
           "type": "object",
           "required": [
@@ -2120,7 +2192,14 @@
               ]
             },
             "params": {
-              "type": "null"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/v2/GetAccountRateLimitsParams"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -4284,7 +4363,7 @@
       ],
       "properties": {
         "cwd": {
-          "$ref": "#/definitions/v2/AbsolutePathBuf"
+          "$ref": "#/definitions/v2/LegacyAppPathString"
         },
         "environmentId": {
           "type": [
@@ -4678,6 +4757,26 @@
             },
             "params": {
               "$ref": "#/definitions/v2/ThreadNameUpdatedNotification"
+            }
+          }
+        },
+        {
+          "title": "Thread/attachment/updatedNotification",
+          "type": "object",
+          "required": [
+            "method",
+            "params"
+          ],
+          "properties": {
+            "method": {
+              "title": "Thread/attachment/updatedNotificationMethod",
+              "type": "string",
+              "enum": [
+                "thread/attachment/updated"
+              ]
+            },
+            "params": {
+              "$ref": "#/definitions/v2/ThreadAttachmentUpdatedNotification"
             }
           }
         },
@@ -7477,6 +7576,40 @@
       "AppToolsConfig": {
         "type": "object"
       },
+      "ApplicationNetworkRequirements": {
+        "type": "object",
+        "required": [
+          "domains",
+          "enabled"
+        ],
+        "properties": {
+          "domains": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/definitions/v2/NetworkDomainPermission"
+            }
+          },
+          "enabled": {
+            "description": "When enabled, only explicitly allowed exact domains may be contacted.",
+            "type": "boolean"
+          }
+        }
+      },
+      "ApplicationRequirements": {
+        "type": "object",
+        "properties": {
+          "network": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/ApplicationNetworkRequirements"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
       "ApprovalsReviewer": {
         "description": "Configures who approval requests are routed to for review. Examples include sandbox escapes, blocked network access, MCP approval prompts, and ARC escalations. Defaults to `user`. `auto_review` uses a carefully prompted subagent to gather relevant context and apply a risk-based decision framework before approving or denying the request. The legacy value `guardian_subagent` is accepted for compatibility.",
         "type": "string",
@@ -8055,6 +8188,12 @@
             ]
           },
           "allowHistoryAccess": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "allowWebmcp": {
             "type": [
               "boolean",
               "null"
@@ -10010,6 +10149,18 @@
           }
         }
       },
+      "ConfigurationReasoning": {
+        "description": "Reasoning settings interpreted by the backend for the routed model.",
+        "type": "object",
+        "required": [
+          "effort"
+        ],
+        "properties": {
+          "effort": {
+            "$ref": "#/definitions/v2/ReasoningEffort"
+          }
+        }
+      },
       "ConfiguredHookHandler": {
         "oneOf": [
           {
@@ -11450,6 +11601,14 @@
           "threadId"
         ],
         "properties": {
+          "promptHash": {
+            "description": "Whitespace-normalized SHA-256 of the session base instructions, matching the uploaded `prompt_hash` tag. Does not include later developer messages. Null when the reported rollout has no prompt metadata.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "default": null
+          },
           "threadId": {
             "type": "string"
           }
@@ -12248,6 +12407,20 @@
           }
         }
       },
+      "GetAccountRateLimitsParams": {
+        "description": "Usage-read capabilities of the requesting client, never inferred from its experiment arm.",
+        "type": "object",
+        "properties": {
+          "excludeResetCreditDetails": {
+            "description": "Skip the separate reset-credit detail lookup for background usage polls. The usage response still includes the available count; omitted/false preserves detailed reads.",
+            "type": "boolean"
+          },
+          "supportsLunaReserve": {
+            "description": "The client supports automatic Luna Reserve fallback. For eligible ChatGPT CLI users, allow the backend to record experiment exposure after ordinary usage is blocked.",
+            "type": "boolean"
+          }
+        }
+      },
       "GetAccountRateLimitsResponse": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "GetAccountRateLimitsResponse",
@@ -12260,6 +12433,13 @@
             "description": "Account associated with this usage snapshot, when supplied by the backend.",
             "type": [
               "string",
+              "null"
+            ]
+          },
+          "ordinaryUsageAllowed": {
+            "description": "Backend permission for ordinary included usage, validated against the active account. Null means unavailable; clients must not infer recovery from percentages or reset times.",
+            "type": [
+              "boolean",
               "null"
             ]
           },
@@ -12471,7 +12651,7 @@
                 "type": "string"
               },
               "cwd": {
-                "$ref": "#/definitions/v2/AbsolutePathBuf"
+                "$ref": "#/definitions/v2/LegacyAppPathString"
               },
               "source": {
                 "$ref": "#/definitions/v2/GuardianCommandSource"
@@ -12563,12 +12743,12 @@
                 ]
               },
               "cwd": {
-                "$ref": "#/definitions/v2/AbsolutePathBuf"
+                "$ref": "#/definitions/v2/LegacyAppPathString"
               },
               "files": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/v2/AbsolutePathBuf"
+                  "$ref": "#/definitions/v2/LegacyAppPathString"
                 }
               }
             }
@@ -14517,6 +14697,13 @@
             "additionalProperties": {
               "$ref": "#/definitions/v2/Tool"
             }
+          },
+          "toolsError": {
+            "description": "Tool discovery failed and no catalog was returned. Null when a catalog is returned, including cached or empty catalogs.",
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       },
@@ -15485,6 +15672,18 @@
         "enum": [
           "review",
           "compact"
+        ]
+      },
+      "NullableGetAccountRateLimitsParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Nullable_GetAccountRateLimitsParams",
+        "anyOf": [
+          {
+            "$ref": "#/definitions/v2/GetAccountRateLimitsParams"
+          },
+          {
+            "type": "null"
+          }
         ]
       },
       "NullableGetAccountTokenUsageParams": {
@@ -17433,6 +17632,13 @@
               "null"
             ]
           },
+          "normalModelSlug": {
+            "description": "Normal model whose display name and reasoning options describe this quota alias.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "planType": {
             "anyOf": [
               {
@@ -18717,6 +18923,27 @@
             }
           },
           {
+            "title": "ConfigurationUpdateResponseItem",
+            "description": "A durable input control interpreted by the backend at its position in history.",
+            "type": "object",
+            "required": [
+              "reasoning",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "title": "ConfigurationUpdateResponseItemType",
+                "type": "string",
+                "enum": [
+                  "configuration_update"
+                ]
+              },
+              "reasoning": {
+                "$ref": "#/definitions/v2/ConfigurationReasoning"
+              }
+            }
+          },
+          {
             "title": "CompactionTriggerResponseItem",
             "type": "object",
             "required": [
@@ -18919,7 +19146,7 @@
         ],
         "properties": {
           "delivery": {
-            "description": "Where to run the review: inline (default) on the current thread or detached on a new thread (returned in `reviewThreadId`).",
+            "description": "Where to run the review: inline (default) on the current thread or detached on a new thread (returned in `reviewThreadId`). Detached delivery is deprecated and emits `deprecationNotice`. Use `thread/start` followed by an inline review for a separate review thread.",
             "default": null,
             "anyOf": [
               {
@@ -20243,6 +20470,13 @@
               "null"
             ]
           },
+          "originator": {
+            "description": "Originator recorded when the thread was created, independent of its current client or executor. Null when the recorded originator is unavailable.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "parentThreadId": {
             "description": "The ID of the parent thread. This will only be set if this thread is a subagent.",
             "type": [
@@ -20413,6 +20647,200 @@
           }
         }
       },
+      "ThreadAttachment": {
+        "description": "An independently persisted attachment associated with a thread.",
+        "type": "object",
+        "required": [
+          "attachmentType",
+          "createdAt",
+          "id",
+          "identityKey",
+          "payload"
+        ],
+        "properties": {
+          "attachmentType": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "id": {
+            "type": "string"
+          },
+          "identityKey": {
+            "type": "string"
+          },
+          "payload": true
+        }
+      },
+      "ThreadAttachmentAddOutcome": {
+        "description": "Result of attempting to associate an attachment with a thread.",
+        "type": "string",
+        "enum": [
+          "created",
+          "existing"
+        ]
+      },
+      "ThreadAttachmentAddParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ThreadAttachmentAddParams",
+        "description": "Parameters for creating or locating an attachment on its owning thread.",
+        "type": "object",
+        "required": [
+          "attachmentType",
+          "identityKey",
+          "payload",
+          "threadId"
+        ],
+        "properties": {
+          "attachmentType": {
+            "type": "string"
+          },
+          "identityKey": {
+            "type": "string"
+          },
+          "payload": true,
+          "threadId": {
+            "type": "string"
+          }
+        }
+      },
+      "ThreadAttachmentAddResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ThreadAttachmentAddResponse",
+        "description": "The created or existing attachment.",
+        "type": "object",
+        "required": [
+          "attachment",
+          "outcome"
+        ],
+        "properties": {
+          "attachment": {
+            "$ref": "#/definitions/v2/ThreadAttachment"
+          },
+          "outcome": {
+            "$ref": "#/definitions/v2/ThreadAttachmentAddOutcome"
+          }
+        }
+      },
+      "ThreadAttachmentListParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ThreadAttachmentListParams",
+        "description": "Parameters for listing attachments from one thread.",
+        "type": "object",
+        "required": [
+          "threadId"
+        ],
+        "properties": {
+          "cursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "limit": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "uint32",
+            "minimum": 0
+          },
+          "threadId": {
+            "type": "string"
+          }
+        }
+      },
+      "ThreadAttachmentListResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ThreadAttachmentListResponse",
+        "description": "One page of attachments associated with the requested thread.",
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/v2/ThreadAttachment"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "ThreadAttachmentOperation": {
+        "description": "The persisted attachment change represented by a notification.",
+        "type": "string",
+        "enum": [
+          "created",
+          "deleted"
+        ]
+      },
+      "ThreadAttachmentRemoveParams": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ThreadAttachmentRemoveParams",
+        "description": "Parameters for deleting an attachment by its stable thread-local identity.",
+        "type": "object",
+        "required": [
+          "attachmentType",
+          "identityKey",
+          "threadId"
+        ],
+        "properties": {
+          "attachmentType": {
+            "type": "string"
+          },
+          "identityKey": {
+            "type": "string"
+          },
+          "threadId": {
+            "type": "string"
+          }
+        }
+      },
+      "ThreadAttachmentRemoveResponse": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ThreadAttachmentRemoveResponse",
+        "description": "Successful deletion does not return additional attachment data.",
+        "type": "object"
+      },
+      "ThreadAttachmentUpdatedNotification": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ThreadAttachmentUpdatedNotification",
+        "description": "Notification published after a thread attachment is created or deleted.",
+        "type": "object",
+        "required": [
+          "attachmentId",
+          "attachmentType",
+          "identityKey",
+          "operation",
+          "threadId"
+        ],
+        "properties": {
+          "attachmentId": {
+            "type": "string"
+          },
+          "attachmentType": {
+            "type": "string"
+          },
+          "identityKey": {
+            "type": "string"
+          },
+          "operation": {
+            "$ref": "#/definitions/v2/ThreadAttachmentOperation"
+          },
+          "threadId": {
+            "type": "string"
+          }
+        }
+      },
       "ThreadClosedNotification": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "ThreadClosedNotification",
@@ -20472,6 +20900,29 @@
         "properties": {
           "threadId": {
             "type": "string"
+          }
+        }
+      },
+      "ThreadEnvironment": {
+        "description": "An environment selected by a loaded thread, independent of connection status.",
+        "type": "object",
+        "required": [
+          "cwd",
+          "environmentId",
+          "runtimeWorkspaceRoots"
+        ],
+        "properties": {
+          "cwd": {
+            "$ref": "#/definitions/v2/LegacyAppPathString"
+          },
+          "environmentId": {
+            "type": "string"
+          },
+          "runtimeWorkspaceRoots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/v2/LegacyAppPathString"
+            }
           }
         }
       },
@@ -21889,6 +22340,16 @@
           },
           "modelProviders": {
             "description": "Optional provider filter; when set, only sessions recorded under these providers are returned. When present but empty, includes all providers.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "originators": {
+            "description": "Optional originator allowlist, matching any supplied value exactly. Supported by hosted backends only; the local app-server rejects a nonempty list. Omitted or empty lists leave originators unrestricted.",
             "type": [
               "array",
               "null"

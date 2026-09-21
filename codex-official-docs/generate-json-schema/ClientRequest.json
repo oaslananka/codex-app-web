@@ -293,6 +293,78 @@
       }
     },
     {
+      "title": "Thread/attachment/addRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Thread/attachment/addRequestMethod",
+          "type": "string",
+          "enum": [
+            "thread/attachment/add"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadAttachmentAddParams"
+        }
+      }
+    },
+    {
+      "title": "Thread/attachment/listRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Thread/attachment/listRequestMethod",
+          "type": "string",
+          "enum": [
+            "thread/attachment/list"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadAttachmentListParams"
+        }
+      }
+    },
+    {
+      "title": "Thread/attachment/removeRequest",
+      "type": "object",
+      "required": [
+        "id",
+        "method",
+        "params"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/RequestId"
+        },
+        "method": {
+          "title": "Thread/attachment/removeRequestMethod",
+          "type": "string",
+          "enum": [
+            "thread/attachment/remove"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadAttachmentRemoveParams"
+        }
+      }
+    },
+    {
       "title": "Thread/section/moveRequest",
       "type": "object",
       "required": [
@@ -1917,7 +1989,14 @@
           ]
         },
         "params": {
-          "type": "null"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/GetAccountRateLimitsParams"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -2991,6 +3070,18 @@
         "value": true
       }
     },
+    "ConfigurationReasoning": {
+      "description": "Reasoning settings interpreted by the backend for the routed model.",
+      "type": "object",
+      "required": [
+        "effort"
+      ],
+      "properties": {
+        "effort": {
+          "$ref": "#/definitions/ReasoningEffort"
+        }
+      }
+    },
     "ConsumeAccountRateLimitResetCreditParams": {
       "type": "object",
       "required": [
@@ -3893,6 +3984,20 @@
       "properties": {
         "refreshToken": {
           "description": "When `true`, requests a proactive token refresh before returning.\n\nIn managed auth mode this triggers the normal refresh-token flow. In external auth mode this flag is ignored. Clients should refresh tokens themselves and call `account/login/start` with `chatgptAuthTokens`.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GetAccountRateLimitsParams": {
+      "description": "Usage-read capabilities of the requesting client, never inferred from its experiment arm.",
+      "type": "object",
+      "properties": {
+        "excludeResetCreditDetails": {
+          "description": "Skip the separate reset-credit detail lookup for background usage polls. The usage response still includes the available count; omitted/false preserves detailed reads.",
+          "type": "boolean"
+        },
+        "supportsLunaReserve": {
+          "description": "The client supports automatic Luna Reserve fallback. For eligible ChatGPT CLI users, allow the backend to record experiment exposure after ordinary usage is blocked.",
           "type": "boolean"
         }
       }
@@ -5834,6 +5939,27 @@
           }
         },
         {
+          "title": "ConfigurationUpdateResponseItem",
+          "description": "A durable input control interpreted by the backend at its position in history.",
+          "type": "object",
+          "required": [
+            "reasoning",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "ConfigurationUpdateResponseItemType",
+              "type": "string",
+              "enum": [
+                "configuration_update"
+              ]
+            },
+            "reasoning": {
+              "$ref": "#/definitions/ConfigurationReasoning"
+            }
+          }
+        },
+        {
           "title": "CompactionTriggerResponseItem",
           "type": "object",
           "required": [
@@ -6021,7 +6147,7 @@
       ],
       "properties": {
         "delivery": {
-          "description": "Where to run the review: inline (default) on the current thread or detached on a new thread (returned in `reviewThreadId`).",
+          "description": "Where to run the review: inline (default) on the current thread or detached on a new thread (returned in `reviewThreadId`). Detached delivery is deprecated and emits `deprecationNotice`. Use `thread/start` followed by an inline review for a separate review thread.",
           "default": null,
           "anyOf": [
             {
@@ -6457,6 +6583,74 @@
         }
       }
     },
+    "ThreadAttachmentAddParams": {
+      "description": "Parameters for creating or locating an attachment on its owning thread.",
+      "type": "object",
+      "required": [
+        "attachmentType",
+        "identityKey",
+        "payload",
+        "threadId"
+      ],
+      "properties": {
+        "attachmentType": {
+          "type": "string"
+        },
+        "identityKey": {
+          "type": "string"
+        },
+        "payload": true,
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
+    "ThreadAttachmentListParams": {
+      "description": "Parameters for listing attachments from one thread.",
+      "type": "object",
+      "required": [
+        "threadId"
+      ],
+      "properties": {
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
+    "ThreadAttachmentRemoveParams": {
+      "description": "Parameters for deleting an attachment by its stable thread-local identity.",
+      "type": "object",
+      "required": [
+        "attachmentType",
+        "identityKey",
+        "threadId"
+      ],
+      "properties": {
+        "attachmentType": {
+          "type": "string"
+        },
+        "identityKey": {
+          "type": "string"
+        },
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
     "ThreadCompactStartParams": {
       "type": "object",
       "required": [
@@ -6779,6 +6973,16 @@
         },
         "modelProviders": {
           "description": "Optional provider filter; when set, only sessions recorded under these providers are returned. When present but empty, includes all providers.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "originators": {
+          "description": "Optional originator allowlist, matching any supplied value exactly. Supported by hosted backends only; the local app-server rejects a nonempty list. Omitted or empty lists leave originators unrestricted.",
           "type": [
             "array",
             "null"

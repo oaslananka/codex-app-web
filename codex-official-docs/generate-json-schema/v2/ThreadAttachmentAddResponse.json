@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadAttachmentAddResponse",
+  "description": "The created or existing attachment.",
+  "type": "object",
+  "required": [
+    "attachment",
+    "outcome"
+  ],
+  "properties": {
+    "attachment": {
+      "$ref": "#/definitions/ThreadAttachment"
+    },
+    "outcome": {
+      "$ref": "#/definitions/ThreadAttachmentAddOutcome"
+    }
+  },
+  "definitions": {
+    "ThreadAttachment": {
+      "description": "An independently persisted attachment associated with a thread.",
+      "type": "object",
+      "required": [
+        "attachmentType",
+        "createdAt",
+        "id",
+        "identityKey",
+        "payload"
+      ],
+      "properties": {
+        "attachmentType": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string"
+        },
+        "identityKey": {
+          "type": "string"
+        },
+        "payload": true
+      }
+    },
+    "ThreadAttachmentAddOutcome": {
+      "description": "Result of attempting to associate an attachment with a thread.",
+      "type": "string",
+      "enum": [
+        "created",
+        "existing"
+      ]
+    }
+  }
+}

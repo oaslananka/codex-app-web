@@ -212,6 +212,26 @@
       }
     },
     {
+      "title": "Thread/attachment/updatedNotification",
+      "type": "object",
+      "required": [
+        "method",
+        "params"
+      ],
+      "properties": {
+        "method": {
+          "title": "Thread/attachment/updatedNotificationMethod",
+          "type": "string",
+          "enum": [
+            "thread/attachment/updated"
+          ]
+        },
+        "params": {
+          "$ref": "#/definitions/ThreadAttachmentUpdatedNotification"
+        }
+      }
+    },
+    {
       "title": "Thread/goal/updatedNotification",
       "type": "object",
       "required": [
@@ -3634,7 +3654,7 @@
               "type": "string"
             },
             "cwd": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             },
             "source": {
               "$ref": "#/definitions/GuardianCommandSource"
@@ -3726,12 +3746,12 @@
               ]
             },
             "cwd": {
-              "$ref": "#/definitions/AbsolutePathBuf"
+              "$ref": "#/definitions/LegacyAppPathString"
             },
             "files": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/AbsolutePathBuf"
+                "$ref": "#/definitions/LegacyAppPathString"
               }
             }
           }
@@ -5055,6 +5075,13 @@
             "null"
           ]
         },
+        "normalModelSlug": {
+          "description": "Normal model whose display name and reasoning options describe this quota alias.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "planType": {
           "anyOf": [
             {
@@ -5820,6 +5847,13 @@
             "null"
           ]
         },
+        "originator": {
+          "description": "Originator recorded when the thread was created, independent of its current client or executor. Null when the recorded originator is unavailable.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "parentThreadId": {
           "description": "The ID of the parent thread. This will only be set if this thread is a subagent.",
           "type": [
@@ -5948,6 +5982,42 @@
         }
       }
     },
+    "ThreadAttachmentOperation": {
+      "description": "The persisted attachment change represented by a notification.",
+      "type": "string",
+      "enum": [
+        "created",
+        "deleted"
+      ]
+    },
+    "ThreadAttachmentUpdatedNotification": {
+      "description": "Notification published after a thread attachment is created or deleted.",
+      "type": "object",
+      "required": [
+        "attachmentId",
+        "attachmentType",
+        "identityKey",
+        "operation",
+        "threadId"
+      ],
+      "properties": {
+        "attachmentId": {
+          "type": "string"
+        },
+        "attachmentType": {
+          "type": "string"
+        },
+        "identityKey": {
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/definitions/ThreadAttachmentOperation"
+        },
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
     "ThreadClosedNotification": {
       "type": "object",
       "required": [
@@ -5967,6 +6037,29 @@
       "properties": {
         "threadId": {
           "type": "string"
+        }
+      }
+    },
+    "ThreadEnvironment": {
+      "description": "An environment selected by a loaded thread, independent of connection status.",
+      "type": "object",
+      "required": [
+        "cwd",
+        "environmentId",
+        "runtimeWorkspaceRoots"
+      ],
+      "properties": {
+        "cwd": {
+          "$ref": "#/definitions/LegacyAppPathString"
+        },
+        "environmentId": {
+          "type": "string"
+        },
+        "runtimeWorkspaceRoots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LegacyAppPathString"
+          }
         }
       }
     },

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadAttachmentListParams",
+  "description": "Parameters for listing attachments from one thread.",
+  "type": "object",
+  "required": [
+    "threadId"
+  ],
+  "properties": {
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "limit": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "uint32",
+      "minimum": 0
+    },
+    "threadId": {
+      "type": "string"
+    }
+  }
+}

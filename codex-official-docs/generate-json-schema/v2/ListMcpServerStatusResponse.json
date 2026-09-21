@@ -144,6 +144,13 @@
           "additionalProperties": {
             "$ref": "#/definitions/Tool"
           }
+        },
+        "toolsError": {
+          "description": "Tool discovery failed and no catalog was returned. Null when a catalog is returned, including cached or empty catalogs.",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
