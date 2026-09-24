@@ -47,6 +47,16 @@
         "type": "string"
       }
     },
+    "originators": {
+      "description": "Optional originator allowlist, matching any supplied value exactly. Supported by hosted backends only; the local app-server rejects a nonempty list. Omitted or empty lists leave originators unrestricted.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
     "searchTerm": {
       "description": "Optional substring filter for the extracted thread title.",
       "type": [

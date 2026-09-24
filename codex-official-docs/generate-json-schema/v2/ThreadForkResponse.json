@@ -26,6 +26,14 @@
     "cwd": {
       "$ref": "#/definitions/AbsolutePathBuf"
     },
+    "disabledPluginIds": {
+      "description": "Saved list of disabled plugin IDs. Does not yet filter plugin capabilities.",
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "string"
+      }
+    },
     "instructionSources": {
       "description": "Environment-native paths to instruction source files currently loaded for this thread.",
       "type": "array",
@@ -651,7 +659,6 @@
           "title": "InputImageFunctionCallOutputContentItem",
           "type": "object",
           "required": [
-            "image_url",
             "type"
           ],
           "properties": {
@@ -671,11 +678,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "image_url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "ImageUrlFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "image_url"
+              ],
+              "properties": {
+                "image_url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "file_id"
+              ],
+              "properties": {
+                "file_id": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "InputAudioFunctionCallOutputContentItem",
@@ -799,6 +829,29 @@
     },
     "LegacyAppPathString": {
       "type": "string"
+    },
+    "McpAppDisplayMode": {
+      "type": "string",
+      "enum": [
+        "inline",
+        "fullscreen"
+      ]
+    },
+    "McpAppUi": {
+      "description": "UI resource and display preference for model invocations, captured from the tool descriptor.",
+      "type": "object",
+      "required": [
+        "preferredModelDisplayMode",
+        "resourceUri"
+      ],
+      "properties": {
+        "preferredModelDisplayMode": {
+          "$ref": "#/definitions/McpAppDisplayMode"
+        },
+        "resourceUri": {
+          "type": "string"
+        }
+      }
     },
     "McpToolCallAppContext": {
       "type": "object",
@@ -1436,6 +1489,13 @@
             "null"
           ]
         },
+        "originator": {
+          "description": "Originator recorded when the thread was created, independent of its current client or executor. Null when the recorded originator is unavailable.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "parentThreadId": {
           "description": "The ID of the parent thread. This will only be set if this thread is a subagent.",
           "type": [
@@ -1533,7 +1593,7 @@
           ]
         },
         "turns": {
-          "description": "Only populated on `thread/resume`, `thread/rollback`, `thread/fork`, and `thread/read` (when `includeTurns` is true) responses. For all other responses and notifications returning a Thread, the turns field will be an empty list.",
+          "description": "Only populated on `thread/resume`, `thread/fork`, and `thread/read` (when `includeTurns` is true) responses. For all other responses and notifications returning a Thread, the turns field will be an empty list.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/Turn"
@@ -1552,6 +1612,29 @@
         "waitingOnApproval",
         "waitingOnUserInput"
       ]
+    },
+    "ThreadEnvironment": {
+      "description": "An environment selected by a loaded thread, independent of connection status.",
+      "type": "object",
+      "required": [
+        "cwd",
+        "environmentId",
+        "runtimeWorkspaceRoots"
+      ],
+      "properties": {
+        "cwd": {
+          "$ref": "#/definitions/LegacyAppPathString"
+        },
+        "environmentId": {
+          "type": "string"
+        },
+        "runtimeWorkspaceRoots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LegacyAppPathString"
+          }
+        }
+      }
     },
     "ThreadExtra": {
       "description": "Extra app-server data for a thread.",
@@ -1972,10 +2055,21 @@
               "type": "string"
             },
             "mcpAppResourceUri": {
-              "description": "Deprecated: use `appContext.resourceUri` instead.",
+              "description": "Legacy compatibility field; prefer `mcpAppUi.resourceUri` when available.",
               "type": [
                 "string",
                 "null"
+              ]
+            },
+            "mcpAppUi": {
+              "description": "Presentation captured from the invoked descriptor; absent in older history.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/McpAppUi"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "pluginId": {
@@ -2715,8 +2809,7 @@
           "title": "ImageUserInput",
           "type": "object",
           "required": [
-            "type",
-            "url"
+            "type"
           ],
           "properties": {
             "type": {
@@ -2736,11 +2829,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "UrlUserInput",
+              "type": "object",
+              "required": [
+                "url"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdUserInput",
+              "type": "object",
+              "required": [
+                "fileId"
+              ],
+              "properties": {
+                "fileId": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "LocalImageUserInput",

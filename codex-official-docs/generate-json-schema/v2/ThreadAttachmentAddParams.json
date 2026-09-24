@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadAttachmentAddParams",
+  "description": "Parameters for creating or locating an attachment on its owning thread.",
+  "type": "object",
+  "required": [
+    "attachmentType",
+    "identityKey",
+    "payload",
+    "threadId"
+  ],
+  "properties": {
+    "attachmentType": {
+      "type": "string"
+    },
+    "identityKey": {
+      "type": "string"
+    },
+    "payload": true,
+    "threadId": {
+      "type": "string"
+    }
+  }
+}

@@ -389,7 +389,6 @@
           "title": "InputImageFunctionCallOutputContentItem",
           "type": "object",
           "required": [
-            "image_url",
             "type"
           ],
           "properties": {
@@ -409,11 +408,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "image_url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "ImageUrlFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "image_url"
+              ],
+              "properties": {
+                "image_url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "file_id"
+              ],
+              "properties": {
+                "file_id": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "InputAudioFunctionCallOutputContentItem",
@@ -514,6 +536,29 @@
     },
     "LegacyAppPathString": {
       "type": "string"
+    },
+    "McpAppDisplayMode": {
+      "type": "string",
+      "enum": [
+        "inline",
+        "fullscreen"
+      ]
+    },
+    "McpAppUi": {
+      "description": "UI resource and display preference for model invocations, captured from the tool descriptor.",
+      "type": "object",
+      "required": [
+        "preferredModelDisplayMode",
+        "resourceUri"
+      ],
+      "properties": {
+        "preferredModelDisplayMode": {
+          "$ref": "#/definitions/McpAppDisplayMode"
+        },
+        "resourceUri": {
+          "type": "string"
+        }
+      }
     },
     "McpToolCallAppContext": {
       "type": "object",
@@ -1159,10 +1204,21 @@
               "type": "string"
             },
             "mcpAppResourceUri": {
-              "description": "Deprecated: use `appContext.resourceUri` instead.",
+              "description": "Legacy compatibility field; prefer `mcpAppUi.resourceUri` when available.",
               "type": [
                 "string",
                 "null"
+              ]
+            },
+            "mcpAppUi": {
+              "description": "Presentation captured from the invoked descriptor; absent in older history.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/McpAppUi"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "pluginId": {
@@ -1650,8 +1706,7 @@
           "title": "ImageUserInput",
           "type": "object",
           "required": [
-            "type",
-            "url"
+            "type"
           ],
           "properties": {
             "type": {
@@ -1671,11 +1726,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "UrlUserInput",
+              "type": "object",
+              "required": [
+                "url"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdUserInput",
+              "type": "object",
+              "required": [
+                "fileId"
+              ],
+              "properties": {
+                "fileId": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "LocalImageUserInput",

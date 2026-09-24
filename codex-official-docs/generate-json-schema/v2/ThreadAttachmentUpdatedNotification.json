@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadAttachmentUpdatedNotification",
+  "description": "Notification published after a thread attachment is created or deleted.",
+  "type": "object",
+  "required": [
+    "attachmentId",
+    "attachmentType",
+    "identityKey",
+    "operation",
+    "threadId"
+  ],
+  "properties": {
+    "attachmentId": {
+      "type": "string"
+    },
+    "attachmentType": {
+      "type": "string"
+    },
+    "identityKey": {
+      "type": "string"
+    },
+    "operation": {
+      "$ref": "#/definitions/ThreadAttachmentOperation"
+    },
+    "threadId": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "ThreadAttachmentOperation": {
+      "description": "The persisted attachment change represented by a notification.",
+      "type": "string",
+      "enum": [
+        "created",
+        "deleted"
+      ]
+    }
+  }
+}

@@ -214,6 +214,18 @@
             "type": "string"
           }
         },
+        "onboardingSkill": {
+          "description": "The declared onboarding skill, when the plugin and visible skill are enabled.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SkillSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "scheduledTasks": {
           "type": [
             "array",

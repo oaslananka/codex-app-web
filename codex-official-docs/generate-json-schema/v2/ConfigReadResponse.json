@@ -100,6 +100,16 @@
             }
           ]
         },
+        "omit_tools_from": {
+          "description": "Additional model-facing surfaces omitted for this connector's tools.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ToolExposureSurface"
+          }
+        },
         "open_world_enabled": {
           "type": [
             "boolean",
@@ -1034,6 +1044,32 @@
           }
         }
       }
+    },
+    "ToolExposureSurface": {
+      "description": "A model-facing surface on which a tool can be exposed.",
+      "oneOf": [
+        {
+          "description": "Nested tools available to Code Mode scripts.",
+          "type": "string",
+          "enum": [
+            "code_mode"
+          ]
+        },
+        {
+          "description": "Tools discovered later through tool search.",
+          "type": "string",
+          "enum": [
+            "deferred"
+          ]
+        },
+        {
+          "description": "Tools present in the model's initial tool list.",
+          "type": "string",
+          "enum": [
+            "direct"
+          ]
+        }
+      ]
     },
     "ToolsV2": {
       "type": "object",

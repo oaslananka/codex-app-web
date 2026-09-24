@@ -136,8 +136,7 @@
           "title": "ImageUserInput",
           "type": "object",
           "required": [
-            "type",
-            "url"
+            "type"
           ],
           "properties": {
             "type": {
@@ -157,11 +156,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "UrlUserInput",
+              "type": "object",
+              "required": [
+                "url"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdUserInput",
+              "type": "object",
+              "required": [
+                "fileId"
+              ],
+              "properties": {
+                "fileId": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "LocalImageUserInput",

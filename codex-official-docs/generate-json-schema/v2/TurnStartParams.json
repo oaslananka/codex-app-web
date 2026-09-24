@@ -42,6 +42,16 @@
         "null"
       ]
     },
+    "disabledPluginIds": {
+      "description": "Replace this thread's disabled plugin IDs. Omitted/null preserves the list; [] clears it.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
     "effort": {
       "description": "Override the reasoning effort for this turn and subsequent turns.",
       "anyOf": [
@@ -70,7 +80,7 @@
       "description": "Optional JSON Schema used to constrain the final assistant message for this turn."
     },
     "personality": {
-      "description": "Override the personality for this turn and subsequent turns.",
+      "description": "@deprecated `friendly` and `pragmatic` no longer select a style. Changing this does not rewrite the thread's existing instructions.",
       "anyOf": [
         {
           "$ref": "#/definitions/Personality"
@@ -306,7 +316,6 @@
           "title": "InputImageFunctionCallOutputContentItem",
           "type": "object",
           "required": [
-            "image_url",
             "type"
           ],
           "properties": {
@@ -326,11 +335,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "image_url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "ImageUrlFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "image_url"
+              ],
+              "properties": {
+                "image_url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "file_id"
+              ],
+              "properties": {
+                "file_id": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "InputAudioFunctionCallOutputContentItem",
@@ -427,6 +459,7 @@
       ]
     },
     "Personality": {
+      "description": "Deprecated: `friendly` and `pragmatic` no longer select a style.",
       "type": "string",
       "enum": [
         "none",
@@ -689,8 +722,7 @@
           "title": "ImageUserInput",
           "type": "object",
           "required": [
-            "type",
-            "url"
+            "type"
           ],
           "properties": {
             "type": {
@@ -710,11 +742,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "UrlUserInput",
+              "type": "object",
+              "required": [
+                "url"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdUserInput",
+              "type": "object",
+              "required": [
+                "fileId"
+              ],
+              "properties": {
+                "fileId": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "LocalImageUserInput",

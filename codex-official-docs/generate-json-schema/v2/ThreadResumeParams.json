@@ -71,6 +71,7 @@
       ]
     },
     "personality": {
+      "description": "@deprecated `friendly` and `pragmatic` no longer select a style. Changing this does not rewrite the thread's existing instructions.",
       "anyOf": [
         {
           "$ref": "#/definitions/Personality"
@@ -207,6 +208,18 @@
         }
       ]
     },
+    "ConfigurationReasoning": {
+      "description": "Reasoning settings interpreted by the backend for the routed model.",
+      "type": "object",
+      "required": [
+        "effort"
+      ],
+      "properties": {
+        "effort": {
+          "$ref": "#/definitions/ReasoningEffort"
+        }
+      }
+    },
     "ContentItem": {
       "oneOf": [
         {
@@ -233,7 +246,6 @@
           "title": "InputImageContentItem",
           "type": "object",
           "required": [
-            "image_url",
             "type"
           ],
           "properties": {
@@ -253,11 +265,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "image_url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "ImageUrlContentItem",
+              "type": "object",
+              "required": [
+                "image_url"
+              ],
+              "properties": {
+                "image_url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdContentItem",
+              "type": "object",
+              "required": [
+                "file_id"
+              ],
+              "properties": {
+                "file_id": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "InputAudioContentItem",
@@ -341,7 +376,6 @@
           "title": "InputImageFunctionCallOutputContentItem",
           "type": "object",
           "required": [
-            "image_url",
             "type"
           ],
           "properties": {
@@ -361,11 +395,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "image_url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "ImageUrlFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "image_url"
+              ],
+              "properties": {
+                "image_url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "file_id"
+              ],
+              "properties": {
+                "file_id": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "InputAudioFunctionCallOutputContentItem",
@@ -514,12 +571,18 @@
       ]
     },
     "Personality": {
+      "description": "Deprecated: `friendly` and `pragmatic` no longer select a style.",
       "type": "string",
       "enum": [
         "none",
         "friendly",
         "pragmatic"
       ]
+    },
+    "ReasoningEffort": {
+      "description": "A non-empty reasoning effort value advertised by the model.",
+      "type": "string",
+      "minLength": 1
     },
     "ReasoningItemContent": {
       "oneOf": [
@@ -1237,6 +1300,27 @@
                   "type": "null"
                 }
               ]
+            }
+          }
+        },
+        {
+          "title": "ConfigurationUpdateResponseItem",
+          "description": "A durable input control interpreted by the backend at its position in history.",
+          "type": "object",
+          "required": [
+            "reasoning",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "title": "ConfigurationUpdateResponseItemType",
+              "type": "string",
+              "enum": [
+                "configuration_update"
+              ]
+            },
+            "reasoning": {
+              "$ref": "#/definitions/ConfigurationReasoning"
             }
           }
         },

@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThreadAttachmentRemoveResponse",
+  "description": "Successful deletion does not return additional attachment data.",
+  "type": "object"
+}

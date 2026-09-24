@@ -21,6 +21,15 @@
     }
   },
   "definitions": {
+    "CyberAccessProgram": {
+      "description": "Requested cyber treatment for a ChatGPT-authenticated Codex turn. Authorization and model-tier restrictions remain server-owned.",
+      "type": "string",
+      "enum": [
+        "standard",
+        "daybreakBlue",
+        "daybreakRed"
+      ]
+    },
     "InputModality": {
       "description": "Canonical user-input modality tags advertised by a model.",
       "oneOf": [
@@ -75,6 +84,18 @@
           "anyOf": [
             {
               "$ref": "#/definitions/ModelAvailabilityNux"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "availableAccessPrograms": {
+          "description": "Null when the catalog does not provide access-program metadata.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ModelAccessPrograms"
             },
             {
               "type": "null"
@@ -149,6 +170,7 @@
           }
         },
         "supportsPersonality": {
+          "description": "@deprecated Always false; models no longer support personality selection.",
           "type": "boolean",
           "default": false
         },
@@ -167,6 +189,22 @@
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    "ModelAccessPrograms": {
+      "description": "Caller-specific explicit access programs advertised by model discovery.",
+      "type": "object",
+      "required": [
+        "cyber"
+      ],
+      "properties": {
+        "cyber": {
+          "description": "Accepted explicit selections.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CyberAccessProgram"
+          }
         }
       }
     },
