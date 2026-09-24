@@ -430,6 +430,16 @@
             "$ref": "#/definitions/AskForApproval"
           }
         },
+        "allowedLoginMethods": {
+          "description": "Effective login methods after managed, forced-login, and workspace restrictions. An empty list permits no login method. Older servers may omit this field.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/ForcedLoginMethod"
+          }
+        },
         "allowedPermissionProfiles": {
           "type": [
             "object",
@@ -463,7 +473,7 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/WindowsSandboxSetupMode"
+            "$ref": "#/definitions/WindowsSandboxImplementation"
           }
         },
         "autoReview": {
@@ -575,6 +585,21 @@
             "null"
           ]
         },
+        "modelProvider": {
+          "description": "Exact provider selection required by managed policy.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "modelProviders": {
+          "description": "Complete required provider definitions, using config.toml field names.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
         "models": {
           "anyOf": [
             {
@@ -588,12 +613,6 @@
         "sqliteHome": {
           "type": [
             "string",
-            "null"
-          ]
-        },
-        "windowsSandboxPrivateDesktop": {
-          "type": [
-            "boolean",
             "null"
           ]
         }
@@ -761,6 +780,13 @@
           ]
         }
       }
+    },
+    "ForcedLoginMethod": {
+      "type": "string",
+      "enum": [
+        "chatgpt",
+        "api"
+      ]
     },
     "InAppBrowserRequirements": {
       "type": "object",
@@ -1068,11 +1094,12 @@
         "live"
       ]
     },
-    "WindowsSandboxSetupMode": {
+    "WindowsSandboxImplementation": {
       "type": "string",
       "enum": [
         "elevated",
-        "unelevated"
+        "unelevated",
+        "mxc"
       ]
     }
   }

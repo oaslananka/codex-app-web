@@ -36,7 +36,6 @@ export const OFFICIAL_REQUEST_METHODS = [
   "thread/compact/start",
   "thread/shellCommand",
   "thread/approveGuardianDeniedAction",
-  "thread/rollback",
   "thread/revert",
   "thread/list",
   "threadSection/list",

@@ -88,6 +88,15 @@
         }
       ]
     },
+    "AccountRoutingOverride": {
+      "description": "Backend routing policy. Wire values match the accounts/check contract.",
+      "type": "string",
+      "enum": [
+        "NO_CONSTRAINT",
+        "us",
+        "us_cr"
+      ]
+    },
     "PlanType": {
       "type": "string",
       "enum": [
@@ -109,6 +118,25 @@
         "edu_pro",
         "unknown"
       ]
+    },
+    "WorkspaceRouting": {
+      "type": "object",
+      "required": [
+        "accountRoutingOverride",
+        "backendOrigin",
+        "chatgptAccountId"
+      ],
+      "properties": {
+        "accountRoutingOverride": {
+          "$ref": "#/definitions/AccountRoutingOverride"
+        },
+        "backendOrigin": {
+          "type": "string"
+        },
+        "chatgptAccountId": {
+          "type": "string"
+        }
+      }
     }
   }
 }

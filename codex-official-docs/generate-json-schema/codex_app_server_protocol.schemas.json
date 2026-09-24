@@ -688,30 +688,6 @@
           }
         },
         {
-          "title": "Thread/rollbackRequest",
-          "type": "object",
-          "required": [
-            "id",
-            "method",
-            "params"
-          ],
-          "properties": {
-            "id": {
-              "$ref": "#/definitions/v2/RequestId"
-            },
-            "method": {
-              "title": "Thread/rollbackRequestMethod",
-              "type": "string",
-              "enum": [
-                "thread/rollback"
-              ]
-            },
-            "params": {
-              "$ref": "#/definitions/v2/ThreadRollbackParams"
-            }
-          }
-        },
-        {
           "title": "Thread/revertRequest",
           "type": "object",
           "required": [
@@ -6731,6 +6707,15 @@
           }
         }
       },
+      "AccountRoutingOverride": {
+        "description": "Backend routing policy. Wire values match the accounts/check contract.",
+        "type": "string",
+        "enum": [
+          "NO_CONSTRAINT",
+          "us",
+          "us_cr"
+        ]
+      },
       "AccountTokenUsageDailyBucket": {
         "type": "object",
         "required": [
@@ -7111,6 +7096,16 @@
                 "type": "null"
               }
             ]
+          },
+          "omit_tools_from": {
+            "description": "Additional model-facing surfaces omitted for this connector's tools.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/definitions/v2/ToolExposureSurface"
+            }
           },
           "open_world_enabled": {
             "type": [
@@ -9485,7 +9480,7 @@
             ]
           },
           "reloadUserConfig": {
-            "description": "When true, hot-reload updated runtime settings into loaded threads after writing. Session-static model, reasoning-effort, Plan-mode reasoning-effort, service-tier, and personality defaults are not reloaded.",
+            "description": "When true, hot-reload updated runtime settings into loaded threads after writing. Session-static model, reasoning-effort, Plan-mode reasoning-effort, and service-tier defaults are not reloaded. The deprecated personality setting is also not reloaded.",
             "type": "boolean"
           }
         }
@@ -9855,6 +9850,16 @@
               "$ref": "#/definitions/v2/AskForApproval"
             }
           },
+          "allowedLoginMethods": {
+            "description": "Effective login methods after managed, forced-login, and workspace restrictions. An empty list permits no login method. Older servers may omit this field.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/definitions/v2/ForcedLoginMethod"
+            }
+          },
           "allowedPermissionProfiles": {
             "type": [
               "object",
@@ -9888,7 +9893,7 @@
               "null"
             ],
             "items": {
-              "$ref": "#/definitions/v2/WindowsSandboxSetupMode"
+              "$ref": "#/definitions/v2/WindowsSandboxImplementation"
             }
           },
           "autoReview": {
@@ -10000,6 +10005,21 @@
               "null"
             ]
           },
+          "modelProvider": {
+            "description": "Exact provider selection required by managed policy.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "modelProviders": {
+            "description": "Complete required provider definitions, using config.toml field names.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
           "models": {
             "anyOf": [
               {
@@ -10013,12 +10033,6 @@
           "sqliteHome": {
             "type": [
               "string",
-              "null"
-            ]
-          },
-          "windowsSandboxPrivateDesktop": {
-            "type": [
-              "boolean",
               "null"
             ]
           }
@@ -10467,7 +10481,6 @@
             "title": "InputImageContentItem",
             "type": "object",
             "required": [
-              "image_url",
               "type"
             ],
             "properties": {
@@ -10487,11 +10500,34 @@
                     "type": "null"
                   }
                 ]
-              },
-              "image_url": {
-                "type": "string"
               }
-            }
+            },
+            "anyOf": [
+              {
+                "title": "ImageUrlContentItem",
+                "type": "object",
+                "required": [
+                  "image_url"
+                ],
+                "properties": {
+                  "image_url": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "title": "FileIdContentItem",
+                "type": "object",
+                "required": [
+                  "file_id"
+                ],
+                "properties": {
+                  "file_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
           },
           {
             "title": "InputAudioContentItem",
@@ -12328,7 +12364,6 @@
             "title": "InputImageFunctionCallOutputContentItem",
             "type": "object",
             "required": [
-              "image_url",
               "type"
             ],
             "properties": {
@@ -12348,11 +12383,34 @@
                     "type": "null"
                   }
                 ]
-              },
-              "image_url": {
-                "type": "string"
               }
-            }
+            },
+            "anyOf": [
+              {
+                "title": "ImageUrlFunctionCallOutputContentItem",
+                "type": "object",
+                "required": [
+                  "image_url"
+                ],
+                "properties": {
+                  "image_url": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "title": "FileIdFunctionCallOutputContentItem",
+                "type": "object",
+                "required": [
+                  "file_id"
+                ],
+                "properties": {
+                  "file_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
           },
           {
             "title": "InputAudioFunctionCallOutputContentItem",
@@ -14358,6 +14416,29 @@
           }
         }
       },
+      "McpAppDisplayMode": {
+        "type": "string",
+        "enum": [
+          "inline",
+          "fullscreen"
+        ]
+      },
+      "McpAppUi": {
+        "description": "UI resource and display preference for model invocations, captured from the tool descriptor.",
+        "type": "object",
+        "required": [
+          "preferredModelDisplayMode",
+          "resourceUri"
+        ],
+        "properties": {
+          "preferredModelDisplayMode": {
+            "$ref": "#/definitions/v2/McpAppDisplayMode"
+          },
+          "resourceUri": {
+            "type": "string"
+          }
+        }
+      },
       "McpAuthStatus": {
         "type": "string",
         "enum": [
@@ -14681,6 +14762,9 @@
                 "type": "null"
               }
             ]
+          },
+          "serverCapabilities": {
+            "description": "Capabilities advertised by the initialized MCP server; null when unavailable."
           },
           "serverInfo": {
             "anyOf": [
@@ -15108,6 +15192,18 @@
               }
             ]
           },
+          "availableAccessPrograms": {
+            "description": "Null when the catalog does not provide access-program metadata.",
+            "default": null,
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/ModelAccessPrograms"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "defaultReasoningEffort": {
             "$ref": "#/definitions/v2/ReasoningEffort"
           },
@@ -15176,6 +15272,7 @@
             }
           },
           "supportsPersonality": {
+            "description": "@deprecated Always false; models no longer support personality selection.",
             "type": "boolean",
             "default": false
           },
@@ -15194,6 +15291,22 @@
                 "type": "null"
               }
             ]
+          }
+        }
+      },
+      "ModelAccessPrograms": {
+        "description": "Caller-specific explicit access programs advertised by model discovery.",
+        "type": "object",
+        "required": [
+          "cyber"
+        ],
+        "properties": {
+          "cyber": {
+            "description": "Accepted explicit selections.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/v2/CyberAccessProgram"
+            }
           }
         }
       },
@@ -15863,6 +15976,7 @@
         }
       },
       "Personality": {
+        "description": "Deprecated: `friendly` and `pragmatic` no longer select a style.",
         "type": "string",
         "enum": [
           "none",
@@ -15996,6 +16110,18 @@
             "items": {
               "type": "string"
             }
+          },
+          "onboardingSkill": {
+            "description": "The declared onboarding skill, when the plugin and visible skill are enabled.",
+            "default": null,
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/SkillSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "scheduledTasks": {
             "type": [
@@ -20574,7 +20700,7 @@
             ]
           },
           "turns": {
-            "description": "Only populated on `thread/resume`, `thread/rollback`, `thread/fork`, and `thread/read` (when `includeTurns` is true) responses. For all other responses and notifications returning a Thread, the turns field will be an empty list.",
+            "description": "Only populated on `thread/resume`, `thread/fork`, and `thread/read` (when `includeTurns` is true) responses. For all other responses and notifications returning a Thread, the turns field will be an empty list.",
             "type": "array",
             "items": {
               "$ref": "#/definitions/v2/Turn"
@@ -21071,6 +21197,14 @@
           },
           "cwd": {
             "$ref": "#/definitions/v2/AbsolutePathBuf"
+          },
+          "disabledPluginIds": {
+            "description": "Saved list of disabled plugin IDs. Does not yet filter plugin capabilities.",
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
           },
           "instructionSources": {
             "description": "Environment-native paths to instruction source files currently loaded for this thread.",
@@ -21752,10 +21886,21 @@
                 "type": "string"
               },
               "mcpAppResourceUri": {
-                "description": "Deprecated: use `appContext.resourceUri` instead.",
+                "description": "Legacy compatibility field; prefer `mcpAppUi.resourceUri` when available.",
                 "type": [
                   "string",
                   "null"
+                ]
+              },
+              "mcpAppUi": {
+                "description": "Presentation captured from the invoked descriptor; absent in older history.",
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/McpAppUi"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "pluginId": {
@@ -23262,6 +23407,7 @@
             ]
           },
           "personality": {
+            "description": "@deprecated `friendly` and `pragmatic` no longer select a style. Changing this does not rewrite the thread's existing instructions.",
             "anyOf": [
               {
                 "$ref": "#/definitions/v2/Personality"
@@ -23317,8 +23463,27 @@
               }
             ]
           },
+          "collaborationMode": {
+            "description": "Effective collaboration mode. Absent when resuming from an older server.",
+            "anyOf": [
+              {
+                "$ref": "#/definitions/v2/CollaborationMode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "cwd": {
             "$ref": "#/definitions/v2/AbsolutePathBuf"
+          },
+          "disabledPluginIds": {
+            "description": "Saved list of disabled plugin IDs. Does not yet filter plugin capabilities.",
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
           },
           "instructionSources": {
             "description": "Environment-native paths to instruction source files currently loaded for this thread.",
@@ -23440,45 +23605,6 @@
         "properties": {
           "threadId": {
             "type": "string"
-          }
-        }
-      },
-      "ThreadRollbackParams": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "title": "ThreadRollbackParams",
-        "description": "DEPRECATED: `thread/rollback` will be removed soon.",
-        "type": "object",
-        "required": [
-          "numTurns",
-          "threadId"
-        ],
-        "properties": {
-          "numTurns": {
-            "description": "The number of turns to drop from the end of the thread. Must be >= 1.\n\nThis only modifies the thread's history and does not revert local file changes that have been made by the agent. Clients are responsible for reverting these changes.",
-            "type": "integer",
-            "format": "uint32",
-            "minimum": 0
-          },
-          "threadId": {
-            "type": "string"
-          }
-        }
-      },
-      "ThreadRollbackResponse": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "title": "ThreadRollbackResponse",
-        "type": "object",
-        "required": [
-          "thread"
-        ],
-        "properties": {
-          "thread": {
-            "description": "The updated thread after applying the rollback, with `turns` populated.\n\nThe ThreadItems stored in each Turn are lossy since we explicitly do not persist all agent interactions, such as command executions. This is the same behavior as `thread/resume`.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v2/Thread"
-              }
-            ]
           }
         }
       },
@@ -23798,6 +23924,14 @@
           "cwd": {
             "$ref": "#/definitions/v2/AbsolutePathBuf"
           },
+          "disabledPluginIds": {
+            "description": "Saved list of disabled plugin IDs. Does not yet filter plugin capabilities.",
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
+          },
           "effort": {
             "anyOf": [
               {
@@ -23815,6 +23949,7 @@
             "type": "string"
           },
           "personality": {
+            "description": "@deprecated Reports the saved setting; `friendly` and `pragmatic` no longer select a style.",
             "anyOf": [
               {
                 "$ref": "#/definitions/v2/Personality"
@@ -23990,6 +24125,7 @@
             ]
           },
           "personality": {
+            "description": "@deprecated `friendly` and `pragmatic` no longer select a style.",
             "anyOf": [
               {
                 "$ref": "#/definitions/v2/Personality"
@@ -24071,6 +24207,14 @@
           },
           "cwd": {
             "$ref": "#/definitions/v2/AbsolutePathBuf"
+          },
+          "disabledPluginIds": {
+            "description": "Saved list of disabled plugin IDs. Does not yet filter plugin capabilities.",
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
           },
           "instructionSources": {
             "description": "Environment-native paths to instruction source files currently loaded for this thread.",
@@ -24747,6 +24891,32 @@
           "outputSchema": true
         }
       },
+      "ToolExposureSurface": {
+        "description": "A model-facing surface on which a tool can be exposed.",
+        "oneOf": [
+          {
+            "description": "Nested tools available to Code Mode scripts.",
+            "type": "string",
+            "enum": [
+              "code_mode"
+            ]
+          },
+          {
+            "description": "Tools discovered later through tool search.",
+            "type": "string",
+            "enum": [
+              "deferred"
+            ]
+          },
+          {
+            "description": "Tools present in the model's initial tool list.",
+            "type": "string",
+            "enum": [
+              "direct"
+            ]
+          }
+        ]
+      },
       "ToolsV2": {
         "type": "object",
         "properties": {
@@ -25097,6 +25267,16 @@
               "null"
             ]
           },
+          "disabledPluginIds": {
+            "description": "Replace this thread's disabled plugin IDs. Omitted/null preserves the list; [] clears it.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
           "effort": {
             "description": "Override the reasoning effort for this turn and subsequent turns.",
             "anyOf": [
@@ -25125,7 +25305,7 @@
             "description": "Optional JSON Schema used to constrain the final assistant message for this turn."
           },
           "personality": {
-            "description": "Override the personality for this turn and subsequent turns.",
+            "description": "@deprecated `friendly` and `pragmatic` no longer select a style. Changing this does not rewrite the thread's existing instructions.",
             "anyOf": [
               {
                 "$ref": "#/definitions/v2/Personality"
@@ -25357,8 +25537,7 @@
             "title": "ImageUserInput",
             "type": "object",
             "required": [
-              "type",
-              "url"
+              "type"
             ],
             "properties": {
               "type": {
@@ -25378,11 +25557,34 @@
                     "type": "null"
                   }
                 ]
-              },
-              "url": {
-                "type": "string"
               }
-            }
+            },
+            "anyOf": [
+              {
+                "title": "UrlUserInput",
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "title": "FileIdUserInput",
+                "type": "object",
+                "required": [
+                  "fileId"
+                ],
+                "properties": {
+                  "fileId": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
           },
           {
             "title": "LocalImageUserInput",
@@ -25718,6 +25920,14 @@
         },
         "additionalProperties": false
       },
+      "WindowsSandboxImplementation": {
+        "type": "string",
+        "enum": [
+          "elevated",
+          "unelevated",
+          "mxc"
+        ]
+      },
       "WindowsSandboxReadiness": {
         "type": "string",
         "enum": [
@@ -25873,6 +26083,25 @@
           "announcement",
           "unknown"
         ]
+      },
+      "WorkspaceRouting": {
+        "type": "object",
+        "required": [
+          "accountRoutingOverride",
+          "backendOrigin",
+          "chatgptAccountId"
+        ],
+        "properties": {
+          "accountRoutingOverride": {
+            "$ref": "#/definitions/v2/AccountRoutingOverride"
+          },
+          "backendOrigin": {
+            "type": "string"
+          },
+          "chatgptAccountId": {
+            "type": "string"
+          }
+        }
       },
       "WriteStatus": {
         "type": "string",

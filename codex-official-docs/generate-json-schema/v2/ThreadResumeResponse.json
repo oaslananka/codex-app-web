@@ -23,8 +23,27 @@
         }
       ]
     },
+    "collaborationMode": {
+      "description": "Effective collaboration mode. Absent when resuming from an older server.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/CollaborationMode"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "cwd": {
       "$ref": "#/definitions/AbsolutePathBuf"
+    },
+    "disabledPluginIds": {
+      "description": "Saved list of disabled plugin IDs. Does not yet filter plugin capabilities.",
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "string"
+      }
     },
     "instructionSources": {
       "description": "Environment-native paths to instruction source files currently loaded for this thread.",
@@ -408,6 +427,22 @@
         "interrupted"
       ]
     },
+    "CollaborationMode": {
+      "description": "Collaboration mode for a Codex session.",
+      "type": "object",
+      "required": [
+        "mode",
+        "settings"
+      ],
+      "properties": {
+        "mode": {
+          "$ref": "#/definitions/ModeKind"
+        },
+        "settings": {
+          "$ref": "#/definitions/Settings"
+        }
+      }
+    },
     "CommandAction": {
       "oneOf": [
         {
@@ -667,7 +702,6 @@
           "title": "InputImageFunctionCallOutputContentItem",
           "type": "object",
           "required": [
-            "image_url",
             "type"
           ],
           "properties": {
@@ -687,11 +721,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "image_url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "ImageUrlFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "image_url"
+              ],
+              "properties": {
+                "image_url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdFunctionCallOutputContentItem",
+              "type": "object",
+              "required": [
+                "file_id"
+              ],
+              "properties": {
+                "file_id": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "InputAudioFunctionCallOutputContentItem",
@@ -815,6 +872,29 @@
     },
     "LegacyAppPathString": {
       "type": "string"
+    },
+    "McpAppDisplayMode": {
+      "type": "string",
+      "enum": [
+        "inline",
+        "fullscreen"
+      ]
+    },
+    "McpAppUi": {
+      "description": "UI resource and display preference for model invocations, captured from the tool descriptor.",
+      "type": "object",
+      "required": [
+        "preferredModelDisplayMode",
+        "resourceUri"
+      ],
+      "properties": {
+        "preferredModelDisplayMode": {
+          "$ref": "#/definitions/McpAppDisplayMode"
+        },
+        "resourceUri": {
+          "type": "string"
+        }
+      }
     },
     "McpToolCallAppContext": {
       "type": "object",
@@ -991,6 +1071,14 @@
           "type": "string"
         }
       }
+    },
+    "ModeKind": {
+      "description": "Initial collaboration mode to use when the TUI starts.",
+      "type": "string",
+      "enum": [
+        "plan",
+        "default"
+      ]
     },
     "MultiAgentMode": {
       "description": "Controls the effective multi-agent delegation instructions for a turn. `custom` means the configured mode hint defines the policy instead of a built-in policy.",
@@ -1241,6 +1329,34 @@
           "additionalProperties": false
         }
       ]
+    },
+    "Settings": {
+      "description": "Settings for a collaboration mode.",
+      "type": "object",
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "developer_instructions": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": "string"
+        },
+        "reasoning_effort": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ReasoningEffort"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
     },
     "SubAgentActivityKind": {
       "type": "string",
@@ -1556,7 +1672,7 @@
           ]
         },
         "turns": {
-          "description": "Only populated on `thread/resume`, `thread/rollback`, `thread/fork`, and `thread/read` (when `includeTurns` is true) responses. For all other responses and notifications returning a Thread, the turns field will be an empty list.",
+          "description": "Only populated on `thread/resume`, `thread/fork`, and `thread/read` (when `includeTurns` is true) responses. For all other responses and notifications returning a Thread, the turns field will be an empty list.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/Turn"
@@ -2018,10 +2134,21 @@
               "type": "string"
             },
             "mcpAppResourceUri": {
-              "description": "Deprecated: use `appContext.resourceUri` instead.",
+              "description": "Legacy compatibility field; prefer `mcpAppUi.resourceUri` when available.",
               "type": [
                 "string",
                 "null"
+              ]
+            },
+            "mcpAppUi": {
+              "description": "Presentation captured from the invoked descriptor; absent in older history.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/McpAppUi"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "pluginId": {
@@ -2787,8 +2914,7 @@
           "title": "ImageUserInput",
           "type": "object",
           "required": [
-            "type",
-            "url"
+            "type"
           ],
           "properties": {
             "type": {
@@ -2808,11 +2934,34 @@
                   "type": "null"
                 }
               ]
-            },
-            "url": {
-              "type": "string"
             }
-          }
+          },
+          "anyOf": [
+            {
+              "title": "UrlUserInput",
+              "type": "object",
+              "required": [
+                "url"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "title": "FileIdUserInput",
+              "type": "object",
+              "required": [
+                "fileId"
+              ],
+              "properties": {
+                "fileId": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         {
           "title": "LocalImageUserInput",

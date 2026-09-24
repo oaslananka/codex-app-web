@@ -154,6 +154,7 @@
       ]
     },
     "Personality": {
+      "description": "Deprecated: `friendly` and `pragmatic` no longer select a style.",
       "type": "string",
       "enum": [
         "none",
@@ -347,6 +348,14 @@
         "cwd": {
           "$ref": "#/definitions/AbsolutePathBuf"
         },
+        "disabledPluginIds": {
+          "description": "Saved list of disabled plugin IDs. Does not yet filter plugin capabilities.",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
         "effort": {
           "anyOf": [
             {
@@ -364,6 +373,7 @@
           "type": "string"
         },
         "personality": {
+          "description": "@deprecated Reports the saved setting; `friendly` and `pragmatic` no longer select a style.",
           "anyOf": [
             {
               "$ref": "#/definitions/Personality"
